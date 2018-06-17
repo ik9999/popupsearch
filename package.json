@@ -1,0 +1,48 @@
+{
+  "name": "popupsearch",
+  "version": "1.0.0",
+  "description": "Chrome extension for searching",
+  "author": "q@eqw.me",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack --hide-modules",
+    "build:dev": "cross-env NODE_ENV=development webpack --hide-modules",
+    "build-zip": "node scripts/build-zip.js",
+    "watch": "npm run build -- --watch",
+    "watch:dev": "cross-env HMR=true npm run build:dev -- --watch"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "vue": "^2.5.13",
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1",
+    "dexie": "^2.0.4",
+    "bootstrap": "^4.1.1",
+    "@fortawesome/fontawesome": "^1.1.8",
+    "@fortawesome/fontawesome-free-solid": "^5.0.13",
+    "@fortawesome/vue-fontawesome": "^0.0.23",
+    "jquery": "^3.3.1",
+    "jquery-autocomplete": "^1.2.8",
+    "popper.js": "^1.14.3",
+    "lodash": "^4.17.10"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.49",
+    "@babel/plugin-proposal-optional-chaining": "^7.0.0-beta.49",
+    "@babel/preset-env": "^7.0.0-beta.49",
+    "babel-loader": "8.0.0-beta.3",
+    "copy-webpack-plugin": "^4.0.1",
+    "cross-env": "^5.1.6",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "mini-css-extract-plugin": "^0.4.0",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^7.0.1",
+    "vue-loader": "^15.2.0",
+    "vue-template-compiler": "^2.5.13",
+    "webpack": "^4.12.0",
+    "webpack-chrome-extension-reloader": "^0.6.7",
+    "webpack-cli": "^2.1.4",
+    "webpack-shell-plugin": "^0.5.0",
+    "zip-folder": "^1.0.0"
+  }
+}

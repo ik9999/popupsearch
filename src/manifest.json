@@ -1,0 +1,37 @@
+{
+  "name": "PopupSearch",
+  "description": "Chrome extension for searching",
+  "version": null,
+  "manifest_version": 2,
+  "icons": {
+    "48": "icons/icon_48.png",
+    "128": "icons/icon_128.png"
+  },
+  "permissions": [
+    "<all_urls>",
+    "*://*/*",
+    "activeTab",
+    "tabs",
+    "background",
+    "unlimitedStorage",
+    "storage"
+  ],
+  "browser_action": {
+    "default_title": "PopupSearch",
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "options_page": "settings/settings.html",
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+E",
+        "mac": "Ctrl+E"
+      }
+    }
+  }
+}
