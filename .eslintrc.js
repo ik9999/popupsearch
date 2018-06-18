@@ -21,7 +21,8 @@ module.exports = {
     'space-before-function-paren': ['error', 'never']
   },
   globals: {
-    CIQ: true
+    $: true,
+    jQuery: true
   }
 };
 

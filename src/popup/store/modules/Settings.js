@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 const state = {
-  searchEngine: 'google',
+  searchEngine: 'googleHTML',
   acSource: 'google',
 };
 

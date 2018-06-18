@@ -31,7 +31,7 @@ const state = Settings.state;
 
 export default {
   data: () => ({
-    engineList: ['google'],
+    engineList: ['googleHTML'],
     acSourceList: ['google'],
     settings: {
     }

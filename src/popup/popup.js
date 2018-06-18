@@ -14,11 +14,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 fontawesome.library.add(faSpinner)
+window.store = store;
 
 /* eslint-disable no-new */
-new Vue({
+window.App = new Vue({
   el: '#app',
   store,
   router,
   render: h => h(App)
-})
+});

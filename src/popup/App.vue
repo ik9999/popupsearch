@@ -21,5 +21,5 @@ export default {
 <style lang="sass">
 body, .App
   width: 690px
-  min-height: 200px
+  min-height: 450px
 </style>

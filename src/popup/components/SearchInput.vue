@@ -1,7 +1,7 @@
 <template>
   <input
-    type="text" class="SearchInput form-control" id="auto1" placeholder="enter state" 
-    v-on:keyup.enter.stop.prevent="submit"
+    type="text" class="SearchInput form-control" id="auto1" placeholder="enter state"
+    v-on:keyup.esc.stop.prevent="unfocus"
   />
 </template>
 
@@ -12,23 +12,33 @@ import 'jquery-autocomplete/jquery.autocomplete.css';
 
 export default {
   data() {
-    return {}
+    return {
+      $elem: undefined
+    }
   },
   methods: {
-    submit() {
+    unfocus() {
+      this.$elem.blur();
     }
   },
   mounted() {
-    $('.SearchInput').autocomplete({
+    this.$elem = $('.SearchInput');
+    this.$elem.autocomplete({
+      appendMethod: 'replace',
       source:[
         (query, add) => {
           this.$store.dispatch('keywords/loadRemoteKeys', query).then(() => {
-            add(this.$store.state.keywords.remoteKeys);
+            add(this.$store.state.keywords.remoteKeywords);
           });
         }
       ]
     });
-    $('.SearchInput').focus();
+    this.$elem.focus();
+    this.$elem.on('selected.xdsoft', (e, keyword) => {
+      this.$store.dispatch('searchresults/search', {
+        keyword
+      });
+    });
   },
   components: {
     FontAwesomeIcon

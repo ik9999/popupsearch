@@ -2,17 +2,22 @@ import _ from 'lodash';
 import axios from 'axios';
 
 const state = {
-  historyKeys: [],
-  remoteKeys: []
+  historyKeywords: [],
+  remoteKeywords: [],
+  currentKeyword: '',
 };
 
 const getters = {
 };
 
 const mutations = {
-  setRemoteKeys(state, keys) {
-    state.remoteKeys = keys;
-  }
+  setRemoteKeywords(state, keywords) {
+    state.remoteKeywords = keywords;
+  },
+  setCurrentKeyword(state, keyword) {
+    state.currentKeyword = keyword;
+    state.historyKeywords.push(keyword);
+  },
 };
 
 const actions = {
@@ -20,6 +25,9 @@ const actions = {
     return new Promise(resolveFn => {
       resolveFn();
     });
+  },
+  updateCurrentKeyword({commit, state}, keyword) {
+    commit('setCurrentKeyword', keyword);
   },
   loadRemoteKeys({rootState, commit, state}, keyword) {
     if (!_.isString(keyword) || _.isEmpty(keyword)) {
@@ -35,9 +43,7 @@ const actions = {
         }).then((response) => {
           let keywordList = _.get(response, 'data[1]');
           if (_.isArray(keywordList)) {
-            console.log(keywordList);
-            commit('setRemoteKeys', keywordList);
-            console.log(state.remoteKeys);
+            commit('setRemoteKeywords', keywordList);
             resolveFn(keywordList);
             return ;
           }
