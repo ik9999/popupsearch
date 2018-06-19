@@ -4,8 +4,6 @@
 ## Development
 
 ```bash
-$ vue init kocal/vue-web-extension my-extension
-$ cd my-extension
 $ npm install
 $ npm run build
 ```
