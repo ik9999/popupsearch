@@ -6,14 +6,14 @@ import store from './store'
 import router from './router'
 
 import fontawesome from '@fortawesome/fontawesome'
-import faSpinner from '@fortawesome/fontawesome-free-solid/faSpinner'
+import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV !== 'production') {
   Vue.config.devtools = true;
 }
 
-fontawesome.library.add(faSpinner)
+fontawesome.library.add(faSearch)
 window.store = store;
 
 /* eslint-disable no-new */

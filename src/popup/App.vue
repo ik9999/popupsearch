@@ -20,6 +20,9 @@ export default {
 
 <style lang="sass">
 body, .App
-  width: 690px
-  min-height: 450px
+  width: 800px
+  height: 600px
+  overflow: hidden
+.App
+  padding: 4px 0
 </style>

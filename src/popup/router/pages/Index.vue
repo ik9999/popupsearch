@@ -1,7 +1,7 @@
 <template>
-  <div class="Index px-2 pt-1">
+  <div class="Index">
     <search-input></search-input>
-    <search-results ref="SearchResults"></search-results>
+    <search-results ref="SearchResults" class="Index-searchResults"></search-results>
   </div>
 </template>
 
@@ -20,4 +20,12 @@ export default {
 </script>
 
 <style lang="sass">
+.Index
+  height: 100%
+  width: 100%
+  padding: 0 8px
+  &-searchResults
+    width: 100%
+    height: calc(100% - 46px)
+    margin-top: 4px
 </style>

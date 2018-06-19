@@ -22,7 +22,7 @@ let google = (query, start) => {
   return igoogle(query, startIndex);
 }
 
-google.resultsPerPage = 10
+google.resultsPerPage = 15
 google.tld = 'com'
 google.lang = 'en'
 google.nextText = 'Next'
@@ -54,9 +54,10 @@ var igoogle = function (query, start) {
     }
 
     $body.find(itemSel).each(function() {
-      var linkElem = $(this).find(linkSel);
-      var descElem = $(this).find(descSel);
-      var sublinksElem = $(this).find(sublinksSel);
+      const $this = $(this);
+      var linkElem = $this.find(linkSel);
+      var descElem = $this.find(descSel);
+      var sublinksElem = $this.find(sublinksSel);
       var item = {
         title: linkElem.first().text(),
         link: null,
@@ -66,15 +67,20 @@ var igoogle = function (query, start) {
       var qsObj = querystring.parse(linkElem.attr('href'))
 
       if (qsObj['/url?q']) {
-        item.link = qsObj['/url?q']
-        item.href = item.link
+        item.href = qsObj['/url?q'];
       } else {
-        item.link = linkElem.attr('href')
-        item.href = item.link
+        item.href = linkElem.attr('href');
       }
       var $date = descElem.find('span.f');
       if ($date.length > 0) {
         $date.addClass('date');
+      }
+
+      $this.find('cite').each(function() {
+        item.link = $(this).text();
+      });
+      if (!item.link) {
+        item.link = item.href;
       }
 
       item.description = descElem.html()

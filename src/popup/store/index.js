@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import settings from './modules/Settings.js';
 import keywords from './modules/Keywords.js';
 import searchresults from './modules/SearchResults.js';
+import ui from './modules/UI.js';
 
 Vue.use(Vuex);
 
@@ -11,5 +12,6 @@ export default new Vuex.Store({
     settings,
     keywords,
     searchresults,
+    ui,
   },
 });
