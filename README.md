@@ -1,5 +1,6 @@
 # PopupSearch
 
+Chrome extension with popup window for searching in google
 
 ## Development
 
