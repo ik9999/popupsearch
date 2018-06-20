@@ -4,7 +4,7 @@ import fastFormat from 'fast-format';
 
 var linkSel = 'h3.r a'
 var descSel = 'span.st'
-var sublinksSel = 'div.osl';
+var sublinksSel = 'div.osl a';
 var itemSel = 'div.g'
 var nextSel = 'td.b a span'
 
@@ -62,7 +62,8 @@ var igoogle = function (query, start) {
         title: linkElem.first().text(),
         link: null,
         description: null,
-        href: null
+        href: null,
+        subLinkList: []
       }
       var qsObj = querystring.parse(linkElem.attr('href'))
 
@@ -85,7 +86,12 @@ var igoogle = function (query, start) {
 
       item.description = descElem.html()
       if (sublinksElem.length > 0) {
-        item.description = `<div>${item.description}</div><div>${sublinksElem.html()}</div>`;
+        sublinksElem.each(function() {
+          item.subLinkList.push({
+            href: $(this).attr('href'),
+            title: $(this).text(),
+          });
+        });
       }
 
       if (item.href && item.title) {
