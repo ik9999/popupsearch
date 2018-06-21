@@ -1,11 +1,13 @@
 <template>
   <div class="SearchResult">
-    <a :href="result.href" v-html="result.title"></a>
+    <a :href="result.href" v-html="getTitle()"></a>
     <div class="SearchResult-link" v-html="result.link"></div>
     <div class="SearchResult-desc" v-html="result.description"></div>
     <div class="SearchResult-subLinks">
       <template v-for="(linkData, linkIdx) in result.subLinkList">
-        <a :href="linkData.href" v-text="linkData.title" class="SearchResult-subLink"></a>
+        <a :href="linkData.href" class="SearchResult-subLink">
+          {{ sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '' }} {{ linkData.title }}
+        </a>
         <span v-if="linkIdx < result.subLinkList.length - 1"> · </span>
       </template>
     </div>
@@ -28,6 +30,12 @@ export default {
     },
   },
   methods: {
+    getTitle() {
+      if (_.isUndefined(this.key)) {
+        return this.result.title;
+      }
+      return `[${this.key}] ${this.result.title}`;
+    },
     getHieght() {
       return this.$el.offsetHeight;
     },

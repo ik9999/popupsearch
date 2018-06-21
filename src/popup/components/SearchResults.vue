@@ -1,5 +1,5 @@
 <template>
-  <div class="SearchResults" tabindex="-1">
+  <div class="SearchResults" tabindex="-1" @scroll="updateControls">
     <template v-for="(resultData, index) in currentSearchResults">
       <search-result 
         :result="resultData" class="SearchResults-result" :ref="'element' + index"
@@ -39,7 +39,7 @@ export default {
     currentSearchResults: function(val) {
       if (_.size(val) > 0 && this.focusedElement === 'searchresults') {
         this.$nextTick(() => {
-          updateControls();
+          this.updateControls();
           this.$el.focus();
         });
       }
@@ -62,7 +62,7 @@ export default {
       let keyNum = 1;
       let keyLetter = 'a';
       _.each(this.currentSearchResults, (resultData, resIdx) => {
-        let resultComp = this.$refs[`element${resIdx}`];
+        let resultComp = this.$refs[`element${resIdx}`][0];
         if (incHeight >= scrollOffset && incHeight <= scrollOffset + elHeight) {
           if (keyNum < 10) {
             resultComp.setKey(keyNum);
@@ -85,6 +85,7 @@ export default {
           resultComp.setKey(undefined);
           resultComp.setSublinkKey(undefined);
         }
+        incHeight += resultComp.getHieght() + resultMarginSize;
       });
     }
   },

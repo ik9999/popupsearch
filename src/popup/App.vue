@@ -1,6 +1,6 @@
 <template>
   <div class="App">
-    <router-view></router-view>
+    <router-view v-if="loaded"></router-view>
   </div>
 </template>
 
@@ -8,10 +8,13 @@
 
 export default {
   data() {
-    return {}
+    return {
+      loaded: false
+    }
   },
   created() {
     this.$store.dispatch('settings/load').then(() => {
+      this.loaded = true;
       return this.$store.dispatch('keywords/load');
     });
   }
