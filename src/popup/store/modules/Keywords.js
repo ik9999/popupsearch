@@ -34,7 +34,7 @@ const actions = {
       return Promise.resolve([]);
     }
     return (new Promise((resolveFn) => {
-      switch (rootState.settings.acSource) {
+      switch (rootState.settings.settings.acSource) {
       case 'google':
         axios.get('http://suggestqueries.google.com/complete/search?client=firefox', {
           params: {

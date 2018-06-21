@@ -8,7 +8,7 @@ const state = {
 
 const getters = {
   getCurrentSearchResults(state, getters, rootState) {
-    const searchEngine = rootState.settings.searchEngine;
+    const searchEngine = rootState.settings.settings.searchEngine;
     const keyword = rootState.keywords.currentKeyword;
     if (_.isEmpty(keyword) || !_.hasIn(state.searches, `[${searchEngine}][${keyword}]`)) {
       return [];
@@ -42,7 +42,7 @@ const actions = {
       start: 0,
       forceNew: false
     }, params);
-    let searchEngine = rootState.settings.searchEngine;
+    let searchEngine = rootState.settings.settings.searchEngine;
     let {keyword, start, forceNew} = params;
     if (!_.isString(keyword) || _.isEmpty(keyword)) {
       return Promise.resolve([]);
@@ -56,7 +56,6 @@ const actions = {
           if (_.size(_.get(result, 'links')) > 0) {
             links = _.get(result, 'links');
           }
-          console.log(searchEngine, keyword, links, forceNew);
           commit('appendSearchResults', {searchEngine, keyword, links, forceNew});
         });
         break;

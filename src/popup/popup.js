@@ -8,7 +8,6 @@ import router from './router'
 import fontawesome from '@fortawesome/fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 
-console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV !== 'production') {
   Vue.config.devtools = true;
 }
