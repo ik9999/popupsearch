@@ -32,13 +32,6 @@
         "default": "Ctrl+E",
         "mac": "Ctrl+E"
       }
-    },
-    "toggle_closepopup": {
-      "suggested_key": {
-        "default": "Ctrl+Q",
-        "mac": "Ctrl+Q"
-      },
-      "description": "Toggle 'Close after opening a link'"
     }
   }
 }
