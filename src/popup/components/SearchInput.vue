@@ -60,7 +60,11 @@ export default {
       source:[
         (query, add) => {
           this.$store.dispatch('keywords/loadRemoteKeys', query).then(() => {
-            add(this.$store.state.keywords.remoteKeywords);
+            if (this.focusedElement === 'searchinput') {
+              add(this.$store.state.keywords.remoteKeywords);
+            } else {
+              add([]);
+            }
           });
         }
       ]

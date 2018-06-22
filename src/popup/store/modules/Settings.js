@@ -5,8 +5,14 @@ const state = {
     searchEngine: 'googleHTML',
     acSource: 'google',
     closeAfterLink: false,
-    toggleClosepopupKey: 'CTRL+Q'
-  }
+    toggleClosepopupKey: 'CTRL+Q',
+    scrollUpKey: 'k',
+    scrollDownKey: 'j',
+    openBgTabModifier: 'Shift',
+    openActTabModifier: '',
+    openCurTabModifier: 'Ctrl',
+  },
+  keyModifierList: ['Ctrl', 'Shift', 'Alt', '']
 };
 
 const getters = {

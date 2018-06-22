@@ -6,7 +6,7 @@
       <div class="col-1"></div>
       <div class="col-3"></div>
       <div class="col-4">
-        <div class="form-group form-check mb-0 Index-options text-center">
+        <div class="form-group form-check mb-0 Index-options text-center" v-if="false">
           <input type="checkbox" class="form-check-input Index-newTabCb" v-model="closeAfterLink">
           <label class="form-check-label">
             {{ (toggleClosepopupKey ? '[' + toggleClosepopupKey.toLowerCase() + ']' : '') }}
@@ -46,6 +46,9 @@ export default {
     this.HI.on(this.toggleClosepopupKey.toLowerCase().replace('+', '-'), () => {
       this.$store.commit('settings/setProp', {prop: 'closeAfterLink', val: !this.closeAfterLink});
     });
+  },
+  beforeDestroy() {
+    this.HI.off();
   },
   components: {
     SearchInput,
