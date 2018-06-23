@@ -21,7 +21,7 @@
     "@fortawesome/fontawesome-free-solid": "^5.0.13",
     "@fortawesome/vue-fontawesome": "^0.0.23",
     "jquery": "^3.3.1",
-    "jquery-autocomplete": "^1.2.8",
+    "jquery-autocomplete": "ik9999/autocomplete",
     "popper.js": "^1.14.3",
     "lodash": "^4.17.10",
     "fast-format": "^0.2.0",

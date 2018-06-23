@@ -1,5 +1,5 @@
 <template>
-  <div class="SearchResults" tabindex="-1" @scroll="updateControls">
+  <div class="SearchResults" tabindex="-1" @scroll="updateControls" @focus="onFocus">
     <template v-for="(resultData, index) in currentSearchResults">
       <search-result 
         :result="resultData" class="SearchResults-result" :ref="'element' + index"
@@ -31,6 +31,7 @@ export default {
       scrollDownKey: state => state.settings.settings.scrollDownKey,
       toggleClosepopupKey: state => state.settings.settings.toggleClosepopupKey,
       closeAfterLink: state => state.settings.settings.closeAfterLink,
+      focusInputKey: state => state.settings.settings.focusInputKey,
     }),
     ...mapGetters({
       currentSearchResults: 'searchresults/getCurrentSearchResults'
@@ -52,6 +53,9 @@ export default {
     }
   },
   methods: {
+    onFocus() {
+      this.$store.commit('ui/setFocusedElement', 'searchresults');
+    },
     nextChar(c) {
       if (c === 'z') {
         return '';
@@ -123,14 +127,18 @@ export default {
             var tab = tabs[0];
             chrome.tabs.update(tab.id, {url: this.urlByKeys[key]});
           });
-          window.close();
+          setTimeout(() => {
+            window.close();
+          }, 500);
         break;
       }
     }
   },
   mounted() {
     let $this = $(this.$el);
-    this.reservedKeys = _.map([this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey], (key) => {
+    this.reservedKeys = _.map([
+      this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey
+    ], (key) => {
       if (!_.isString(key)) {
         return undefined;
       }
@@ -141,7 +149,7 @@ export default {
       });
       return oneCharKeyParts;
     });
-    this.reservedKeys = _.without(_.concat(this.reservedKeys), '', undefined);
+    this.reservedKeys = _.without(_.flatten(this.reservedKeys), '', undefined);
     this.HI = new HumanInput(this.$el, {noKeyRepeat: false});
     let allKeys = _.concat(
       Array.from({ length: 26 }, (_, i) => String.fromCharCode('a'.charCodeAt(0) + i)),

@@ -18,11 +18,11 @@ const getters = {
 };
 
 const mutations = {
-  appendSearchResults(state, {searchEngine, keyword, links, forceNew}) {
+  appendSearchResults(state, {searchEngine, keyword, links, forceNew, start}) {
     if (_.isUndefined(state.searches[searchEngine])) {
       Vue.set(state.searches, searchEngine, {});
     }
-    if (_.isUndefined(state.searches[searchEngine][keyword]) || forceNew) {
+    if (_.isUndefined(state.searches[searchEngine][keyword]) || forceNew || start === 0) {
       Vue.set(state.searches[searchEngine], keyword, []);
     }
     state.searches[searchEngine][keyword] = _.concat(
@@ -56,7 +56,7 @@ const actions = {
           if (_.size(_.get(result, 'links')) > 0) {
             links = _.get(result, 'links');
           }
-          commit('appendSearchResults', {searchEngine, keyword, links, forceNew});
+          commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
         });
         break;
       }

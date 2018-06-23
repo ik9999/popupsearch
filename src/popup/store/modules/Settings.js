@@ -5,12 +5,14 @@ const state = {
     searchEngine: 'googleHTML',
     acSource: 'google',
     closeAfterLink: false,
-    toggleClosepopupKey: 'CTRL+Q',
+    toggleClosepopupKey: 'Ctrl+q',
+    focusInputKey: 'Ctrl+e',
+    clearInputKey: 'Ctrl+u',
     scrollUpKey: 'k',
     scrollDownKey: 'j',
     openBgTabModifier: 'Shift',
     openActTabModifier: '',
-    openCurTabModifier: 'Ctrl',
+    openCurTabModifier: 'Ctrl'
   },
   keyModifierList: ['Ctrl', 'Shift', 'Alt', '']
 };

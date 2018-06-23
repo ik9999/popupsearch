@@ -34,8 +34,10 @@ export default {
   },
   computed: {
     ...mapState({
+      focusedElement: state => state.ui.focusedElement,
       toggleClosepopupKey: state => state.settings.settings.toggleClosepopupKey,
       closeAfterLink: state => state.settings.settings.closeAfterLink,
+      focusInputKey: state => state.settings.settings.focusInputKey,
     })
   },
   mounted() {
@@ -46,6 +48,16 @@ export default {
     this.HI.on(this.toggleClosepopupKey.toLowerCase().replace('+', '-'), () => {
       this.$store.commit('settings/setProp', {prop: 'closeAfterLink', val: !this.closeAfterLink});
     });
+    if (this.focusInputKey) {
+      let focusInptuKey = this.focusInputKey.toLowerCase().replace('+', '-');
+      this.HI.on(focusInptuKey, (event) => {
+        if (this.focusedElement === 'searchinput') {
+          this.$store.commit('ui/setFocusedElement', 'searchresults');
+        } else if (this.focusedElement === 'searchresults') {
+          this.$store.commit('ui/setFocusedElement', 'searchinput');
+        }
+      });
+    }
   },
   beforeDestroy() {
     this.HI.off();
