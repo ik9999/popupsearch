@@ -43,7 +43,7 @@ const actions = {
         }).then((response) => {
           let keywordList = _.get(response, 'data[1]');
           if (_.isArray(keywordList)) {
-            commit('setRemoteKeywords', keywordList);
+            commit('setRemoteKeywords', _.without(keywordList, keyword));
             resolveFn(keywordList);
             return ;
           }
