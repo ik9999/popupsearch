@@ -42,4 +42,4 @@ Zip file is located in `dist-zip` folder.
 
 [jquery-autocomplete](https://github.com/xdan/autocomplete)
 
-[Others](https://github.com/ik9999/popupsearch/blob/master/package.json)
+[other dependencies](https://github.com/ik9999/popupsearch/blob/master/package.json)
