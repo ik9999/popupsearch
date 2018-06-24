@@ -1,11 +1,11 @@
 <template>
   <div class="SearchResult">
-    <a :href="result.href" v-html="getTitle()"></a>
+    <a :href="result.href" v-html="getTitle()" @click.prevent="onClick($event, result.href)"></a>
     <div class="SearchResult-link" v-html="result.link"></div>
     <div class="SearchResult-desc" v-html="result.description"></div>
     <div class="SearchResult-subLinks">
       <template v-for="(linkData, linkIdx) in result.subLinkList">
-        <a :href="linkData.href" class="SearchResult-subLink">
+        <a :href="linkData.href" class="SearchResult-subLink" @click.prevent="onClick($event, linkData.href)">
           {{ sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '' }} {{ linkData.title }}
         </a>
         <span v-if="linkIdx < result.subLinkList.length - 1"> · </span>
@@ -30,6 +30,17 @@ export default {
     },
   },
   methods: {
+    onClick(event, url) {
+      let keyModifier = '';
+      if (event.altKey) {
+        keyModifier = 'Alt';
+      } else if (event.ctrlKey) {
+        keyModifier = 'Ctrl';
+      } else if (event.shiftKey) {
+        keyModifier = 'Shift';
+      }
+      this.$store.dispatch('links/openLink', {url, keyModifier});
+    },
     getTitle() {
       if (_.isUndefined(this.key)) {
         return this.result.title;

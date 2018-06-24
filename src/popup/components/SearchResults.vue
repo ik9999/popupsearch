@@ -27,6 +27,7 @@ export default {
   computed: {
     ...mapState({
       focusedElement: state => state.ui.focusedElement,
+      isLoadingResults: state => state.searchresults.isLoadingResults,
       scrollUpKey: state => state.settings.settings.scrollUpKey,
       scrollDownKey: state => state.settings.settings.scrollDownKey,
       toggleClosepopupKey: state => state.settings.settings.toggleClosepopupKey,
@@ -104,33 +105,8 @@ export default {
         }
         incHeight += resultComp.getHieght() + resultMarginSize;
       });
-    },
-    openLinkByKey(key, keyModifier) {
-      if (!this.urlByKeys[key]) {
-        return ;
-      }
-      switch (keyModifier) {
-      case this.$store.state.settings.settings.openBgTabModifier:
-        chrome.tabs.create({
-          url: this.urlByKeys[key],
-          active: false
-        });
-        break;
-      case this.$store.state.settings.settings.openActTabModifier:
-        chrome.tabs.create({
-          url: this.urlByKeys[key],
-          active: true
-        });
-        break;
-      case this.$store.state.settings.settings.openCurTabModifier:
-          chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-            var tab = tabs[0];
-            chrome.tabs.update(tab.id, {url: this.urlByKeys[key]});
-          });
-          setTimeout(() => {
-            window.close();
-          }, 500);
-        break;
+      if (scrollHeight - scrollOffset - elHeight < 200 && !this.isLoadingResults) {
+        this.$store.dispatch('searchresults/search', {});
       }
     }
   },
@@ -165,26 +141,29 @@ export default {
           modifiedkey = `${keyModifier.toLowerCase()}-${key}`;
         }
         this.HI.on(modifiedkey, (event) => {
-          this.openLinkByKey(key, keyModifier);
+          this.$store.dispatch('links/openLink', {url: this.urlByKeys[key], keyModifier});
         });
       });
     });
     let next = undefined;
-    this.HI.on([`keydown:${this.scrollUpKey}`, `keydown:${this.scrollDownKey}`], (event) => {
+    this.HI.on([
+      `keydown:${this.scrollUpKey}`, `keydown:${this.scrollDownKey}`, 'keydown:up', 'keydown:down'
+    ], (event) => {
       if (next === undefined) {
         next = Date.now();   
       }
       if (next <= Date.now()) {
         next = Date.now() + 170;
         let cur;
-        if (event.key === this.scrollDownKey) {
+        if (event.key === this.scrollDownKey || event.key === 'ArrowDown') {
           cur =  this.$el.scrollTop;
           $this.animate({scrollTop: cur + 60}, 200);
-        } else if (event.key === this.scrollUpKey) {
+        } else if (event.key === this.scrollUpKey || event.key === 'ArrowUp') {
           cur = this.$el.scrollTop;
           $this.animate({scrollTop: cur - 60}, 200);
         }
       }
+      return false;
     });
   },
   components: {

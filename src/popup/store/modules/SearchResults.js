@@ -4,16 +4,20 @@ import Vue from 'vue';
 
 const state = {
   searches: {},
+  isLoadingResults: false,
 };
 
 const getters = {
   getCurrentSearchResults(state, getters, rootState) {
     const searchEngine = rootState.settings.settings.searchEngine;
     const keyword = rootState.keywords.currentKeyword;
-    if (_.isEmpty(keyword) || !_.hasIn(state.searches, `[${searchEngine}][${keyword}]`)) {
+    if (
+      _.isEmpty(keyword) || _.isUndefined(state.searches[searchEngine]) ||
+      _.isUndefined(state.searches[searchEngine][keyword])
+    ) {
       return [];
     }
-    return _.get(state.searches, `[${searchEngine}][${keyword}]`);
+    return state.searches[searchEngine][keyword];
   }
 };
 
@@ -28,6 +32,9 @@ const mutations = {
     state.searches[searchEngine][keyword] = _.concat(
       state.searches[searchEngine][keyword], links
     );
+  },
+  setIsLoading(state, value) {
+    state.isLoadingResults = value;
   }
 };
 
@@ -37,7 +44,11 @@ const actions = {
       resolveFn();
     });
   },
-  search({rootState, commit, state, dispatch}, params) {
+  search({rootState, commit, state, dispatch, getters}, params) {
+    if (!params.keyword) {
+      params.keyword = rootState.keywords.currentKeyword;
+      params.start = getters.getCurrentSearchResults.length + 1;
+    }
     params = _.extend({
       start: 0,
       forceNew: false
@@ -48,6 +59,7 @@ const actions = {
       return Promise.resolve([]);
     }
     dispatch('keywords/updateCurrentKeyword', keyword, {root:true});
+    commit('setIsLoading', true);
     return (new Promise((resolveFn) => {
       switch (searchEngine) {
       case 'googleHTML':
@@ -57,11 +69,13 @@ const actions = {
             links = _.get(result, 'links');
           }
           commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
+        }).finally(() => {
+          commit('setIsLoading', false);
         });
         break;
       }
     }));
-  },
+  }
 };
 
 export default {
