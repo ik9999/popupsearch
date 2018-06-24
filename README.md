@@ -1,6 +1,6 @@
 # PopupSearch
 
-Chrome extension with popup window for searching in google
+Chrome/Chromium extension with popup window for searching in google
 
 ## Development
 
@@ -33,3 +33,13 @@ It also enable [Hot Module Reloading](https://webpack.js.org/concepts/hot-module
 
 Build a zip file following this format `<name>-v<version>.zip`, by reading `name` and `version` from `manifest.json` file.
 Zip file is located in `dist-zip` folder.
+
+## Libraries used for UI
+
+[Vue.js](https://github.com/vuejs/vue)
+
+[Vuex](https://github.com/vuejs/vuex)
+
+[jquery-autocomplete](https://github.com/xdan/autocomplete)
+
+[Others](https://github.com/ik9999/popupsearch/blob/master/package.json)
