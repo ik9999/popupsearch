@@ -20,29 +20,31 @@ const actions = {
         return rootState.settings.settings[_keyModifierType] === keyModifier;
       })
     }
-    switch (keyModifierType) {
-    case 'openBgTabModifier':
-      chrome.tabs.create({
-        url,
-        active: false
-      });
-      break;
-    case 'openActTabModifier':
-      chrome.tabs.create({
-        url,
-        active: true
-      });
-      break;
-    case 'openCurTabModifier':
-        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-          var tab = tabs[0];
-          chrome.tabs.update(tab.id, {url});
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      let tab = tabs[0];
+      switch (keyModifierType) {
+      case 'openBgTabModifier':
+        chrome.tabs.create({
+          url,
+          active: false,
+          index: tab.index + 1,
         });
+        break;
+      case 'openActTabModifier':
+        chrome.tabs.create({
+          url,
+          active: true,
+          index: tab.index + 1,
+        });
+        break;
+      case 'openCurTabModifier':
+        chrome.tabs.update(tab.id, {url});
         setTimeout(() => {
           window.close();
         }, 500);
-      break;
-    }
+        break;
+      }
+    });
   }
 };
 

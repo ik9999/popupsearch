@@ -57,7 +57,7 @@ var igoogle = function (query, start) {
       const $this = $(this);
       var linkElem = $this.find(linkSel);
       var descElem = $this.find(descSel);
-      var sublinksElem = $this.find(sublinksSel);
+      var sublinksInlineElem = $this.find(sublinksSel);
       var item = {
         title: linkElem.first().text(),
         link: null,
@@ -85,11 +85,46 @@ var igoogle = function (query, start) {
       }
 
       item.description = descElem.html()
-      if (sublinksElem.length > 0) {
-        sublinksElem.each(function() {
+      if (sublinksInlineElem.length > 0) {
+        sublinksInlineElem.each(function() {
           item.subLinkList.push({
             href: $(this).attr('href'),
             title: $(this).text(),
+          });
+        });
+      } else if ($this.find('table').length > 0) {
+        let $sublinksTable = $this.find('table');
+        $sublinksTable.find('tr').last().remove();
+        $sublinksTable.find('td').each(function() {
+          let $a = $(this).find('a');
+          if ($a.length === 0) {
+            return ;
+          }
+          let linkText = $a.text();
+          let linkHref = $a.attr('href');
+          $a.remove();
+          let linkDesc = $(this).text();
+          item.subLinkList.push({
+            href: linkHref,
+            title: linkText,
+            desc: (linkDesc ? linkDesc : ''),
+          });
+        });
+      } else if ($this.find('a[href*="+site:"]').length > 0) {
+        let $sublinksCont = $this.find('a[href*="+site:"]').parent().parent().parent();
+        $sublinksCont.children().each(function() {
+          let $a = $(this).find('a');
+          if ($a.length === 0) {
+            return ;
+          }
+          let linkText = $a.text();
+          let linkHref = $a.attr('href');
+          $a.remove();
+          let linkDesc = $(this).html().replace(/(<([^>]+)>)/ig, ' ').replace(/ +(?= )/g,'');
+          item.subLinkList.push({
+            href: linkHref,
+            title: linkText,
+            desc: (linkDesc ? linkDesc : ''),
           });
         });
       }

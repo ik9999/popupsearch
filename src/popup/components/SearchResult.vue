@@ -3,12 +3,29 @@
     <a :href="result.href" v-html="getTitle()" @click.prevent="onClick($event, result.href)"></a>
     <div class="SearchResult-link" v-html="result.link"></div>
     <div class="SearchResult-desc" v-html="result.description"></div>
-    <div class="SearchResult-subLinks">
-      <template v-for="(linkData, linkIdx) in result.subLinkList">
+    <div class="SearchResult-subLinks" v-if="result.subLinkList.length > 0">
+      <template v-for="(linkData, linkIdx) in result.subLinkList" v-if="sublinksType === 'list'">
         <a :href="linkData.href" class="SearchResult-subLink" @click.prevent="onClick($event, linkData.href)">
           {{ sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '' }} {{ linkData.title }}
         </a>
         <span v-if="linkIdx < result.subLinkList.length - 1"> · </span>
+      </template>
+      <template v-if="sublinksType === 'desc' || sublinksType === 'descdate'">
+        <table class="table table-borderless SearchResult-subLinkTable">
+          <tbody>
+            <tr v-for="(linkData, linkIdx) in result.subLinkList">
+              <td>
+                <a
+                  :href="linkData.href" class="SearchResult-subLink"
+                  @click.prevent="onClick($event, linkData.href)"
+                >
+                  {{ sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '' }} {{ linkData.title }}
+                </a>
+              </td>
+              <td class="SearchResult-subLinkDesc">{{ linkData.desc }}</td>
+            </tr>
+          </tbody>
+        </table>
       </template>
     </div>
   </div>
@@ -27,6 +44,18 @@ export default {
   props: {
     result: {
       required: true,
+    },
+  },
+  computed: {
+    sublinksType() {
+      if (this.result.subLinkList.length === 0) {
+        return undefined;
+      }
+      if (!_.isUndefined(this.result.subLinkList[0].desc)) {
+        return 'desc';
+      } else {
+        return 'links';
+      }
     },
   },
   methods: {
@@ -91,6 +120,9 @@ export default {
     color: #006621
     font-size: 0.8rem
     line-height: 1.1
-  &-subLink
+  &-subLinkTable
+    td, tr
+      padding: 0
+  &-subLink, &-subLinkDesc
     font-size: 0.8rem
 </style>

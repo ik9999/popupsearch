@@ -2,7 +2,7 @@
   <div class="SearchInput">
     <div class="SearchInput-inputCont">
       <input
-        type="text" class="SearchInput-input form-control" id="auto1" placeholder="enter state"
+        type="text" class="SearchInput-input form-control" id="auto1" placeholder=""
         v-on:keyup.esc.stop.prevent="unfocus" v-on:focus="onFocus"
       />
     </div>
@@ -18,7 +18,7 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import 'jquery-autocomplete/jquery.autocomplete.js';
 import 'jquery-autocomplete/jquery.autocomplete.css';
 import _ from 'lodash';
-import HumanInput from 'humaninput/dist/humaninput-1.1.15-full';
+import HumanInput from 'humaninput/dist/humaninput-1.1.15-full.js';
 
 export default {
   data() {
@@ -64,7 +64,7 @@ export default {
     this.$elem.autocomplete({
       appendMethod: 'replace',
       showHint: false,
-      source:[
+      source: [
         (query, add) => {
           this.$store.dispatch('keywords/loadRemoteKeys', query).then(() => {
             if (this.focusedElement === 'searchinput') {
@@ -74,7 +74,10 @@ export default {
             }
           });
         }
-      ]
+      ],
+      valid: function(value, query) {
+        return true;
+      },
     });
     this.$elem.focus();
     this.$elem.on('selected.xdsoft', (e, keyword) => {

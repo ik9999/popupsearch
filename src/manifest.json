@@ -1,7 +1,7 @@
 {
   "name": "PopupSearch",
-  "description": "Chrome extension for searching",
-  "version": "0.1.0",
+  "description": "Chrome extension for searching in google using popup window with keyboard navigation support",
+  "version": "1.0.0",
   "manifest_version": 2,
   "icons": {
     "48": "icons/icon_48.png",
