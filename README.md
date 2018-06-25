@@ -2,6 +2,14 @@
 
 Chrome/Chromium extension with popup window for searching in google with
 
+## Features
+
+- Full keyboard navigation
+
+- Custom shortcuts
+
+- Display additional links (e.g. More from this site)
+
 ## Demo
 
 ![gif demo](https://user-images.githubusercontent.com/6804575/41853083-930fe3f4-7895-11e8-869d-bf3652d0df60.gif)
@@ -48,6 +56,17 @@ Open result link in current tab - press **Ctrl** + number/letter displayed prior
 
 Scrolling results - arrow keys, **j**/**k** keys, **PageUp**/**PageDown** keys 
 
+## Future improvements
+
+- Search results caching
+
+- Search history
+
+- Visited links history
+
+- Add searx.me and duckduckgo engines
+
+- Dark color ui theme
 
 ## Development
 
