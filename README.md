@@ -31,7 +31,7 @@ Scrolling results - arrow keys, **j**/**k** keys, **PageUp**/**PageDown** keys
 
 ## Demo
 
-![gif demo](https://user-images.githubusercontent.com/6804575/41849425-8ee0126a-7889-11e8-9fb3-2c581d3350ff.gif)
+![gif demo](https://user-images.githubusercontent.com/6804575/41853083-930fe3f4-7895-11e8-869d-bf3652d0df60.gif)
 
 ## Development
 
