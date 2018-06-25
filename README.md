@@ -28,6 +28,20 @@ Open result link in current tab - press **Ctrl** + number/letter displayed prior
 
 Scrolling results - arrow keys, **j**/**k** keys, **PageUp**/**PageDown** keys 
 
+## Installation
+
+- Download latest zip from [Releases page](https://github.com/ik9999/popupsearch/releases)
+
+- Unpack it to some directory
+
+- Go to chrome://extensions/ page
+
+- Enable Developer mode
+
+- Click "Load unpacked" button and open the directory you unpacked downloaded zip to.
+
+- Re-assign shortcut to open popup on chrome://extensions/shortcuts
+
 
 ## Demo
 
