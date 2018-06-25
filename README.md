@@ -8,7 +8,7 @@ Chrome/Chromium extension with popup window for searching in google with
 
 - Custom shortcuts
 
-- Display additional links (e.g. More from this site)
+- Displaying additional links (e.g. More from this site)
 
 ## Demo
 
