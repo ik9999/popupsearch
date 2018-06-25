@@ -16,6 +16,8 @@ Chrome/Chromium extension with popup window for searching in google with
 
 ## Installation
 
+### From zip
+
 - Download latest zip from [Releases page](https://github.com/ik9999/popupsearch/releases)
 
 - Unpack it to some directory
@@ -27,6 +29,16 @@ Chrome/Chromium extension with popup window for searching in google with
 - Click "Load unpacked" button and open the directory you unpacked downloaded zip to.
 
 - Re-assign shortcut to open popup on chrome://extensions/shortcuts
+
+### From crx
+
+- Download latest crx from [Releases page](https://github.com/ik9999/popupsearch/releases)
+
+- Go to chrome://extensions/ page
+
+- Enable Developer mode
+
+- Drag crx file from downloads bar to Extensions page
 
 
 ## Usage
