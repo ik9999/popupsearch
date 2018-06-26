@@ -92,6 +92,9 @@ if (config.mode === 'production') {
       },
     }),
   ]);
+  config.optimization = {
+    minimize: false
+  };
 }
 
 if (process.env.HMR === 'true') {

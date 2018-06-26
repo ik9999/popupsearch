@@ -1,6 +1,6 @@
 {
   "name": "PopupSearch",
-  "description": "Chrome extension for searching in google using popup window with keyboard navigation support",
+  "description": "Chrome extension for searching in google™ using popup window with keyboard navigation support",
   "version": "1.0.0",
   "manifest_version": 2,
   "icons": {
@@ -8,8 +8,8 @@
     "128": "icons/icon_128.png"
   },
   "permissions": [
-    "<all_urls>",
-    "*://*/*",
+    "https://www.google.com/search*",
+    "http://suggestqueries.google.com/complete/search/*",
     "activeTab",
     "tabs",
     "background",

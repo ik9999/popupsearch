@@ -13,7 +13,7 @@
 import _ from 'lodash';
 import { mapGetters, mapState } from 'vuex';
 import SearchResult from './SearchResult.vue';
-import HumanInput from 'humaninput/dist/humaninput-full.min';
+import HumanInput from 'humaninput/dist/humaninput-1.1.15-full';
 
 export default {
   data() {

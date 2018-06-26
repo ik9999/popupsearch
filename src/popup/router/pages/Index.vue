@@ -24,7 +24,7 @@
 import SearchInput from '../../components/SearchInput.vue';
 import SearchResults from '../../components/SearchResults.vue';
 import { mapState } from 'vuex';
-import HumanInput from 'humaninput/dist/humaninput-full.min';
+import HumanInput from 'humaninput/dist/humaninput-1.1.15-full';
 
 export default {
   data() {
