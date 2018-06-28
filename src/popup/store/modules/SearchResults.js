@@ -5,6 +5,7 @@ import Vue from 'vue';
 const state = {
   searches: {},
   isLoadingResults: false,
+  isShowingResults: false,
 };
 
 const getters = {
@@ -32,6 +33,7 @@ const mutations = {
     state.searches[searchEngine][keyword] = _.concat(
       state.searches[searchEngine][keyword], links
     );
+    state.isShowingResults = true;
   },
   setIsLoading(state, value) {
     state.isLoadingResults = value;

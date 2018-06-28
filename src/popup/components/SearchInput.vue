@@ -18,7 +18,7 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import 'jquery-autocomplete/jquery.autocomplete.js';
 import 'jquery-autocomplete/jquery.autocomplete.css';
 import _ from 'lodash';
-import HumanInput from 'humaninput/dist/humaninput-1.1.15-full.js';
+import HumanInput from 'humaninput/dist/humaninput-1.1.15-full.min.js';
 
 export default {
   data() {
@@ -98,6 +98,7 @@ export default {
       });
     }
     this.HI.on('enter', (event) => {
+      console.log(event);
       this.keyword = this.$elemInput.val();
       this.submit();
       return false;

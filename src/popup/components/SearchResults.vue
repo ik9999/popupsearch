@@ -6,7 +6,7 @@
       >
       </search-result>
     </template>
-    <h5 class="text-center" v-if="showResults && currentSearchResults.length === 0">No results found</h5>
+    <h5 class="text-center" v-if="isShowingResults && currentSearchResults.length === 0">No results found</h5>
   </div>
 </template>
 
@@ -14,7 +14,7 @@
 import _ from 'lodash';
 import { mapGetters, mapState } from 'vuex';
 import SearchResult from './SearchResult.vue';
-import HumanInput from 'humaninput/dist/humaninput-1.1.15-full';
+import HumanInput from 'humaninput/dist/humaninput-1.1.15-full.min.js';
 
 export default {
   data() {
@@ -23,12 +23,12 @@ export default {
       urlByKeys: {},
       lettersByNums: {},
       reservedKeys: [],
-      showResults: false
     }
   },
   computed: {
     ...mapState({
       focusedElement: state => state.ui.focusedElement,
+      isShowingResults: state => state.searchresults.isShowingResults,
       isLoadingResults: state => state.searchresults.isLoadingResults,
       scrollUpKey: state => state.settings.settings.scrollUpKey,
       scrollDownKey: state => state.settings.settings.scrollDownKey,
@@ -49,7 +49,6 @@ export default {
       }
     },
     currentSearchResults: function(val) {
-      this.showResults = true;
       if (this.focusedElement === 'searchresults') {
         //if (_.size(val) === 0) {
           //this.$store.commit('ui/setFocusedElement', 'searchinput');
