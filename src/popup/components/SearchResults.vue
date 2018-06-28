@@ -30,6 +30,8 @@ export default {
       isLoadingResults: state => state.searchresults.isLoadingResults,
       scrollUpKey: state => state.settings.settings.scrollUpKey,
       scrollDownKey: state => state.settings.settings.scrollDownKey,
+      jumpTopKey: state => state.settings.settings.jumpTopKey,
+      jumpBottomKey: state => state.settings.settings.jumpBottomKey,
       toggleClosepopupKey: state => state.settings.settings.toggleClosepopupKey,
       closeAfterLink: state => state.settings.settings.closeAfterLink,
       focusInputKey: state => state.settings.settings.focusInputKey,
@@ -113,20 +115,24 @@ export default {
   mounted() {
     let $this = $(this.$el);
     this.reservedKeys = _.map([
-      this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey
+      this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey,
+      this.jumpTopKey, this.jumpBottomKey
     ], (key) => {
       if (!_.isString(key)) {
         return undefined;
       }
       key = key.toLowerCase();
-      let keySplit = key.split(/\+|-/);
+      let keySplit = key.split(/\+|-| /);
       let oneCharKeyParts = _.filter(keySplit, (keyPart) => {
         return _.isString(keyPart) && keyPart.length === 1;
       });
       return oneCharKeyParts;
     });
     this.reservedKeys = _.without(_.flatten(this.reservedKeys), '', undefined);
-    this.HI = new HumanInput(this.$el, {noKeyRepeat: false});
+    this.HI = new HumanInput(this.$el, {
+      noKeyRepeat: false,
+      sequenceTimeout: 30000
+    });
     let allKeys = _.concat(
       Array.from({ length: 26 }, (_, i) => String.fromCharCode('a'.charCodeAt(0) + i)),
       _.map(_.range(0, 10), (i) => String(i))
@@ -164,6 +170,14 @@ export default {
         }
       }
       return false;
+    });
+    this.HI.on(this.jumpTopKey.toLowerCase().replace('+', '-'), (event) => {
+      this.$el.scrollTop = 0;
+    });
+    this.HI.on(this.jumpBottomKey.toLowerCase().replace('+', '-'), (event) => {
+      const scrollHeight = this.$el.scrollHeight;
+      const elHeight = this.$el.offsetHeight;
+      this.$el.scrollTop = scrollHeight - elHeight;
     });
   },
   components: {

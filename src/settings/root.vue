@@ -41,6 +41,18 @@
         <input type="text" class="form-control" v-model="settings.toggleClosepopupKey">
       </div>
     </div>
+    <div class="form-group row mt-3" v-if="false">
+      <label class="col-5 col-form-label">Jump to first loaded result</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.jumpTopKey">
+      </div>
+    </div>
+    <div class="form-group row mt-3" v-if="false">
+      <label class="col-5 col-form-label">Jump to last loaded result</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.jumpBottomKey">
+      </div>
+    </div>
     <div class="form-group row mt-3">
       <label class="col-5 col-form-label">Focus search field</label>
       <div class="col-7">

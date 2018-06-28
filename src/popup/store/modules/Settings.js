@@ -8,6 +8,8 @@ const state = {
     toggleClosepopupKey: 'Ctrl+q',
     focusInputKey: 'Ctrl+e',
     clearInputKey: 'Ctrl+u',
+    jumpTopKey: 'Shift+g',
+    jumpBottomKey: 'g g',
     scrollUpKey: 'k',
     scrollDownKey: 'j',
     openBgTabModifier: 'Shift',
