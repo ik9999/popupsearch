@@ -1,6 +1,11 @@
-# PopupSearch
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ik9999/popupsearch/master/src/icons/promo_440_280.png" alt="logo">
+</p>
 
-Chrome/Chromium extension with popup window for searching in google with
+<p align="center">
+  Chrome/Chromium extension for searching in google™ and open results using popup window
+</p>
+<hr />
 
 ## Features
 
