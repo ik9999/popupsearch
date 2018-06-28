@@ -44,14 +44,16 @@ var igoogle = function (query, start) {
 
   return axios.get(newUrl).then((resp) => {
     let body = resp.data;
-    var $body = $(body);
-    var res = {
+    let $body = $(body);
+    let res = {
       url: newUrl,
       query: query,
       start: start,
       links: [],
       startNext: 0
     }
+    
+    let $input = $body.find('input[]');
 
     $body.find(itemSel).each(function() {
       const $this = $(this);

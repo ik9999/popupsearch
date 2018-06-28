@@ -65,6 +65,12 @@ Focus query input field or focus search results - **ctrl+e**
 
 Clear input field - **ctrl+u**
 
+Jump to first loaded result - **shift+g**
+
+Jump to last loaded result - **g g**
+
+Clear input field - **ctrl+u**
+
 Open result link in new active tab - press number/letter displayed prior to the link
 
 Open result link in new background tab - press **shift** + number/letter displayed prior to the link
