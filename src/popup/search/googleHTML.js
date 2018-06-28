@@ -53,7 +53,11 @@ var igoogle = function (query, start) {
       startNext: 0
     }
     
-    let $input = $body.find('input[]');
+    let $input = $body.find(`input[value="${query}"]`);
+    
+    if ($input.length < 1) {
+      return Promise.reject(new Error('request error'));
+    }
 
     $body.find(itemSel).each(function() {
       const $this = $(this);
@@ -140,7 +144,7 @@ var igoogle = function (query, start) {
       res.startNext = start + res.links.length;
     }
 
-    return res;
+    return Promise.resolve(res);
   }, (error) => {
     return new Error('Error on response' + (error.response ? ' (' + error.response.status + ')' : '') + ':' + error.message);
   });

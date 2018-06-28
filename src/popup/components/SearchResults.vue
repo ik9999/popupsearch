@@ -6,6 +6,7 @@
       >
       </search-result>
     </template>
+    <h5 class="text-center" v-if="showResults && currentSearchResults.length === 0">No results found</h5>
   </div>
 </template>
 
@@ -21,7 +22,8 @@ export default {
       $elem: undefined,
       urlByKeys: {},
       lettersByNums: {},
-      reservedKeys: []
+      reservedKeys: [],
+      showResults: false
     }
   },
   computed: {
@@ -47,7 +49,12 @@ export default {
       }
     },
     currentSearchResults: function(val) {
-      if (_.size(val) > 0 && this.focusedElement === 'searchresults') {
+      this.showResults = true;
+      if (this.focusedElement === 'searchresults') {
+        //if (_.size(val) === 0) {
+          //this.$store.commit('ui/setFocusedElement', 'searchinput');
+          //return;
+        //}
         this.$nextTick(() => {
           this.updateControls();
           this.$el.focus();
