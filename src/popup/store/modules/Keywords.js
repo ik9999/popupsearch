@@ -69,7 +69,6 @@ const actions = {
       }
       return resolveFn([]);
     })).then((keywordList) => {
-      console.log(keywordList);
       commit('setRemoteKeywords', _.without(keywordList, keyword));
       return Promise.resolve(keywordList);
     });

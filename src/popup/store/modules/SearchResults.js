@@ -38,6 +38,7 @@ const mutations = {
   },
   setIsLoading(state, value) {
     state.isLoadingResults = value;
+    state.isShowingResults = false;
   }
 };
 
@@ -64,8 +65,6 @@ const actions = {
     if (params.keyword[0] === '!') {
       let keywordEscaped = querystring.escape(params.keyword);
       let url = `https://api.duckduckgo.com/?q=${keywordEscaped}&format=json&pretty=1`;
-      console.log(url);
-      console.log(params.keyModifier);
       return dispatch('links/openLink', {
         url, 
         keyModifier: params.keyModifier,
