@@ -15,7 +15,7 @@
 
 - Displaying additional links (e.g. More from this site)
 
-- [DuckDuckGo bangs](https://duckduckgo.com/bang) support (type something like "!yt test" then press Ctrl/Shift/Alt and/or Enter to search on youtube)
+- [DuckDuckGo bangs](https://duckduckgo.com/bang) support (type something like "!yt test" then press Enter or Ctrl/Shift/Alt + Enter to search on youtube)
 
 ## Demo
 
