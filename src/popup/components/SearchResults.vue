@@ -14,7 +14,7 @@
 import _ from 'lodash';
 import { mapGetters, mapState } from 'vuex';
 import SearchResult from './SearchResult.vue';
-import HumanInput from 'humaninput/dist/humaninput-1.1.15-full.min.js';
+import Mousetrap from 'mousetrap';
 
 export default {
   data() {
@@ -135,10 +135,7 @@ export default {
       return oneCharKeyParts;
     });
     this.reservedKeys = _.without(_.flatten(this.reservedKeys), '', undefined);
-    this.HI = new HumanInput(this.$el, {
-      noKeyRepeat: false,
-      sequenceTimeout: 30000
-    });
+    this.HI = new Mousetrap(this.$el);
     let allKeys = _.concat(
       Array.from({ length: 26 }, (_, i) => String.fromCharCode('a'.charCodeAt(0) + i)),
       _.map(_.range(0, 10), (i) => String(i))
@@ -150,17 +147,15 @@ export default {
       _.each(this.$store.state.settings.keyModifierList, (keyModifier) => {
         let modifiedkey = key;
         if (keyModifier !== '') {
-          modifiedkey = `${keyModifier.toLowerCase()}-${key}`;
+          modifiedkey = `${keyModifier.toLowerCase()}+${key}`;
         }
-        this.HI.on(modifiedkey, (event) => {
+        this.HI.bind(modifiedkey, (event) => {
           this.$store.dispatch('links/openLink', {url: this.urlByKeys[key], keyModifier});
         });
       });
     });
     let next = undefined;
-    this.HI.on([
-      `keydown:${this.scrollUpKey}`, `keydown:${this.scrollDownKey}`, 'keydown:up', 'keydown:down'
-    ], (event) => {
+    this.HI.bind([this.scrollUpKey, this.scrollDownKey, 'up', 'down'], (event) => {
       if (next === undefined) {
         next = Date.now();   
       }
@@ -176,11 +171,11 @@ export default {
         }
       }
       return false;
-    });
-    this.HI.on(this.jumpTopKey.toLowerCase().replace('+', '-'), (event) => {
+    }, 'keydown');
+    this.HI.bind(this.jumpTopKey.toLowerCase(), (event) => {
       this.$el.scrollTop = 0;
     });
-    this.HI.on(this.jumpBottomKey.toLowerCase().replace('+', '-'), (event) => {
+    this.HI.bind(this.jumpBottomKey.toLowerCase(), (event) => {
       const scrollHeight = this.$el.scrollHeight;
       const elHeight = this.$el.offsetHeight;
       this.$el.scrollTop = scrollHeight - elHeight;

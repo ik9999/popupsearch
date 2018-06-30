@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import googleHTML from '../../search/googleHTML.js';
 import Vue from 'vue';
+import querystring from 'querystring-browser';
 
 const state = {
   searches: {},
@@ -59,6 +60,16 @@ const actions = {
     let {keyword, start, forceNew} = params;
     if (!_.isString(keyword) || _.isEmpty(keyword)) {
       return Promise.resolve([]);
+    }
+    if (params.keyword[0] === '!') {
+      let keywordEscaped = querystring.escape(params.keyword);
+      let url = `https://api.duckduckgo.com/?q=${keywordEscaped}&format=json&pretty=1`;
+      console.log(url);
+      console.log(params.keyModifier);
+      return dispatch('links/openLink', {
+        url, 
+        keyModifier: params.keyModifier,
+      }, {root:true});
     }
     dispatch('keywords/updateCurrentKeyword', keyword, {root:true});
     commit('setIsLoading', true);

@@ -6,7 +6,7 @@
         v-on:keyup.esc.stop.prevent="unfocus" v-on:focus="onFocus"
       />
     </div>
-    <button type="button" class="btn btn-primary SearchInput-button" @click.prevent="submit()">
+    <button type="button" class="btn btn-primary SearchInput-button" @click.prevent="submit(keyword, $event)">
       <font-awesome-icon icon="search" />
     </button>
   </div>
@@ -18,7 +18,7 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import 'jquery-autocomplete/jquery.autocomplete.js';
 import 'jquery-autocomplete/jquery.autocomplete.css';
 import _ from 'lodash';
-import HumanInput from 'humaninput/dist/humaninput-1.1.15-full.min.js';
+import Mousetrap from 'mousetrap';
 
 export default {
   data() {
@@ -26,7 +26,8 @@ export default {
       $elem: undefined,
       $elemInput: undefined,
       keyword: '',
-      HI: undefined
+      HI: undefined,
+      lastSubmittedKeyword: undefined,
     }
   },
   computed: {
@@ -42,12 +43,22 @@ export default {
     onFocus() {
       this.$store.commit('ui/setFocusedElement', 'searchinput');
     },
-    submit(keyword) {
-      if (_.isUndefined(keyword)) {
-        keyword = this.keyword;
+    submit(keyword, event) {
+      if (keyword === this.lastSubmittedKeyword) {
+        return ;
+      }
+      this.lastSubmittedKeyword = keyword;
+      let keyModifier = '';
+      if (event.altKey) {
+        keyModifier = 'Alt';
+      } else if (event.shiftKey) {
+        keyModifier = 'Shift';
+      } else if (event.ctrlKey) {
+        keyModifier = 'Ctrl';
       }
       this.$store.dispatch('searchresults/search', {
-        keyword
+        keyword,
+        keyModifier
       });
       this.$store.commit('ui/setFocusedElement', 'searchresults');
     }
@@ -80,27 +91,40 @@ export default {
       },
     });
     this.$elem.focus();
-    this.$elem.on('selected.xdsoft', (e, keyword) => {
-      this.submit(keyword);
+    this.$elem.on('selected.xdsoft', (event, keyword) => {
+      setTimeout(() => {
+        this.submit(keyword, event);
+      }, 50);
     });
     this.$elemInput = $('.xdsoft_input');
     this.$elem.on('keydown.xdsoft input.xdsoft cut.xdsoft paste.xdsoft', (e, keyword) => {
       this.keyword = this.$elemInput.val();
     });
-    this.HI = new HumanInput(this.$elem[0]);
-    this.HI.filter = (e) => {
-      return true;
+    this.HI = new Mousetrap(this.$elem[0]);
+    this.HI.stopCallback = (e) => {
+      return false;
     };
     if (this.clearInputKey) {
-      this.HI.on(this.clearInputKey.toLowerCase().replace('+', '-'), (event) => {
+      this.HI.bind(this.clearInputKey.toLowerCase(), (event) => {
         this.$elem.val('');
         this.keyword = '';
       });
     }
-    this.HI.on('enter', (event) => {
-      console.log(event);
-      this.keyword = this.$elemInput.val();
-      this.submit();
+    //TODO: handle bangs here
+    this.HI.bind('enter', (event) => {
+      this.submit(this.$elemInput.val(), event);
+      return false;
+    });
+    this.HI.bind('shift+enter', (event) => {
+      this.submit(this.$elemInput.val(), event);
+      return false;
+    });
+    this.HI.bind('ctrl+enter', (event) => {
+      this.submit(this.$elemInput.val(), event);
+      return false;
+    });
+    this.HI.bind('alt+enter', (event) => {
+      this.submit(this.$elemInput.val(), event);
       return false;
     });
   },

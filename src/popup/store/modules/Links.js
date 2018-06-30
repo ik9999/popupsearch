@@ -14,6 +14,7 @@ const actions = {
     if (!url) {
       return ;
     }
+    console.log('here');
     let keyModifierTypeList = ['openBgTabModifier', 'openActTabModifier', 'openCurTabModifier'];
     if (_.isUndefined(keyModifierType)) {
       keyModifierType = _.find(keyModifierTypeList, (_keyModifierType) => {

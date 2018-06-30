@@ -15,6 +15,8 @@
 
 - Displaying additional links (e.g. More from this site)
 
+- DuckDuckGo bangs support (type something like "!yt test" then press Ctrl/Shift/Alt and/or Enter to search on youtube)
+
 ## Demo
 
 ![gif demo](https://user-images.githubusercontent.com/6804575/41853083-930fe3f4-7895-11e8-869d-bf3652d0df60.gif)

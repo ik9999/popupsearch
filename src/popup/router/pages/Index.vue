@@ -24,7 +24,7 @@
 import SearchInput from '../../components/SearchInput.vue';
 import SearchResults from '../../components/SearchResults.vue';
 import { mapState } from 'vuex';
-import HumanInput from 'humaninput/dist/humaninput-1.1.15-full.min.js';
+import Mousetrap from 'mousetrap';
 
 export default {
   data() {
@@ -41,16 +41,16 @@ export default {
     })
   },
   mounted() {
-    this.HI = new HumanInput(this.$el);
-    this.HI.filter = (e) => {
-      return true;
+    this.HI = new Mousetrap(this.$el);
+    this.HI.stopCallback = (e) => {
+      return false;
     };
-    this.HI.on(this.toggleClosepopupKey.toLowerCase().replace('+', '-'), () => {
+    this.HI.bind(this.toggleClosepopupKey.toLowerCase(), () => {
       this.$store.commit('settings/setProp', {prop: 'closeAfterLink', val: !this.closeAfterLink});
     });
     if (this.focusInputKey) {
-      let focusInptuKey = this.focusInputKey.toLowerCase().replace('+', '-');
-      this.HI.on(focusInptuKey, (event) => {
+      let focusInptuKey = this.focusInputKey.toLowerCase();
+      this.HI.bind(focusInptuKey, (event) => {
         if (this.focusedElement === 'searchinput') {
           this.$store.commit('ui/setFocusedElement', 'searchresults');
         } else if (this.focusedElement === 'searchresults') {

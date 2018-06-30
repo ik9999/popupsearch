@@ -30,28 +30,49 @@ const actions = {
     commit('setCurrentKeyword', keyword);
   },
   loadRemoteKeys({rootState, commit, state}, keyword) {
-    if (!_.isString(keyword) || _.isEmpty(keyword)) {
-      return Promise.resolve([]);
-    }
     return (new Promise((resolveFn) => {
+      if (!_.isString(keyword) || _.isEmpty(keyword)) {
+        return resolveFn([]);
+      }
+      let isBang = false;
+      let bang = '';
+      if (keyword[0] === '!') {
+        isBang = true;
+        let keywSplit = keyword.split(' ');
+        if (keywSplit.length < 2) {
+          return resolveFn([]);
+        }
+        bang = keywSplit.shift();
+        keyword = keywSplit.join(' ');
+        if (_.isEmpty(keyword)) {
+          return resolveFn([]);
+        }
+      }
       switch (rootState.settings.settings.acSource) {
       case 'google':
-        axios.get('http://suggestqueries.google.com/complete/search?client=firefox', {
+        return resolveFn(axios.get('http://suggestqueries.google.com/complete/search?client=firefox', {
           params: {
             q: keyword
           }
         }).then((response) => {
           let keywordList = _.get(response, 'data[1]');
           if (_.isArray(keywordList)) {
-            commit('setRemoteKeywords', _.without(keywordList, keyword));
-            resolveFn(keywordList);
-            return ;
+            keywordList = _.without(keywordList, keyword);
+            if (isBang) {
+              return Promise.resolve(_.map(keywordList, res => bang + ' ' + res));
+            }
+            return Promise.resolve(keywordList);
           }
-          resolveFn([]);
-        });
+          return Promise.resolve([]);
+        }));
         break;
       }
-    }));
+      return resolveFn([]);
+    })).then((keywordList) => {
+      console.log(keywordList);
+      commit('setRemoteKeywords', _.without(keywordList, keyword));
+      return Promise.resolve(keywordList);
+    });
   },
 };
 
