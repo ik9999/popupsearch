@@ -62,9 +62,15 @@ const actions = {
     if (!_.isString(keyword) || _.isEmpty(keyword)) {
       return Promise.resolve([]);
     }
-    if (params.keyword[0] === '!') {
+    if (params.keyword[0] === '!' || params.keyword[0] === '=') {
       let keywordEscaped = querystring.escape(params.keyword);
-      let url = `https://api.duckduckgo.com/?q=${keywordEscaped}&format=json&pretty=1`;
+      let url;
+      if (params.keyword[0] === '!') {
+        url = `https://api.duckduckgo.com/?q=${keywordEscaped}&format=json&pretty=1`;
+      }
+      if (params.keyword[0] === '=') {
+        url = `https://duckduckgo.com/?q=${keywordEscaped}`;
+      }
       return dispatch('links/openLink', {
         url, 
         keyModifier: params.keyModifier,

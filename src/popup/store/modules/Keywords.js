@@ -36,6 +36,9 @@ const actions = {
       }
       let isBang = false;
       let bang = '';
+      if (keyword[0] === '=') {
+        return resolveFn([]);
+      }
       if (keyword[0] === '!') {
         isBang = true;
         let keywSplit = keyword.split(' ');
