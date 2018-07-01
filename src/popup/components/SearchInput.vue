@@ -110,7 +110,10 @@ export default {
         this.keyword = '';
       });
     }
-    //TODO: handle bangs here
+    this.HI.bind('esc', (event) => {
+      this.$store.commit('ui/setFocusedElement', 'searchresults');
+      return false;
+    });
     this.HI.bind('enter', (event) => {
       this.submit(this.$elemInput.val(), event);
       return false;
