@@ -19,7 +19,7 @@
 
 - [DuckDuckGo bangs](https://duckduckgo.com/bang) (type something like "!yt test" then press Enter or Ctrl/Shift/Alt + Enter to search on youtube)
 
-- DuckDuckGo calculator (type your expression e.g. "=2+2" then press Enter or Ctrl/Shift/Alt + Enter to open ddg calculator page)
+- [DuckDuckGo calculator](https://duckduckgo.com/?q=%3D2%2B2&t=h_&ia=calculator) (type your expression e.g. "=2+2" then press Enter or Ctrl/Shift/Alt + Enter to open ddg calculator page)
 
 ## Demo
 
