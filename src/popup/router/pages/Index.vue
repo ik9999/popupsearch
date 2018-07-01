@@ -5,14 +5,8 @@
     <div class="row Index-uiRow">
       <div class="col-1"></div>
       <div class="col-3"></div>
-      <div class="col-4">
-        <div class="form-group form-check mb-0 Index-options text-center" v-if="false">
-          <input type="checkbox" class="form-check-input Index-newTabCb" v-model="closeAfterLink">
-          <label class="form-check-label">
-            {{ (toggleClosepopupKey ? '[' + toggleClosepopupKey.toLowerCase() + ']' : '') }}
-            Close after opening a link
-          </label>
-        </div>
+      <div class="col-4 text-center">
+        <pulse-loader :loading="isLoadingResults" :color="'#007bff'" :size="'11px'"></pulse-loader>
       </div>
       <div class="col-3"></div>
       <div class="col-1"></div>
@@ -23,6 +17,7 @@
 <script>
 import SearchInput from '../../components/SearchInput.vue';
 import SearchResults from '../../components/SearchResults.vue';
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 import { mapState } from 'vuex';
 import Mousetrap from 'mousetrap';
 
@@ -38,6 +33,7 @@ export default {
       toggleClosepopupKey: state => state.settings.settings.toggleClosepopupKey,
       closeAfterLink: state => state.settings.settings.closeAfterLink,
       focusInputKey: state => state.settings.settings.focusInputKey,
+      isLoadingResults: state => state.searchresults.isLoadingResults,
     })
   },
   mounted() {
@@ -65,6 +61,7 @@ export default {
   components: {
     SearchInput,
     SearchResults,
+    PulseLoader,
   }
 }
 </script>

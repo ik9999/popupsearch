@@ -19,7 +19,7 @@ let google = (query, start) => {
   if (start) {
     startIndex = start
   }
-  return igoogle(query, startIndex);
+  return igoogle(query.trim(), startIndex);
 }
 
 google.resultsPerPage = 15
@@ -53,9 +53,14 @@ var igoogle = function (query, start) {
       startNext: 0
     }
     
-    let $input = $body.find(`input[value="${query}"]`);
+    let $input;
+    $body.find('input').each(function() {
+      if ($(this).val() === query) {
+        $input = $(this);
+      }
+    });
     
-    if ($input.length < 1) {
+    if (!$input) {
       return Promise.reject(new Error('request error'));
     }
 

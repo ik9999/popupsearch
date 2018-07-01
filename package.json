@@ -26,7 +26,8 @@
     "lodash": "^4.17.10",
     "fast-format": "^0.2.0",
     "querystring-browser": "^1.0.4",
-    "mousetrap": "^1.6.2"
+    "mousetrap": "^1.6.2",
+    "vue-spinner": "^1.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.49",
