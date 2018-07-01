@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ik9999/popupsearch/master/src/icons/promo_440_280.png" alt="logo">
+  <a href="https://github.com/ik9999/popupsearch" target="_blank" rel="noopener noreferrer">
+    <img src="https://raw.githubusercontent.com/ik9999/popupsearch/master/src/icons/promo_440_280.png" alt="logo">
+  </a>
 </p>
 
 <p align="center">
