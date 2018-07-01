@@ -124,6 +124,9 @@ var igoogle = function (query, start) {
       } else if ($this.find('a[href*="+site:"]').length > 0) {
         let $sublinksCont = $this.find('a[href*="+site:"]').parent().parent().parent();
         $sublinksCont.children().each(function() {
+          if ($(this).find('a[href*="+site:"]').length > 0) {
+            return ;
+          }
           let $a = $(this).find('a');
           if ($a.length === 0) {
             return ;

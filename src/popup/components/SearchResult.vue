@@ -1,11 +1,20 @@
 <template>
   <div class="SearchResult">
-    <a :href="result.href" v-html="getTitle()" @click.prevent="onClick($event, result.href)"></a>
+    <a
+      :href="result.href" v-html="getTitle()" @click.prevent="onClick($event, result.href)"
+      v-bind:class="{ 'SearchResult-title': true, 'SearchResult-title--opened': openedMainLink }"
+    >
+    </a>
     <div class="SearchResult-link" v-html="result.link"></div>
     <div class="SearchResult-desc" v-html="result.description"></div>
     <div class="SearchResult-subLinks" v-if="result.subLinkList.length > 0">
       <template v-for="(linkData, linkIdx) in result.subLinkList" v-if="sublinksType === 'list'">
-        <a :href="linkData.href" class="SearchResult-subLink" @click.prevent="onClick($event, linkData.href)">
+        <a
+          :href="linkData.href" @click.prevent="onClick($event, linkData.href)"
+          v-bind:class="{
+            'SearchResult-subLink': true, 'SearchResult-subLink--opened': openedSublinkIdx === linkIdx 
+          }"
+        >
           {{ sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '' }} {{ linkData.title }}
         </a>
         <span v-if="linkIdx < result.subLinkList.length - 1"> · </span>
@@ -16,7 +25,10 @@
             <tr v-for="(linkData, linkIdx) in result.subLinkList">
               <td>
                 <a
-                  :href="linkData.href" class="SearchResult-subLink"
+                  :href="linkData.href"
+                  v-bind:class="{
+                    'SearchResult-subLink': true, 'SearchResult-subLink--opened': openedSublinkIdx === linkIdx 
+                  }"
                   @click.prevent="onClick($event, linkData.href)"
                 >
                   {{ sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '' }} {{ linkData.title }}
@@ -39,6 +51,8 @@ export default {
     return {
       key: undefined,
       sublinkKeyList: [],
+      openedMainLink: false,
+      openedSublinkIdx: undefined
     };
   },
   props: {
@@ -94,7 +108,19 @@ export default {
       } else {
         this.sublinkKeyList[linkIdx] = key;
       }
-    }
+    },
+    triggerPressMainLink() {
+      this.openedMainLink = true;
+      setTimeout(() => {
+        this.openedMainLink = false;
+      }, 500);
+    },
+    triggerPressSubLink(idx) {
+      this.openedSublinkIdx = idx;
+      setTimeout(() => {
+        this.openedSublinkIdx = undefined;
+      }, 500);
+    },
   },
   mounted() {
     this.sublinkKeyList = _.fill(Array(this.result.subLinkList.length), undefined);
@@ -104,6 +130,16 @@ export default {
 
 <style lang="sass">
 .SearchResult
+  &-title, &-subLink
+    background: none
+    -webkit-transition: background-color 500ms linear;
+    -ms-transition: background-color 500ms linear;
+    transition: background-color 500ms linear;
+  &-title--opened, &-subLink--opened
+    background-color: #ffc7f7
+    -webkit-transition: background-color 500ms linear;
+    -ms-transition: background-color 500ms linear;
+    transition: background-color 500ms linear;
   &-desc
     line-height: 1.35
     font-size: 0.9rem

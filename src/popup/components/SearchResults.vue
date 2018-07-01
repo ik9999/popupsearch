@@ -21,6 +21,7 @@ export default {
     return {
       $elem: undefined,
       urlByKeys: {},
+      callbackFnByKeys: {},
       lettersByNums: {},
       reservedKeys: [],
     }
@@ -79,6 +80,7 @@ export default {
     updateControls() {
       this.urlByKeys = {};
       this.lettersByNums = {};
+      this.callbackFnByKeys = {};
       const scrollHeight = this.$el.scrollHeight;
       const elHeight = this.$el.offsetHeight;
       const resultMarginSize = 14;
@@ -90,20 +92,26 @@ export default {
       _.each(this.currentSearchResults, (resultData, resIdx) => {
         let resultComp = this.$refs[`element${resIdx}`][0];
         if (incHeight >= scrollOffset && incHeight <= scrollOffset + elHeight) {
+          let key = undefined;
           if (keyNum < 10) {
-            resultComp.setKey(keyNum);
-            this.urlByKeys[String(keyNum)] = resultData.href;
+            key = keyNum;
           } else if (keyNum === 10) {
-            resultComp.setKey(0);
-            this.urlByKeys[String(0)] = resultData.href;
+            key = 0;
           } else {
-            resultComp.setKey(keyLetter);
-            this.urlByKeys[String(keyLetter)] = resultData.href;
+            key = keyLetter;
             keyLetter = this.nextChar(keyLetter);
           }
+          resultComp.setKey(key);
+          this.urlByKeys[String(key)] = resultData.href;
+          this.callbackFnByKeys[String(key)] = () => {
+            resultComp.triggerPressMainLink();
+          };
           keyNum += 1;
           _.each(resultData.subLinkList, (linkData, linkIdx) => {
             this.urlByKeys[String(keyLetter)] = linkData.href;
+            this.callbackFnByKeys[String(keyLetter)] = () => {
+              resultComp.triggerPressSubLink(linkIdx);
+            };
             resultComp.setSublinkKey(keyLetter, linkIdx);
             keyLetter = this.nextChar(keyLetter);
           });
@@ -151,6 +159,9 @@ export default {
         }
         this.HI.bind(modifiedkey, (event) => {
           this.$store.dispatch('links/openLink', {url: this.urlByKeys[key], keyModifier});
+          if (this.callbackFnByKeys[key]) {
+            this.callbackFnByKeys[key]();
+          }
         });
       });
     });
