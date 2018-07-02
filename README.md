@@ -1,9 +1,11 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ik9999/popupsearch/master/src/icons/promo_440_280.png" alt="logo">
+  <a href="https://github.com/ik9999/popupsearch" target="_blank" rel="noopener noreferrer">
+    <img src="https://raw.githubusercontent.com/ik9999/popupsearch/master/src/icons/promo_440_280.png" alt="logo">
+  </a>
 </p>
 
 <p align="center">
-  Chrome/Chromium extension for searching in google™ and open results using popup window
+  Chrome/Chromium extension for searching in google™ and open results using popup window. The main idea is to not keep opened tabs with search results but do all the searching, browsing results, opening links in popup window. 
 </p>
 <hr />
 
@@ -17,7 +19,7 @@
 
 - [DuckDuckGo bangs](https://duckduckgo.com/bang) (type something like "!yt test" then press Enter or Ctrl/Shift/Alt + Enter to search on youtube)
 
-- DuckDuckGo calculator (type your expression e.g. "=2+2" then press Enter or Ctrl/Shift/Alt + Enter to open ddg calculator page)
+- [DuckDuckGo calculator](https://duckduckgo.com/?q=%3D2%2B2&t=h_&ia=calculator) (type your expression e.g. "=2+2" then press Enter or Ctrl/Shift/Alt + Enter to open ddg calculator page)
 
 ## Demo
 
