@@ -5,6 +5,7 @@ const state = {
   historyKeywords: [],
   remoteKeywords: [],
   currentKeyword: '',
+  error: undefined
 };
 
 const getters = {
@@ -12,12 +13,16 @@ const getters = {
 
 const mutations = {
   setRemoteKeywords(state, keywords) {
+    state.error = undefined;
     state.remoteKeywords = keywords;
   },
   setCurrentKeyword(state, keyword) {
     state.currentKeyword = keyword;
     state.historyKeywords.push(keyword);
   },
+  setError(state, message) {
+    state.error = message;
+  }
 };
 
 const actions = {
@@ -74,6 +79,15 @@ const actions = {
     })).then((keywordList) => {
       commit('setRemoteKeywords', _.without(keywordList, keyword));
       return Promise.resolve(keywordList);
+    }, error => {
+      let msg;
+      if (error.response) {
+        msg = `Error - ${error.response.status}`;
+      } else {
+        msg = JSON.stringify(error.message);
+      }
+      commit('setError', msg);
+      return Promise.reject(new Error(msg));
     });
   },
 };

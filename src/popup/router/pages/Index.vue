@@ -3,13 +3,19 @@
     <search-input></search-input>
     <search-results ref="SearchResults" class="Index-searchResults"></search-results>
     <div class="row Index-uiRow">
-      <div class="col-1"></div>
-      <div class="col-3"></div>
-      <div class="col-4 text-center">
+      <div class="col-4" v-if="!isError"></div>
+      <div class="col-4 text-center" v-if="!isError">
         <pulse-loader :loading="isLoadingResults" :color="'#007bff'" :size="'11px'"></pulse-loader>
       </div>
-      <div class="col-3"></div>
-      <div class="col-1"></div>
+      <div class="col-12 text-center text-danger" v-if="isError">
+        {{ errorMsg }}
+        <a
+          :href="errorPageUrl" class="font-weight-bold text-danger" @click.prevent="openError"
+          v-if="errorPageUrl"
+        >
+          Open page
+        </a>
+      </div>
     </div>
   </div>
 </template>
@@ -34,7 +40,27 @@ export default {
       closeAfterLink: state => state.settings.settings.closeAfterLink,
       focusInputKey: state => state.settings.settings.focusInputKey,
       isLoadingResults: state => state.searchresults.isLoadingResults,
-    })
+      errorMsg: state => state.searchresults.errorMsg,
+      errorPageUrl: state => state.searchresults.errorPageUrl,
+    }),
+    isError() {
+      return this.$store.state.searchresults.isError || this.$store.state.keywords.error;
+    },
+    errorMsg() {
+      return this.$store.state.searchresults.error || this.$store.state.keywords.error;
+    }
+  },
+  methods: {
+    openError() {
+      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        let tab = tabs[0];
+        chrome.tabs.create({
+          url: this.errorPageUrl,
+          active: true,
+          index: tab.index + 1,
+        });
+      });
+    }
   },
   mounted() {
     this.HI = new Mousetrap(this.$el);

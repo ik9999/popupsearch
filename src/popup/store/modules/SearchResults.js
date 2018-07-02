@@ -7,6 +7,10 @@ const state = {
   searches: {},
   isLoadingResults: false,
   isShowingResults: false,
+  isEnd: false,
+  isError: false,
+  errorMsg: undefined,
+  errorPageUrl: undefined
 };
 
 const getters = {
@@ -31,6 +35,9 @@ const mutations = {
     if (_.isUndefined(state.searches[searchEngine][keyword]) || forceNew || start === 0) {
       Vue.set(state.searches[searchEngine], keyword, []);
     }
+    if (_.size(links) < 3) {
+      state.isEnd = true;
+    }
     state.searches[searchEngine][keyword] = _.concat(
       state.searches[searchEngine][keyword], links
     );
@@ -39,6 +46,11 @@ const mutations = {
   setIsLoading(state, value) {
     state.isLoadingResults = value;
     state.isShowingResults = false;
+  },
+  setError(state, {val, msg, url}) {
+    state.isError = val;
+    state.errorMsg = msg;
+    state.errorPageUrl = url;
   }
 };
 
@@ -86,7 +98,17 @@ const actions = {
           if (_.size(_.get(result, 'links')) > 0) {
             links = _.get(result, 'links');
           }
+          commit('setError', {
+            val: false
+          });
           commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
+        }, (err) => {
+          commit('setError', {
+            val: true,
+            msg: err.message,
+            url: err.url
+          });
+          commit('appendSearchResults', {searchEngine, keyword, links: [], forceNew, start});
         }).finally(() => {
           commit('setIsLoading', false);
         });

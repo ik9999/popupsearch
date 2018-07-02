@@ -1,6 +1,7 @@
 import axios from 'axios';
 import querystring from 'querystring-browser';
 import fastFormat from 'fast-format';
+import _ from 'lodash';
 
 var linkSel = 'h3.r a'
 var descSel = 'span.st'
@@ -33,7 +34,7 @@ var igoogle = function (query, start) {
   if (google.lang !== 'en' && google.nextText === 'Next') console.warn(nextTextErrorMsg)
   if (google.protocol !== 'http' && google.protocol !== 'https') {
     google.protocol = 'https'
-    console.warn(protocolErrorMsg)
+    return Promise.reject(_.extend(new Error('Protocol error'), {url: newUrl}));
   }
 
   // timeframe is optional. splice in if set
@@ -61,7 +62,7 @@ var igoogle = function (query, start) {
     });
     
     if (!$input) {
-      return Promise.reject(new Error('request error'));
+      return Promise.reject(_.extend(new Error('Parsing error'), {url: newUrl}));
     }
 
     $body.find(itemSel).each(function() {
@@ -154,7 +155,13 @@ var igoogle = function (query, start) {
 
     return Promise.resolve(res);
   }, (error) => {
-    return new Error('Error on response' + (error.response ? ' (' + error.response.status + ')' : '') + ':' + error.message);
+    let msg;
+    if (error.response) {
+      msg = `Error - ${error.response.status}`;
+    } else {
+      msg = JSON.stringify(error.message);
+    }
+    return Promise.reject(_.extend(new Error(msg), {url: newUrl}));
   });
 }
 

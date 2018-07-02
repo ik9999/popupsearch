@@ -31,6 +31,7 @@ export default {
       focusedElement: state => state.ui.focusedElement,
       isShowingResults: state => state.searchresults.isShowingResults,
       isLoadingResults: state => state.searchresults.isLoadingResults,
+      isEnd: state => state.searchresults.isEnd,
       scrollUpKey: state => state.settings.settings.scrollUpKey,
       scrollDownKey: state => state.settings.settings.scrollDownKey,
       jumpTopKey: state => state.settings.settings.jumpTopKey,
@@ -121,7 +122,7 @@ export default {
         }
         incHeight += resultComp.getHieght() + resultMarginSize;
       });
-      if (scrollHeight - scrollOffset - elHeight < 200 && !this.isLoadingResults) {
+      if (scrollHeight - scrollOffset - elHeight < 200 && !this.isLoadingResults && !this.isEnd) {
         this.$store.dispatch('searchresults/search', {});
       }
     }
