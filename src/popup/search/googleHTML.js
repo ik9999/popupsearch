@@ -96,7 +96,6 @@ var igoogle = function (query, start) {
         item.link = item.href;
       }
 
-      item.description = descElem.html()
       if (sublinksInlineElem.length > 0) {
         sublinksInlineElem.each(function() {
           item.subLinkList.push({
@@ -112,7 +111,7 @@ var igoogle = function (query, start) {
           if ($a.length === 0) {
             return ;
           }
-          let linkText = $a.text();
+          let linkText = $a.html();
           let linkHref = $a.attr('href');
           $a.remove();
           let linkDesc = $(this).text();
@@ -132,7 +131,7 @@ var igoogle = function (query, start) {
           if ($a.length === 0) {
             return ;
           }
-          let linkText = $a.text();
+          let linkText = $a.html();
           let linkHref = $a.attr('href');
           $a.remove();
           let linkDesc = $(this).html().replace(/(<([^>]+)>)/ig, ' ').replace(/ +(?= )/g,'');
@@ -143,6 +142,23 @@ var igoogle = function (query, start) {
           });
         });
       }
+      descElem.find('a').each(function() {
+        let $this = $(this);
+        let sublinkData = {
+          href: $this.attr('href'),
+          title: $this.text()
+        };
+        if (!_.isUndefined(_.get(item.subLinkList, '[0].desc'))) {
+          sublinkData.desc = "";
+        }
+        item.subLinkList.unshift(sublinkData);
+        if ($this.parent().hasClass('f')) {
+          $this.parent().remove();
+        } else {
+          $this.remove();
+        }
+      });
+      item.description = descElem.html()
 
       if (item.href && item.title) {
         res.links.push(item)

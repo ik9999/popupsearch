@@ -8,14 +8,14 @@
     <div class="SearchResult-link" v-html="result.link"></div>
     <div class="SearchResult-desc" v-html="result.description"></div>
     <div class="SearchResult-subLinks" v-if="result.subLinkList.length > 0">
-      <template v-for="(linkData, linkIdx) in result.subLinkList" v-if="sublinksType === 'list'">
+      <template v-for="(linkData, linkIdx) in result.subLinkList" v-if="sublinksType === 'links'">
         <a
           :href="linkData.href" @click.prevent="onClick($event, linkData.href)"
           v-bind:class="{
             'SearchResult-subLink': true, 'SearchResult-subLink--opened': openedSublinkIdx === linkIdx 
           }"
+          v-html="(sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '') + ' ' + linkData.title"
         >
-          {{ sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '' }} {{ linkData.title }}
         </a>
         <span v-if="linkIdx < result.subLinkList.length - 1"> · </span>
       </template>
@@ -30,8 +30,8 @@
                     'SearchResult-subLink': true, 'SearchResult-subLink--opened': openedSublinkIdx === linkIdx 
                   }"
                   @click.prevent="onClick($event, linkData.href)"
+                  v-html="(sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '') + ' ' + linkData.title"
                 >
-                  {{ sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '' }} {{ linkData.title }}
                 </a>
               </td>
               <td class="SearchResult-subLinkDesc">{{ linkData.desc }}</td>
