@@ -7,6 +7,7 @@ const state = {
     closeAfterLink: false,
     toggleClosepopupKey: 'Ctrl+q',
     focusInputKey: 'Ctrl+e',
+    focusInputAltKey: 'Tab',
     clearInputKey: 'Ctrl+u',
     jumpTopKey: 'Shift+g',
     jumpBottomKey: 'g g',
@@ -16,7 +17,7 @@ const state = {
     openActTabModifier: '',
     openCurTabModifier: 'Ctrl'
   },
-  keyModifierList: ['Ctrl', 'Shift', 'Alt', '']
+  keyModifierList: ['Ctrl', 'Shift', 'Alt', ''],
 };
 
 const getters = {

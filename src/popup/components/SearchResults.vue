@@ -24,6 +24,9 @@ export default {
       callbackFnByKeys: {},
       lettersByNums: {},
       reservedKeys: [],
+      initialLastVisibleResIdx: undefined,
+      lastVisibleResIdx: 0,
+      isScrolling: false
     }
   },
   computed: {
@@ -39,6 +42,7 @@ export default {
       toggleClosepopupKey: state => state.settings.settings.toggleClosepopupKey,
       closeAfterLink: state => state.settings.settings.closeAfterLink,
       focusInputKey: state => state.settings.settings.focusInputKey,
+      focusInputAltKey:  state => state.settings.settings.focusInputAltKey,
     }),
     ...mapGetters({
       currentSearchResults: 'searchresults/getCurrentSearchResults'
@@ -50,12 +54,11 @@ export default {
         this.$el.focus();
       }
     },
-    currentSearchResults: function(val) {
+    currentSearchResults: function(val, oldVal) {
       if (this.focusedElement === 'searchresults') {
-        //if (_.size(val) === 0) {
-          //this.$store.commit('ui/setFocusedElement', 'searchinput');
-          //return;
-        //}
+        if (_.size(oldVal) === 0) {
+          this.initialLastVisibleResIdx = undefined;
+        }
         this.$nextTick(() => {
           this.updateControls();
           this.$el.focus();
@@ -86,6 +89,9 @@ export default {
       const elHeight = this.$el.offsetHeight;
       const resultMarginSize = 14;
       const scrollOffset = this.$el.scrollTop;
+      if (!this.isScrolling) {
+        this.lastVisibleResIdx = 0;
+      }
 
       let incHeight = 0;
       let keyNum = 1;
@@ -116,12 +122,18 @@ export default {
             resultComp.setSublinkKey(keyLetter, linkIdx);
             keyLetter = this.nextChar(keyLetter);
           });
+          if (!this.isScrolling) {
+            this.lastVisibleResIdx = resIdx;
+          }
         } else {
           resultComp.setKey(undefined);
           resultComp.setSublinkKey(undefined);
         }
         incHeight += resultComp.getHieght() + resultMarginSize;
       });
+      if (_.isUndefined(this.initialLastVisibleResIdx)) {
+        this.initialLastVisibleResIdx = this.lastVisibleResIdx;
+      }
       if (scrollHeight - scrollOffset - elHeight < 200 && !this.isLoadingResults && !this.isEnd) {
         this.$store.dispatch('searchresults/search', {});
       }
@@ -131,7 +143,7 @@ export default {
     let $this = $(this.$el);
     this.reservedKeys = _.map([
       this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey,
-      this.jumpTopKey, this.jumpBottomKey
+      this.jumpTopKey, this.jumpBottomKey, this.focusInputAltKey
     ], (key) => {
       if (!_.isString(key)) {
         return undefined;
@@ -166,24 +178,45 @@ export default {
         });
       });
     });
-    let next = undefined;
+    let lastScrollPos;
     this.HI.bind([this.scrollUpKey, this.scrollDownKey, 'up', 'down'], (event) => {
-      if (next === undefined) {
-        next = Date.now();   
-      }
-      if (next <= Date.now()) {
-        next = Date.now() + 170;
-        let cur;
+      let scrollPos;
+      this.isScrolling = true;
+      if (this.lastVisibleResIdx > 0) {
         if (event.key === this.scrollDownKey || event.key === 'ArrowDown') {
-          cur =  this.$el.scrollTop;
-          $this.animate({scrollTop: cur + 60}, 200);
+          if (this.$refs[`element${this.lastVisibleResIdx + 1}`]) {
+            let nextResComp = this.$refs[`element${this.lastVisibleResIdx + 1}`][0];
+            scrollPos = nextResComp.$el.offsetTop + nextResComp.$el.offsetHeight - this.$el.offsetHeight;
+            if (this.lastVisibleResIdx + 1 < this.currentSearchResults.length) {
+              this.lastVisibleResIdx +=1;
+            }
+          } else {
+            scrollPos = this.$el.scrollHeight - this.$el.offsetHeight;
+          }
         } else if (event.key === this.scrollUpKey || event.key === 'ArrowUp') {
-          cur = this.$el.scrollTop;
-          $this.animate({scrollTop: cur - 60}, 200);
+          if (this.lastVisibleResIdx - 1 >= 0 && this.$refs[`element${this.lastVisibleResIdx - 1}`]) {
+            let prevResComp = this.$refs[`element${this.lastVisibleResIdx - 1}`][0];
+            scrollPos = prevResComp.$el.offsetTop + prevResComp.$el.offsetHeight - this.$el.offsetHeight;
+            if (scrollPos < 0) {
+              scrollPos = 0;
+            }
+            if (this.initialLastVisibleResIdx && this.lastVisibleResIdx - 1 >= this.initialLastVisibleResIdx) {
+              this.lastVisibleResIdx -=1;
+            }
+          } else {
+            scrollPos = 0;
+          }
+        }
+        if (scrollPos !== lastScrollPos) {
+          lastScrollPos = scrollPos;
+          $this.clearQueue().animate({scrollTop: scrollPos}, 200);
         }
       }
       return false;
     }, 'keydown');
+    this.HI.bind([this.scrollUpKey, this.scrollDownKey, 'up', 'down'], (event) => {
+      this.isScrolling = false;
+    }, 'keyup');
     this.HI.bind(this.jumpTopKey.toLowerCase(), (event) => {
       this.$el.scrollTop = 0;
     });
@@ -205,4 +238,5 @@ export default {
     margin-bottom: 14px
   overflow-y: overlay
   overflow-x: hidden
+  position: relative
 </style>

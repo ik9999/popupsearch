@@ -54,9 +54,15 @@
       </div>
     </div>
     <div class="form-group row mt-3">
-      <label class="col-5 col-form-label">Focus search field</label>
+      <label class="col-5 col-form-label">Focus search field / Focus search results</label>
       <div class="col-7">
         <input type="text" class="form-control" v-model="settings.focusInputKey">
+      </div>
+    </div>
+    <div class="form-group row mt-3">
+      <label class="col-5 col-form-label">Focus search field / Focus search results (alternative)</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.focusInputAltKey">
       </div>
     </div>
     <div class="form-group row mt-3">

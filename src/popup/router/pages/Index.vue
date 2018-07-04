@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import _ from 'lodash';
 import SearchInput from '../../components/SearchInput.vue';
 import SearchResults from '../../components/SearchResults.vue';
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
@@ -39,6 +40,7 @@ export default {
       toggleClosepopupKey: state => state.settings.settings.toggleClosepopupKey,
       closeAfterLink: state => state.settings.settings.closeAfterLink,
       focusInputKey: state => state.settings.settings.focusInputKey,
+      focusInputAltKey: state => state.settings.settings.focusInputAltKey,
       isLoadingResults: state => state.searchresults.isLoadingResults,
       errorMsg: state => state.searchresults.errorMsg,
       errorPageUrl: state => state.searchresults.errorPageUrl,
@@ -70,16 +72,19 @@ export default {
     this.HI.bind(this.toggleClosepopupKey.toLowerCase(), () => {
       this.$store.commit('settings/setProp', {prop: 'closeAfterLink', val: !this.closeAfterLink});
     });
-    if (this.focusInputKey) {
-      let focusInptuKey = this.focusInputKey.toLowerCase();
-      this.HI.bind(focusInptuKey, (event) => {
-        if (this.focusedElement === 'searchinput') {
-          this.$store.commit('ui/setFocusedElement', 'searchresults');
-        } else if (this.focusedElement === 'searchresults') {
-          this.$store.commit('ui/setFocusedElement', 'searchinput');
-        }
-      });
-    }
+    _.each([this.focusInputKey, this.focusInputAltKey], (key) => {
+      if (key) {
+        let focusInptuKey = key.toLowerCase();
+        this.HI.bind(focusInptuKey, (event) => {
+          if (this.focusedElement === 'searchinput') {
+            this.$store.commit('ui/setFocusedElement', 'searchresults');
+          } else if (this.focusedElement === 'searchresults') {
+            this.$store.commit('ui/setFocusedElement', 'searchinput');
+          }
+          return false;
+        });
+      }
+    });
   },
   beforeDestroy() {
     this.HI.off();

@@ -72,7 +72,7 @@ You can change some shortcuts on extension settings page.
 
 ## Default shortcuts
 
-Focus query input field or focus search results - **ctrl+e**
+Focus query input field or focus search results - **ctrl+e** / **tab**
 
 Clear input field - **ctrl+u**
 
