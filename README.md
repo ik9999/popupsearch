@@ -21,9 +21,11 @@
 
 - [DuckDuckGo calculator](https://duckduckgo.com/?q=%3D2%2B2&t=h_&ia=calculator) (type your expression e.g. "=2+2" then press Enter or Ctrl/Shift/Alt + Enter to open ddg calculator page)
 
-## Demo
+## Screenshot
 
-![gif demo](https://user-images.githubusercontent.com/6804575/41853083-930fe3f4-7895-11e8-869d-bf3652d0df60.gif)
+![screenshot](https://user-images.githubusercontent.com/6804575/42267722-779623c4-7f82-11e8-8fb2-6c404980f71c.png)
+
+<a href="https://user-images.githubusercontent.com/6804575/41853083-930fe3f4-7895-11e8-869d-bf3652d0df60.gif" target="_blank" rel="noopener noreferrer">gif demo</a>
 
 ## Installation
 
