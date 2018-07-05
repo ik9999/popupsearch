@@ -45,7 +45,7 @@ const mutations = {
   },
   setIsLoading(state, value) {
     state.isLoadingResults = value;
-    state.isShowingResults = false;
+    state.isShowingResults = !value;
   },
   setError(state, {val, msg, url}) {
     state.isError = val;
