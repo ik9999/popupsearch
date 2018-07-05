@@ -33,6 +33,12 @@
         </div>
       </div>
     </div>
+    <div class="form-group row">
+      <label class="col-5 col-form-label">Remember search results/qeries, days</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.lastDaysToRemember">
+      </div>
+    </div>
     <h3>Shortcuts</h3>
     <div>Dont put spaces. Use '+' for combinations</div>
     <div class="form-group row mt-3" v-if="false">

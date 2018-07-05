@@ -15,7 +15,8 @@ const state = {
     scrollDownKey: 'j',
     openBgTabModifier: 'Shift',
     openActTabModifier: '',
-    openCurTabModifier: 'Ctrl'
+    openCurTabModifier: 'Ctrl',
+    lastDaysToRemember: 10
   },
   keyModifierList: ['Ctrl', 'Shift', 'Alt', ''],
 };

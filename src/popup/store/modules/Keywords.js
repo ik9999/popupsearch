@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import axios from 'axios';
+import db from '../../helper/Database.js';
 
 const state = {
   historyKeywords: [],
@@ -26,13 +27,22 @@ const mutations = {
 };
 
 const actions = {
-  load({commit, state}) {
-    return new Promise(resolveFn => {
+  async load({commit, state}) {
+    await new Promise(resolveFn => {
       resolveFn();
     });
   },
-  updateCurrentKeyword({commit, state}, keyword) {
+  async updateCurrentKeyword({commit, state}, keyword) {
     commit('setCurrentKeyword', keyword);
+    let foundKeyword = await db.keywords.where({name: keyword}).limit(1).first();
+    if (foundKeyword) {
+      //modify
+    } else {
+      await db.keywords.add({
+        name: keyword,
+        timestamp: new Date().valueOf(),
+      });
+    }
   },
   loadRemoteKeys({rootState, commit, state}, keyword) {
     return (new Promise((resolveFn) => {
