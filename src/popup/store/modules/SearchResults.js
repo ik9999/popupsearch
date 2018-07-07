@@ -60,7 +60,7 @@ const actions = {
       resolveFn();
     });
   },
-  search({rootState, commit, state, dispatch, getters}, params) {
+  async search({rootState, commit, state, dispatch, getters}, params) {
     if (!params.keyword) {
       params.keyword = rootState.keywords.currentKeyword;
       params.start = getters.getCurrentSearchResults.length + 1;
@@ -74,47 +74,39 @@ const actions = {
     if (!_.isString(keyword) || _.isEmpty(keyword)) {
       return Promise.resolve([]);
     }
-    if (params.keyword[0] === '!' || params.keyword[0] === '=') {
-      let keywordEscaped = querystring.escape(params.keyword);
-      let url;
-      if (params.keyword[0] === '!') {
-        url = `https://api.duckduckgo.com/?q=${keywordEscaped}&format=json&pretty=1`;
-      }
-      if (params.keyword[0] === '=') {
-        url = `https://duckduckgo.com/?q=${keywordEscaped}`;
-      }
+    await dispatch('keywords/updateCurrentKeyword', keyword, {root:true});
+    if (rootState.keywords.isDdgSpecialKeyword) {
+      let keywordEscaped = querystring.escape(keyword);
+      let url = `https://duckduckgo.com/?q=${keywordEscaped}`;
       return dispatch('links/openLink', {
         url, 
         keyModifier: params.keyModifier,
       }, {root:true});
     }
-    dispatch('keywords/updateCurrentKeyword', keyword, {root:true});
     commit('setIsLoading', true);
-    return (new Promise((resolveFn) => {
-      switch (searchEngine) {
-      case 'googleHTML':
-        googleHTML(keyword, start).then((result) => {
-          let links = [];
-          if (_.size(_.get(result, 'links')) > 0) {
-            links = _.get(result, 'links');
-          }
-          commit('setError', {
-            val: false
-          });
-          commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
-        }, (err) => {
-          commit('setError', {
-            val: true,
-            msg: err.message,
-            url: err.url
-          });
-          commit('appendSearchResults', {searchEngine, keyword, links: [], forceNew, start});
-        }).finally(() => {
-          commit('setIsLoading', false);
+    switch (searchEngine) {
+    case 'googleHTML':
+      try {
+        let result = await googleHTML(keyword, start);
+        let links = [];
+        if (_.size(_.get(result, 'links')) > 0) {
+          links = _.get(result, 'links');
+        }
+        commit('setError', {
+          val: false
         });
-        break;
+        commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
+      } catch(err) {
+        commit('setError', {
+          val: true,
+          msg: err.message,
+          url: err.url
+        });
+        commit('appendSearchResults', {searchEngine, keyword, links: [], forceNew, start});
       }
-    }));
+      commit('setIsLoading', false);
+      break;
+    }
   }
 };
 

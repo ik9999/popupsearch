@@ -6,6 +6,7 @@ const state = {
   historyKeywords: [],
   remoteKeywords: [],
   currentKeyword: '',
+  isDdgSpecialKeyword: false,
   error: undefined
 };
 
@@ -20,6 +21,7 @@ const mutations = {
   setCurrentKeyword(state, keyword) {
     state.currentKeyword = keyword;
     state.historyKeywords.push(keyword);
+    state.isDdgSpecialKeyword = (keyword[0] === '!' || keyword[0] === '=');
   },
   setError(state, message) {
     state.error = message;
@@ -35,14 +37,16 @@ const actions = {
   async updateCurrentKeyword({commit, state}, keyword) {
     commit('setCurrentKeyword', keyword);
     let foundKeyword = await db.keywords.where({name: keyword}).limit(1).first();
-    if (foundKeyword) {
-      //modify
-    } else {
-      await db.keywords.add({
-        name: keyword,
-        timestamp: new Date().valueOf(),
-      });
+    if (!foundKeyword) {
+      foundKeyword = {
+        id: await db.keywords.add({
+          name: keyword,
+          timestamp: new Date().valueOf(),
+        })
+      };
+      localStorage.setItem('lastKeywordId', foundKeyword.id);
     }
+    localStorage.setItem('openedKeyword', foundKeyword.id);
   },
   loadRemoteKeys({rootState, commit, state}, keyword) {
     return (new Promise((resolveFn) => {

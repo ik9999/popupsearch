@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import db from '../../helper/Database.js';
 
 const state = {
 };
@@ -10,7 +11,7 @@ const mutations = {
 };
 
 const actions = {
-  openLink({rootState}, {url, keyModifier, keyModifierType}) {
+  async openLink({rootState}, {url, keyModifier, keyModifierType}) {
     if (!url) {
       return ;
     }
@@ -19,6 +20,21 @@ const actions = {
       keyModifierType = _.find(keyModifierTypeList, (_keyModifierType) => {
         return rootState.settings.settings[_keyModifierType] === keyModifier;
       })
+    }
+    if (!rootState.keywords.isDdgSpecialKeyword) {
+      let foundLink = await db.visitedlinks.where({
+        link: url,
+        search_keyword: rootState.keywords.currentKeyword,
+      }).limit(1).first();
+      if (!foundLink) {
+        await db.visitedlinks.add({
+          link: url,
+          search_keyword: rootState.keywords.currentKeyword,
+          timestamp: new Date().valueOf(),
+        });
+      } else {
+        await db.visitedlinks.where({id: foundLink.id}).modify({timestamp: new Date().valueOf()});
+      }
     }
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       let tab = tabs[0];
