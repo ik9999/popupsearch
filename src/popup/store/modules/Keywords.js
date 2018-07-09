@@ -30,9 +30,11 @@ const mutations = {
 
 const actions = {
   async load({commit, state}) {
-    await new Promise(resolveFn => {
-      resolveFn();
-    });
+    let openedKeywordId = _.parseInt(localStorage.getItem('openedKeywordId'));
+    if (_.isFinite(openedKeywordId)) {
+      let foundKeyword = await db.keywords.where({id: openedKeywordId}).limit(1).first();
+      commit('setCurrentKeyword', foundKeyword.name);
+    }
   },
   async updateCurrentKeyword({commit, state}, keyword) {
     commit('setCurrentKeyword', keyword);
@@ -46,7 +48,7 @@ const actions = {
       };
       localStorage.setItem('lastKeywordId', foundKeyword.id);
     }
-    localStorage.setItem('openedKeyword', foundKeyword.id);
+    localStorage.setItem('openedKeywordId', foundKeyword.id);
   },
   loadRemoteKeys({rootState, commit, state}, keyword) {
     return (new Promise((resolveFn) => {

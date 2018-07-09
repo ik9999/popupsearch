@@ -2,6 +2,7 @@ import _ from 'lodash';
 import googleHTML from '../../search/googleHTML.js';
 import Vue from 'vue';
 import querystring from 'querystring-browser';
+import db from '../../helper/Database.js';
 
 const state = {
   searches: {},
@@ -10,7 +11,10 @@ const state = {
   isEnd: false,
   isError: false,
   errorMsg: undefined,
-  errorPageUrl: undefined
+  errorPageUrl: undefined,
+  areResultsFromCache: false,
+  resCacheTimestamp: undefined,
+  resCacheId: undefined
 };
 
 const getters = {
@@ -51,6 +55,13 @@ const mutations = {
     state.isError = val;
     state.errorMsg = msg;
     state.errorPageUrl = url;
+  },
+  setAreResultsFromCache(state, val) {
+    state.areResultsFromCache = Boolean(val);
+  },
+  setAreResCacheData(state, {id, timestamp}) {
+    state.resCacheId = id;
+    state.resCacheTimestamp = timestamp;
   }
 };
 
@@ -84,6 +95,24 @@ const actions = {
       }, {root:true});
     }
     commit('setIsLoading', true);
+    let isResInDb = undefined;
+    if (!forceNew) {
+      let foundDbRes = await db.results.where({
+        keyword,
+        search_engine: searchEngine,
+      }).limit(1).first();
+      if (foundDbRes) {
+        let links = JSON.parse(foundDbRes.results_json_str);
+        commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
+        commit('setAreResultsFromCache', true);
+        commit('setAreResCacheData', {id: foundDbRes.id, timestamp: foundDbRes.timestamp});
+        commit('ui/setFocusedElement', 'searchresults', {root:true});
+        commit('setIsLoading', false);
+        return ;
+      }
+      isResInDb = false;
+    }
+    commit('setAreResultsFromCache', false);
     switch (searchEngine) {
     case 'googleHTML':
       try {
@@ -107,6 +136,33 @@ const actions = {
       commit('setIsLoading', false);
       break;
     }
+    
+
+    let foundDbRes;
+    let resDbId;
+    if (_.isUndefined(isResInDb)) {
+      foundDbRes = await db.results.where({
+        keyword,
+        search_engine: searchEngine,
+      }).limit(1).first();
+      resDbId = foundDbRes.id;
+    }
+    let resultsJsonStr = JSON.stringify(getters.getCurrentSearchResults);
+    if (isResInDb === false || !foundDbRes) {
+      resDbId = await db.results.add({
+        keyword,
+        search_engine: searchEngine,
+        results_json_str: resultsJsonStr,
+        timestamp: new Date().valueOf(),
+      });
+    } else {
+      let modifiedData = {results_json_str: resultsJsonStr};
+      if (start === 0) {
+        modifiedData.timestamp = new Date().valueOf();
+      }
+      await db.results.where({id: resDbId}).modify(modifiedData);
+    }
+    commit('setAreResCacheData', {id: resDbId});
   }
 };
 

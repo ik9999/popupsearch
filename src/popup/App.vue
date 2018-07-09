@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import _ from 'lodash';
 
 export default {
   data() {
@@ -12,11 +13,18 @@ export default {
       loaded: false
     }
   },
-  created() {
-    this.$store.dispatch('settings/load').then(() => {
-      this.loaded = true;
-      return this.$store.dispatch('keywords/load');
-    });
+  async created() {
+    await this.$store.dispatch('settings/load');
+    await this.$store.dispatch('keywords/load');
+    if (!_.isEmpty(this.$store.state.keywords.currentKeyword)) {
+      try {
+        await this.$store.dispatch('searchresults/search', {
+          keyword: this.$store.state.keywords.currentKeyword,
+        });
+      } catch(e) {
+      }
+    }
+    this.loaded = true;
   }
 }
 </script>

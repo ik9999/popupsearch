@@ -1,4 +1,4 @@
-import PageIndex from './pages/Index'
+import PageIndex from '../components/pages/Index'
 
 export default [
   {

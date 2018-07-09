@@ -3,7 +3,7 @@
     <div class="SearchInput-inputCont">
       <input
         type="text" class="SearchInput-input form-control" id="auto1" placeholder=""
-        v-on:keyup.esc.stop.prevent="unfocus" v-on:focus="onFocus"
+        v-on:keyup.esc.stop.prevent="unfocus" v-on:focus="onFocus" v-model="keyword"
       />
     </div>
     <button type="button" class="btn btn-primary SearchInput-button" @click.prevent="submit(keyword, $event)">
@@ -71,6 +71,7 @@ export default {
     }
   },
   mounted() {
+    this.keyword = this.$store.state.keywords.currentKeyword;
     this.$elem = $('.SearchInput-input');
     this.$elem.autocomplete({
       appendMethod: 'replace',
@@ -90,7 +91,9 @@ export default {
         return true;
       },
     });
-    this.$elem.focus();
+    if (this.focusedElement === 'searchinput') {
+      this.$elem.focus();
+    }
     this.$elem.on('selected.xdsoft', (event, keyword) => {
       setTimeout(() => {
         this.submit(keyword, event);

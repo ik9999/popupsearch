@@ -140,6 +140,12 @@ export default {
     }
   },
   mounted() {
+    if (this.currentSearchResults.length > 0) {
+      this.updateControls();
+    }
+    if (this.focusedElement === 'searchresults') {
+      this.$el.focus();
+    }
     let $this = $(this.$el);
     this.reservedKeys = _.map([
       this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey,
