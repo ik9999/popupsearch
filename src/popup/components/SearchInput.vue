@@ -41,6 +41,9 @@ export default {
       this.$elem.blur();
     },
     onFocus() {
+      if (this.$elem) {
+        this.$elem.select();
+      }
       this.$store.commit('ui/setFocusedElement', 'searchinput');
     },
     submit(keyword, event) {

@@ -1,12 +1,14 @@
 <template>
-  <div class="SearchResults" tabindex="-1" @scroll="updateControls" @focus="onFocus">
+  <div class="SearchResults" tabindex="-1" @scroll="onScroll" @focus="onFocus">
     <template v-for="(resultData, index) in currentSearchResults">
       <search-result 
         :result="resultData" class="SearchResults-result" :ref="'element' + index"
       >
       </search-result>
     </template>
-    <h5 class="text-center" v-if="isShowingResults && currentSearchResults.length === 0">No results found</h5>
+    <h5 class="text-center" v-if="isShowingResults && currentSearchResults.length === 0">
+      No results found
+    </h5>
   </div>
 </template>
 
@@ -32,6 +34,8 @@ export default {
   computed: {
     ...mapState({
       focusedElement: state => state.ui.focusedElement,
+      scrollPos: state => state.ui.scrollPos,
+
       isShowingResults: state => state.searchresults.isShowingResults,
       isLoadingResults: state => state.searchresults.isLoadingResults,
       isEnd: state => state.searchresults.isEnd,
@@ -62,6 +66,9 @@ export default {
         this.$nextTick(() => {
           this.updateControls();
           this.$el.focus();
+          if (this.scrollPos > 0) {
+            this.$el.scrollTop = this.scrollPos;
+          }
         });
       }
     }
@@ -137,11 +144,21 @@ export default {
       if (scrollHeight - scrollOffset - elHeight < 200 && !this.isLoadingResults && !this.isEnd) {
         this.$store.dispatch('searchresults/search', {});
       }
+    },
+    onScroll() {
+      this.updateControls();
+      const pos = this.$el.scrollTop;
+      console.log(pos);
+      this.$store.dispatch('ui/setScrollPos', {pos});
     }
   },
   mounted() {
     if (this.currentSearchResults.length > 0) {
       this.updateControls();
+    }
+    console.log(this.scrollPos);
+    if (this.scrollPos) {
+      this.$el.scrollTop = this.scrollPos;
     }
     if (this.focusedElement === 'searchresults') {
       this.$el.focus();

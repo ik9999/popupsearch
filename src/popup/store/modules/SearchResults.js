@@ -13,8 +13,11 @@ const state = {
   errorMsg: undefined,
   errorPageUrl: undefined,
   areResultsFromCache: false,
-  resCacheTimestamp: undefined,
-  resCacheId: undefined
+  currentResultDbObj: {
+    id: undefined,
+    timestamp: undefined,
+    scrollPos: undefined
+  }
 };
 
 const getters = {
@@ -59,9 +62,10 @@ const mutations = {
   setAreResultsFromCache(state, val) {
     state.areResultsFromCache = Boolean(val);
   },
-  setAreResCacheData(state, {id, timestamp}) {
-    state.resCacheId = id;
-    state.resCacheTimestamp = timestamp;
+  setResCacheData(state, {id, timestamp, scrollPos}) {
+    state.currentResultDbObj.id = id;
+    state.currentResultDbObj.timestamp = timestamp;
+    state.currentResultDbObj.scrollPos = scrollPos;
   }
 };
 
@@ -85,6 +89,7 @@ const actions = {
     if (!_.isString(keyword) || _.isEmpty(keyword)) {
       return Promise.resolve([]);
     }
+    commit('setIsLoading', true);
     await dispatch('keywords/updateCurrentKeyword', keyword, {root:true});
     if (rootState.keywords.isDdgSpecialKeyword) {
       let keywordEscaped = querystring.escape(keyword);
@@ -94,9 +99,8 @@ const actions = {
         keyModifier: params.keyModifier,
       }, {root:true});
     }
-    commit('setIsLoading', true);
     let isResInDb = undefined;
-    if (!forceNew) {
+    if (!forceNew && start === 0) {
       let foundDbRes = await db.results.where({
         keyword,
         search_engine: searchEngine,
@@ -105,8 +109,12 @@ const actions = {
         let links = JSON.parse(foundDbRes.results_json_str);
         commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
         commit('setAreResultsFromCache', true);
-        commit('setAreResCacheData', {id: foundDbRes.id, timestamp: foundDbRes.timestamp});
+        commit('setResCacheData', {
+          id: foundDbRes.id, timestamp: foundDbRes.timestamp,
+          scrollPos: foundDbRes.last_scrolling_position
+        });
         commit('ui/setFocusedElement', 'searchresults', {root:true});
+        dispatch('ui/setScrollPos', {pos: foundDbRes.last_scrolling_position}, {root:true});
         commit('setIsLoading', false);
         return ;
       }
@@ -154,6 +162,7 @@ const actions = {
         search_engine: searchEngine,
         results_json_str: resultsJsonStr,
         timestamp: new Date().valueOf(),
+        last_scrolling_position: 0
       });
     } else {
       let modifiedData = {results_json_str: resultsJsonStr};
@@ -162,7 +171,15 @@ const actions = {
       }
       await db.results.where({id: resDbId}).modify(modifiedData);
     }
-    commit('setAreResCacheData', {id: resDbId});
+    commit('setResCacheData', {id: resDbId});
+  },
+  async updateDbScrollPos({state}, {pos}) {
+    if (!state.currentResultDbObj.id || state.currentResultDbObj.scrollPos === pos) {
+      return ;
+    }
+    await db.results.where({id: state.currentResultDbObj.id}).modify({
+      last_scrolling_position: pos
+    });
   }
 };
 
