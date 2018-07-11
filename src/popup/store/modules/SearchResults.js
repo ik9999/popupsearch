@@ -15,7 +15,6 @@ const state = {
   areResultsFromCache: false,
   currentResultDbObj: {
     id: undefined,
-    timestamp: undefined,
     scrollPos: undefined
   }
 };
@@ -62,9 +61,8 @@ const mutations = {
   setAreResultsFromCache(state, val) {
     state.areResultsFromCache = Boolean(val);
   },
-  setResCacheData(state, {id, timestamp, scrollPos}) {
+  setResCacheData(state, {id, scrollPos}) {
     state.currentResultDbObj.id = id;
-    state.currentResultDbObj.timestamp = timestamp;
     state.currentResultDbObj.scrollPos = scrollPos;
   }
 };
@@ -90,7 +88,7 @@ const actions = {
       return Promise.resolve([]);
     }
     commit('setIsLoading', true);
-    await dispatch('keywords/updateCurrentKeyword', keyword, {root:true});
+    await dispatch('keywords/updateCurrentKeyword', {keyword, forceNew}, {root:true});
     if (rootState.keywords.isDdgSpecialKeyword) {
       let keywordEscaped = querystring.escape(keyword);
       let url = `https://duckduckgo.com/?q=${keywordEscaped}`;
@@ -110,7 +108,7 @@ const actions = {
         commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
         commit('setAreResultsFromCache', true);
         commit('setResCacheData', {
-          id: foundDbRes.id, timestamp: foundDbRes.timestamp,
+          id: foundDbRes.id,
           scrollPos: foundDbRes.last_scrolling_position
         });
         commit('ui/setFocusedElement', 'searchresults', {root:true});
@@ -139,6 +137,11 @@ const actions = {
           msg: err.message,
           url: err.url
         });
+        setTimeout(() => {
+          commit('setError', {
+            val: false
+          });
+        }, 5000);
         commit('appendSearchResults', {searchEngine, keyword, links: [], forceNew, start});
       }
       commit('setIsLoading', false);
@@ -161,15 +164,10 @@ const actions = {
         keyword,
         search_engine: searchEngine,
         results_json_str: resultsJsonStr,
-        timestamp: new Date().valueOf(),
         last_scrolling_position: 0
       });
     } else {
-      let modifiedData = {results_json_str: resultsJsonStr};
-      if (start === 0) {
-        modifiedData.timestamp = new Date().valueOf();
-      }
-      await db.results.where({id: resDbId}).modify(modifiedData);
+      await db.results.where({id: resDbId}).modify({results_json_str: resultsJsonStr});
     }
     commit('setResCacheData', {id: resDbId});
   },

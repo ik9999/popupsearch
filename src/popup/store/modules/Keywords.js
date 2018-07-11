@@ -3,7 +3,7 @@ import axios from 'axios';
 import db from '../../helper/Database.js';
 
 const state = {
-  historyKeywords: [],
+  lastKeywords: [],
   remoteKeywords: [],
   currentKeyword: '',
   isDdgSpecialKeyword: false,
@@ -20,7 +20,6 @@ const mutations = {
   },
   setCurrentKeyword(state, keyword) {
     state.currentKeyword = keyword;
-    state.historyKeywords.push(keyword);
     state.isDdgSpecialKeyword = (keyword[0] === '!' || keyword[0] === '=');
   },
   setError(state, message) {
@@ -36,19 +35,22 @@ const actions = {
       commit('setCurrentKeyword', foundKeyword.name);
     }
   },
-  async updateCurrentKeyword({commit, state}, keyword) {
+  async updateCurrentKeyword({commit, state}, {keyword, forceNew}) {
     commit('setCurrentKeyword', keyword);
     let foundKeyword = await db.keywords.where({name: keyword}).limit(1).first();
-    if (!foundKeyword) {
-      foundKeyword = {
-        id: await db.keywords.add({
-          name: keyword,
-          timestamp: new Date().valueOf(),
-        })
-      };
-      localStorage.setItem('lastKeywordId', foundKeyword.id);
+    if (foundKeyword && forceNew) {
+      await db.keywords.where({id: foundKeyword.id}).delete();
     }
-    localStorage.setItem('openedKeywordId', foundKeyword.id);
+    if (!foundKeyword || forceNew) {
+      let id = await db.keywords.add({
+        name: keyword,
+        timestamp: new Date().valueOf(),
+      });
+      localStorage.setItem('lastKeywordId', id);
+      localStorage.setItem('openedKeywordId', id);
+    } else {
+      localStorage.setItem('openedKeywordId', foundKeyword.id);
+    }
   },
   loadRemoteKeys({rootState, commit, state}, keyword) {
     return (new Promise((resolveFn) => {
@@ -106,6 +108,9 @@ const actions = {
       return Promise.reject(new Error(msg));
     });
   },
+  async initHistory() {
+    //load initial data for history
+  }
 };
 
 export default {

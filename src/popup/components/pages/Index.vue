@@ -3,10 +3,14 @@
     <search-input></search-input>
     <search-results ref="SearchResults" class="Index-searchResults"></search-results>
     <div class="row Index-uiRow">
-      <div class="col-4" v-if="!isError"></div>
-      <div class="col-4 text-center" v-if="!isError">
-        <pulse-loader :loading="isLoadingResults" :color="'#007bff'" :size="'11px'"></pulse-loader>
-      </div>
+      <template v-if="!isError">
+        <div class="col-4">
+          <router-link to="/history">History</router-link>
+        </div>
+        <div class="col-4 text-center">
+          <pulse-loader :loading="isLoadingResults" :color="'#007bff'" :size="'11px'"></pulse-loader>
+        </div>
+      </template>
       <div class="col-12 text-center text-danger" v-if="isError">
         {{ errorMsg }}
         <a

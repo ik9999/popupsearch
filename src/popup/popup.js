@@ -7,6 +7,7 @@ import router from './router'
 
 import fontawesome from '@fortawesome/fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
+import Datatable from 'vue2-datatable-component';
 
 if (process.env.NODE_ENV !== 'production') {
   Vue.config.devtools = true;
@@ -14,6 +15,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 fontawesome.library.add(faSearch)
 window.store = store;
+
+Vue.use(Datatable);
 
 /* eslint-disable no-new */
 window.App = new Vue({
