@@ -17,6 +17,7 @@ import _ from 'lodash';
 import { mapGetters, mapState } from 'vuex';
 import SearchResult from './SearchResult.vue';
 import Mousetrap from 'mousetrap';
+import KeyboardLayout from '../helper/KeyboardLayout.js';
 
 export default {
   data() {
@@ -148,7 +149,6 @@ export default {
     onScroll() {
       this.updateControls();
       const pos = this.$el.scrollTop;
-      console.log(pos);
       this.$store.dispatch('ui/setScrollPos', {pos});
     }
   },
@@ -156,7 +156,6 @@ export default {
     if (this.currentSearchResults.length > 0) {
       this.updateControls();
     }
-    console.log(this.scrollPos);
     if (this.scrollPos) {
       this.$el.scrollTop = this.scrollPos;
     }
@@ -188,12 +187,13 @@ export default {
       if (_.includes(this.reservedKeys, key)) {
         return ;
       }
+      let layoutKeys = KeyboardLayout.getMatchingKeys(key);
       _.each(this.$store.state.settings.keyModifierList, (keyModifier) => {
-        let modifiedkey = key;
+        let modifiedKeys = layoutKeys;
         if (keyModifier !== '') {
-          modifiedkey = `${keyModifier.toLowerCase()}+${key}`;
+          modifiedKeys = _.map(modifiedKeys, key => `${keyModifier.toLowerCase()}+${key}`);
         }
-        this.HI.bind(modifiedkey, (event) => {
+        this.HI.bind(modifiedKeys, (event) => {
           this.$store.dispatch('links/openLink', {url: this.urlByKeys[key], keyModifier});
           if (this.callbackFnByKeys[key]) {
             this.callbackFnByKeys[key]();
@@ -202,33 +202,43 @@ export default {
       });
     });
     let lastScrollPos;
-    this.HI.bind([this.scrollUpKey, this.scrollDownKey, 'up', 'down'], (event) => {
+    let scrollUpKeyList = _.concat(KeyboardLayout.getMatchingKeys(this.scrollUpKey), 'up');
+    let scrollDownKeyList = _.concat(KeyboardLayout.getMatchingKeys(this.scrollDownKey), 'down');
+    this.HI.bind(scrollUpKeyList, (event) => {
       let scrollPos;
       this.isScrolling = true;
       if (this.lastVisibleResIdx > 0) {
-        if (event.key === this.scrollDownKey || event.key === 'ArrowDown') {
-          if (this.$refs[`element${this.lastVisibleResIdx + 1}`]) {
-            let nextResComp = this.$refs[`element${this.lastVisibleResIdx + 1}`][0];
-            scrollPos = nextResComp.$el.offsetTop + nextResComp.$el.offsetHeight - this.$el.offsetHeight;
-            if (this.lastVisibleResIdx + 1 < this.currentSearchResults.length) {
-              this.lastVisibleResIdx +=1;
-            }
-          } else {
-            scrollPos = this.$el.scrollHeight - this.$el.offsetHeight;
-          }
-        } else if (event.key === this.scrollUpKey || event.key === 'ArrowUp') {
-          if (this.lastVisibleResIdx - 1 >= 0 && this.$refs[`element${this.lastVisibleResIdx - 1}`]) {
-            let prevResComp = this.$refs[`element${this.lastVisibleResIdx - 1}`][0];
-            scrollPos = prevResComp.$el.offsetTop + prevResComp.$el.offsetHeight - this.$el.offsetHeight;
-            if (scrollPos < 0) {
-              scrollPos = 0;
-            }
-            if (this.initialLastVisibleResIdx && this.lastVisibleResIdx - 1 >= this.initialLastVisibleResIdx) {
-              this.lastVisibleResIdx -=1;
-            }
-          } else {
+        if (this.lastVisibleResIdx - 1 >= 0 && this.$refs[`element${this.lastVisibleResIdx - 1}`]) {
+          let prevResComp = this.$refs[`element${this.lastVisibleResIdx - 1}`][0];
+          scrollPos = prevResComp.$el.offsetTop + prevResComp.$el.offsetHeight - this.$el.offsetHeight;
+          if (scrollPos < 0) {
             scrollPos = 0;
           }
+          if (this.initialLastVisibleResIdx && this.lastVisibleResIdx - 1 >= this.initialLastVisibleResIdx) {
+            this.lastVisibleResIdx -=1;
+          }
+        } else {
+          scrollPos = 0;
+        }
+        if (scrollPos !== lastScrollPos) {
+          lastScrollPos = scrollPos;
+          $this.clearQueue().animate({scrollTop: scrollPos}, 200);
+        }
+      }
+      return false;
+    }, 'keydown');
+    this.HI.bind(scrollDownKeyList, (event) => {
+      let scrollPos;
+      this.isScrolling = true;
+      if (this.lastVisibleResIdx > 0) {
+        if (this.$refs[`element${this.lastVisibleResIdx + 1}`]) {
+          let nextResComp = this.$refs[`element${this.lastVisibleResIdx + 1}`][0];
+          scrollPos = nextResComp.$el.offsetTop + nextResComp.$el.offsetHeight - this.$el.offsetHeight;
+          if (this.lastVisibleResIdx + 1 < this.currentSearchResults.length) {
+            this.lastVisibleResIdx +=1;
+          }
+        } else {
+          scrollPos = this.$el.scrollHeight - this.$el.offsetHeight;
         }
         if (scrollPos !== lastScrollPos) {
           lastScrollPos = scrollPos;
