@@ -153,16 +153,6 @@ export default {
     }
   },
   mounted() {
-    if (this.currentSearchResults.length > 0) {
-      this.updateControls();
-    }
-    if (this.scrollPos) {
-      this.$el.scrollTop = this.scrollPos;
-    }
-    if (this.focusedElement === 'searchresults') {
-      this.$el.focus();
-    }
-    let $this = $(this.$el);
     this.reservedKeys = _.map([
       this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey,
       this.jumpTopKey, this.jumpBottomKey, this.focusInputAltKey
@@ -178,6 +168,16 @@ export default {
       return oneCharKeyParts;
     });
     this.reservedKeys = _.without(_.flatten(this.reservedKeys), '', undefined);
+    if (this.currentSearchResults.length > 0) {
+      this.updateControls();
+    }
+    if (this.scrollPos) {
+      this.$el.scrollTop = this.scrollPos;
+    }
+    if (this.focusedElement === 'searchresults') {
+      this.$el.focus();
+    }
+    let $this = $(this.$el);
     this.HI = new Mousetrap(this.$el);
     let allKeys = _.concat(
       Array.from({ length: 26 }, (_, i) => String.fromCharCode('a'.charCodeAt(0) + i)),
@@ -191,7 +191,7 @@ export default {
       _.each(this.$store.state.settings.keyModifierList, (keyModifier) => {
         let modifiedKeys = layoutKeys;
         if (keyModifier !== '') {
-          modifiedKeys = _.map(modifiedKeys, key => `${keyModifier.toLowerCase()}+${key}`);
+          modifiedKeys = [`${keyModifier.toLowerCase()}+${key}`];
         }
         this.HI.bind(modifiedKeys, (event) => {
           this.$store.dispatch('links/openLink', {url: this.urlByKeys[key], keyModifier});
