@@ -259,6 +259,9 @@ export default {
       this.$el.scrollTop = scrollHeight - elHeight;
     });
   },
+  beforeDestroy() {
+    this.HI.reset();
+  },
   components: {
     SearchResult,
   }

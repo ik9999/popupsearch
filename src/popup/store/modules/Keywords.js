@@ -7,7 +7,9 @@ const state = {
   remoteKeywords: [],
   currentKeyword: '',
   isDdgSpecialKeyword: false,
-  error: undefined
+  error: undefined,
+  history: [],
+  historyTotal: 0
 };
 
 const getters = {
@@ -24,6 +26,12 @@ const mutations = {
   },
   setError(state, message) {
     state.error = message;
+  },
+  setHistory(state, list) {
+    state.history = list;
+  },
+  setHistoryTotal(state, total) {
+    state.historyTotal = total;
   }
 };
 
@@ -108,8 +116,15 @@ const actions = {
       return Promise.reject(new Error(msg));
     });
   },
-  async initHistory() {
-    //load initial data for history
+  async updateHistory({rootState, commit, state}, {limit, offset, order, sort}) {
+    if (state.historyTotal === 0) {
+      commit('setHistoryTotal', await db.keywords.count());
+    }
+    let q = db.keywords.orderBy('id');
+    if (order === 'desc') {
+      q = q.reverse();
+    }
+    commit('setHistory', await q.offset(offset).limit(limit).toArray());
   }
 };
 

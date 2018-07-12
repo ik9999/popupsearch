@@ -7,14 +7,13 @@
       />
     </div>
     <button type="button" class="btn btn-primary SearchInput-button" @click.prevent="submit(keyword, $event)">
-      <font-awesome-icon icon="search" />
+      <i class="fa fa-search" />
     </button>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import 'jquery-autocomplete/jquery.autocomplete.js';
 import 'jquery-autocomplete/jquery.autocomplete.css';
 import _ from 'lodash';
@@ -137,8 +136,10 @@ export default {
       return false;
     });
   },
+  beforeDestroy() {
+    this.HI.reset();
+  },
   components: {
-    FontAwesomeIcon
   }
 }
 </script>

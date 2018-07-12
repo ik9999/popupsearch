@@ -91,7 +91,7 @@ export default {
     });
   },
   beforeDestroy() {
-    this.HI.off();
+    this.HI.reset();
   },
   components: {
     SearchInput,
