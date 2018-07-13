@@ -41,12 +41,6 @@
     </div>
     <h3>Shortcuts</h3>
     <div>Dont put spaces. Use '+' for combinations</div>
-    <div class="form-group row mt-3" v-if="false">
-      <label class="col-5 col-form-label">Toggle 'Close after opening a link'</label>
-      <div class="col-7">
-        <input type="text" class="form-control" v-model="settings.toggleClosepopupKey">
-      </div>
-    </div>
     <div class="form-group row mt-3">
       <label class="col-5 col-form-label">Jump to first loaded result</label>
       <div class="col-7">
@@ -117,6 +111,12 @@
       <label class="col-5 col-form-label">Scroll down</label>
       <div class="col-7">
         <input type="text" class="form-control" v-model="settings.scrollDownKey">
+      </div>
+    </div>
+    <div class="form-group row mt-3">
+      <label class="col-5 col-form-label">Open/Close history</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.toggleHistoryKey">
       </div>
     </div>
     <button type="submit" class="btn btn-primary" @click.prevent="save">Save</button>

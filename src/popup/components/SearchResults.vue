@@ -48,6 +48,7 @@ export default {
       closeAfterLink: state => state.settings.settings.closeAfterLink,
       focusInputKey: state => state.settings.settings.focusInputKey,
       focusInputAltKey:  state => state.settings.settings.focusInputAltKey,
+      toggleHistoryKey: state => state.settings.settings.toggleHistoryKey,
     }),
     ...mapGetters({
       currentSearchResults: 'searchresults/getCurrentSearchResults'
@@ -60,18 +61,16 @@ export default {
       }
     },
     currentSearchResults: function(val, oldVal) {
-      if (this.focusedElement === 'searchresults') {
-        if (_.size(oldVal) === 0) {
-          this.initialLastVisibleResIdx = undefined;
-        }
-        this.$nextTick(() => {
-          this.updateControls();
-          this.$el.focus();
-          if (this.scrollPos > 0) {
-            this.$el.scrollTop = this.scrollPos;
-          }
-        });
+      if (_.size(oldVal) === 0) {
+        this.initialLastVisibleResIdx = undefined;
       }
+      this.$nextTick(() => {
+        this.updateControls();
+        this.$el.focus();
+        if (this.scrollPos > 0) {
+          this.$el.scrollTop = this.scrollPos;
+        }
+      });
     }
   },
   methods: {
@@ -155,7 +154,7 @@ export default {
   mounted() {
     this.reservedKeys = _.map([
       this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey,
-      this.jumpTopKey, this.jumpBottomKey, this.focusInputAltKey
+      this.jumpTopKey, this.jumpBottomKey, this.focusInputAltKey, this.toggleHistoryKey
     ], (key) => {
       if (!_.isString(key)) {
         return undefined;

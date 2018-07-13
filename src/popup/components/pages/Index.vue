@@ -41,7 +41,7 @@ export default {
   computed: {
     ...mapState({
       focusedElement: state => state.ui.focusedElement,
-      toggleClosepopupKey: state => state.settings.settings.toggleClosepopupKey,
+      toggleHistoryKey: state => state.settings.settings.toggleHistoryKey,
       closeAfterLink: state => state.settings.settings.closeAfterLink,
       focusInputKey: state => state.settings.settings.focusInputKey,
       focusInputAltKey: state => state.settings.settings.focusInputAltKey,
@@ -73,21 +73,23 @@ export default {
     this.HI.stopCallback = (e) => {
       return false;
     };
-    this.HI.bind(this.toggleClosepopupKey.toLowerCase(), () => {
-      this.$store.commit('settings/setProp', {prop: 'closeAfterLink', val: !this.closeAfterLink});
+    this.HI.bind(this.toggleHistoryKey.toLowerCase(), () => {
+      this.$router.push('/history');
+      return false;
     });
     _.each([this.focusInputKey, this.focusInputAltKey], (key) => {
-      if (key) {
-        let focusInptuKey = key.toLowerCase();
-        this.HI.bind(focusInptuKey, (event) => {
-          if (this.focusedElement === 'searchinput') {
-            this.$store.commit('ui/setFocusedElement', 'searchresults');
-          } else if (this.focusedElement === 'searchresults') {
-            this.$store.commit('ui/setFocusedElement', 'searchinput');
-          }
-          return false;
-        });
+      if (!key) {
+        return ;
       }
+      let focusInptuKey = key.toLowerCase();
+      this.HI.bind(focusInptuKey, (event) => {
+        if (this.focusedElement === 'searchinput') {
+          this.$store.commit('ui/setFocusedElement', 'searchresults');
+        } else if (this.focusedElement === 'searchresults') {
+          this.$store.commit('ui/setFocusedElement', 'searchinput');
+        }
+        return false;
+      });
     });
   },
   beforeDestroy() {

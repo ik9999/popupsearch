@@ -29,7 +29,7 @@
     "mousetrap": "^1.6.2",
     "vue-spinner": "^1.0.3",
     "convert-layout": "^0.7.0",
-    "vue2-datatable-component": "^2.3.1"
+    "vue2-datatable-component": "ik9999/vue2-datatable"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.49",

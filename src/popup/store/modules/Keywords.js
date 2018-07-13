@@ -9,7 +9,13 @@ const state = {
   isDdgSpecialKeyword: false,
   error: undefined,
   history: [],
-  historyTotal: 0
+  historyTotal: 0,
+  historyQuery: {
+    offset: 0,
+    limit: 10,
+    sort: 'timestamp',
+    order: 'desc'
+  }
 };
 
 const getters = {
@@ -32,6 +38,9 @@ const mutations = {
   },
   setHistoryTotal(state, total) {
     state.historyTotal = total;
+  },
+  setQuery(state, val) {
+    state.historyQuery = val;
   }
 };
 
@@ -124,7 +133,13 @@ const actions = {
     if (order === 'desc') {
       q = q.reverse();
     }
-    commit('setHistory', await q.offset(offset).limit(limit).toArray());
+    let list = await q.offset(offset).limit(limit).toArray();
+    await Promise.all(_.map(list, (row) => {
+      return db.visitedlinks.where({search_keyword: row.name}).count().then((count) => {
+        row.links = count;
+      })
+    }));
+    commit('setHistory', list);
   }
 };
 
