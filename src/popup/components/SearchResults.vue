@@ -197,6 +197,7 @@ export default {
           if (this.callbackFnByKeys[key]) {
             this.callbackFnByKeys[key]();
           }
+          return false;
         });
       });
     });

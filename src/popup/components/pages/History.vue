@@ -127,7 +127,7 @@ export default {
     this.HI.bind('right', () => {
       this.$refs.datatable.$refs.pagination.turnPage(1);
     });
-    this.HI.bind(this.toggleHistoryKey.toLowerCase(), () => {
+    this.HI.bind([this.toggleHistoryKey.toLowerCase(), 'esc'], () => {
       this.$router.push('/');
       return false;
     });
