@@ -5,7 +5,7 @@
     <div class="row Index-uiRow">
       <template v-if="!isError">
         <div class="col-4">
-          <router-link to="/history">History</router-link>
+          <router-link to="/history">History [{{ toggleHistoryKey }}]</router-link>
         </div>
         <div class="col-4 text-center">
           <pulse-loader :loading="isLoadingResults" :color="'#007bff'" :size="'11px'"></pulse-loader>

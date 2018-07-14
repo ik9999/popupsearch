@@ -2,6 +2,7 @@
   <div class="History">
     <datatable class="History-datatable" :tbl-class="'History-table'"
       :columns="columns" :data="data" :total="total" :query="query" :HeaderSettings="false"
+      ref="datatable"
     />
   </div>
 </template>
@@ -18,7 +19,7 @@ export default {
       HI: undefined,
       columns: [
         {
-          title: 'Open',
+          title: 'Shortcut',
           field: 'shortcut',
           thClass: 'History-tdShortcut',
           tdClass: 'History-tdShortcut',
@@ -31,7 +32,7 @@ export default {
         },
         {
           title: 'Date',
-          field: 'timestamp',
+          field: 'datetime',
           thClass: 'History-tdDate',
           tdClass: 'History-tdDate',
           sortable: true
@@ -52,7 +53,7 @@ export default {
       history: state => state.keywords.history,
       total: state => state.keywords.historyTotal,
       toggleHistoryKey: state => state.settings.settings.toggleHistoryKey,
-    })
+    }),
   },
   watch: {
     query: {
@@ -63,7 +64,7 @@ export default {
       deep: true
     },
     history() {
-      this.setHotkeys();
+      this.processData();
     }
   },
   created() {
@@ -71,29 +72,61 @@ export default {
     this.$store.dispatch('keywords/updateHistory', this.query);
   },
   methods: {
-    setHotkeys() {
+    getShortcutByIdx(idx) {
+      let shortcut = undefined;
+      if (idx < 9) {
+        shortcut = idx + 1;
+      } else if (idx === 9) {
+        shortcut = 0;
+      } 
+      return shortcut;
+    },
+    openByIdx(idx) {
+      if (!this.data[idx]) {
+        return ;
+      }
+      this.$store.dispatch('searchresults/search', {keyword: this.data[idx].name});
+      this.$store.commit('ui/setFocusedElement', 'searchresults', {root:true});
+      this.$router.push('/');
+    },
+    processData() {
       this.data = _.map(this.history, (obj, idx) => {
-        let shortcut = idx + 1;
-        if (shortcut === 10) {
-          shortcut = 0;
-        }
-        return _.extend({}, obj, {shortcut: `[${shortcut}]`});
+        let date = new Date(obj.timestamp);
+        let dateStr = date.toLocaleDateString('UK');
+        let shortcut = this.getShortcutByIdx(idx);
+        return _.extend({}, obj, {
+          shortcut: !_.isUndefined(shortcut) ? `[${shortcut}]` : '',
+          datetime: `${dateStr} ${date.toLocaleTimeString()}`
+        });
       });
     }
   },
   mounted() {
     let that = this;
-    this.setHotkeys();
+    this.processData();
     $(this.$el).on('click', 'td', function() {
       let idx = $(this).closest('tr').index();
-      that.$store.dispatch('searchresults/search', {keyword: that.data[idx].name});
-      that.$store.commit('ui/setFocusedElement', 'searchresults', {root:true});
-      that.$router.push('/');
+      that.openByIdx(idx);
     });
     this.HI = new Mousetrap();
     this.HI.stopCallback = (e) => {
       return false;
     };
+    _.each(_.range(0, 10), (idx) => {
+      let shortcut = this.getShortcutByIdx(idx);
+      if (!shortcut) {
+        return ;
+      }
+      this.HI.bind(String(shortcut), () => {
+        that.openByIdx(idx);
+      });
+    });
+    this.HI.bind('left', () => {
+      this.$refs.datatable.$refs.pagination.turnPage(-1);
+    });
+    this.HI.bind('right', () => {
+      this.$refs.datatable.$refs.pagination.turnPage(1);
+    });
     this.HI.bind(this.toggleHistoryKey.toLowerCase(), () => {
       this.$router.push('/');
       return false;
@@ -138,11 +171,12 @@ export default {
       padding-right: 0.25rem
       float: left
   &-tdName
-    width: 60%
+    width: 48%
   &-tdDate
-    width: 15%
+    width: 25%
+    white-space: nowrap
   &-tdShortcut
-    width: 10%
+    width: 12%
   &-tdLinks
     width: 15%
     text-align: center
