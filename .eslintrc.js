@@ -1,11 +1,11 @@
 module.exports = {
   extends: [
-    'plugin:vue-libs/recommended', // or 'plugin:vue/base'
+    'plugin:vue/recommended', // or 'plugin:vue/base'
     'eslint:recommended'
   ],
   root: true,
-  parser: 'babel-eslint',
   parserOptions: {
+    parser: 'babel-eslint',
     ecmaVersion: 2017,
     sourceType: 'module'
   },

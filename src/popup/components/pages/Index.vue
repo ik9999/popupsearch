@@ -5,10 +5,15 @@
     <div class="row Index-uiRow">
       <template v-if="!isError">
         <div class="col-4">
-          <router-link to="/history">History [{{ toggleHistoryKey }}]</router-link>
+          <i class="fa fa-arrow-left" />
+          <router-link to="/history" >History [{{ toggleHistoryKey }}]</router-link>
         </div>
         <div class="col-4 text-center">
           <pulse-loader :loading="isLoadingResults" :color="'#007bff'" :size="'11px'"></pulse-loader>
+        </div>
+        <div class="col-4 text-right">
+          <i class="fa fa-arrow-right" />
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-prefix="fa" data-icon="arrow-right" viewBox="0 0 535.28589 436.74945" width="11.5" height="11.5"><path d="M190.5 29.25l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 201.35c9.4 9.4 9.4 24.6 0 33.9l-194.4 194.4c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3l120.5-114.8H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 63.55c-9.8-9.3-10-24.8-.4-34.3z" fill="currentColor"/><path d="M467.0192042 18.4296324v400.1319872c0 10.03967532 7.6458669 18.1878176 17.0666672 18.1878176h34.1333344c9.4208003 0 17.0666672-8.14814228 17.0666672-18.1878176V18.4296324c0-10.03967532-7.6458669-18.1878176-17.0666672-18.1878176h-34.1333344c-9.4208003 0-17.0666672 8.14814228-17.0666672 18.1878176z" fill="currentColor" class="active-path"/></svg>
         </div>
       </template>
       <div class="col-12 text-center text-danger" v-if="isError">
@@ -113,10 +118,20 @@ export default {
     height: calc(100% - 62px)
     margin-top: 4px
   &-uiRow
-    height: 16px
+    height: 20px
     font-size: 11px
+    > div
+      svg
+        position: relative
+        top: -2px
+        cursor: pointer
+        color: #007bff
+      line-height: 20px
   &-options
     line-height: 16px
   &-newTabCb
     margin-top: 2px;
+  &-iconToNewestRes
+    height: 10px
+    width: 15px
 </style>

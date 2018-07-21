@@ -60,7 +60,8 @@ export default {
       }
       this.$store.dispatch('searchresults/search', {
         keyword,
-        keyModifier
+        keyModifier,
+        forceUpdateDbTime: true
       });
       this.$store.commit('ui/setFocusedElement', 'searchresults');
     }

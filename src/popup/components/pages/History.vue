@@ -16,6 +16,7 @@ import Mousetrap from 'mousetrap';
 export default {
   data() {
     return {
+      keepFocusInterval: undefined,
       HI: undefined,
       columns: [
         {
@@ -131,8 +132,16 @@ export default {
       this.$router.push('/');
       return false;
     });
+    let tableBodyEl = this.$el.querySelector('tbody');
+    tableBodyEl.setAttribute('tabindex', '-1')
+    if (tableBodyEl) {
+      this.keepFocusInterval = setInterval(() => {
+        tableBodyEl.focus();
+      }, 400);
+    }
   },
   beforeDestroy() {
+    window.clearInterval(this.keepFocusInterval);
     this.HI.reset();
   }
 }
@@ -159,6 +168,7 @@ export default {
       clear: both
     thead th
       height: 50px
+      border-top: none
     tbody
       height: 490px
       overflow-y: auto

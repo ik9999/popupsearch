@@ -35,5 +35,5 @@ body, .App
   height: 600px
   overflow: hidden
 .App
-  padding: 4px 0
+  padding: 4px 0 0 0
 </style>

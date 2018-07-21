@@ -68,27 +68,31 @@ const mutations = {
 };
 
 const actions = {
-  load({commit, state}) {
+  load() {
     return new Promise(resolveFn => {
       resolveFn();
     });
   },
-  async search({rootState, commit, state, dispatch, getters}, params) {
+  async search({rootState, commit, dispatch, getters}, params) {
     if (!params.keyword) {
       params.keyword = rootState.keywords.currentKeyword;
       params.start = getters.getCurrentSearchResults.length + 1;
     }
     params = _.extend({
       start: 0,
-      forceNew: false
+      forceNew: false,
+      forceUpdateDbTime: false
     }, params);
     let searchEngine = rootState.settings.settings.searchEngine;
-    let {keyword, start, forceNew} = params;
+    let {keyword, start, forceNew, forceUpdateDbTime} = params;
     if (!_.isString(keyword) || _.isEmpty(keyword)) {
       return Promise.resolve([]);
     }
     commit('setIsLoading', true);
-    await dispatch('keywords/updateCurrentKeyword', {keyword, forceNew}, {root:true});
+    await dispatch('keywords/updateCurrentKeyword', {
+      keyword,
+      forceNew: forceNew || forceUpdateDbTime
+    }, {root:true});
     if (rootState.keywords.isDdgSpecialKeyword) {
       let keywordEscaped = querystring.escape(keyword);
       let url = `https://duckduckgo.com/?q=${keywordEscaped}`;

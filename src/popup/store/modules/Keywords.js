@@ -45,7 +45,7 @@ const mutations = {
 };
 
 const actions = {
-  async load({commit, state}) {
+  async load({commit}) {
     let openedKeywordId = _.parseInt(localStorage.getItem('openedKeywordId'));
     if (_.isFinite(openedKeywordId)) {
       let foundKeyword = await db.keywords.where({id: openedKeywordId}).limit(1).first();
@@ -55,21 +55,28 @@ const actions = {
   async updateCurrentKeyword({commit, state}, {keyword, forceNew}) {
     commit('setCurrentKeyword', keyword);
     let foundKeyword = await db.keywords.where({name: keyword}).limit(1).first();
-    if (foundKeyword && forceNew) {
-      await db.keywords.where({id: foundKeyword.id}).delete();
+    let id;
+
+    if (foundKeyword) {
+      id = foundKeyword.id;
+      if (forceNew) {
+        await db.keywords.where({id: foundKeyword.id}).delete();
+      }
     }
+
     if (!foundKeyword || forceNew) {
-      let id = await db.keywords.add({
+      id = await db.keywords.add({
         name: keyword,
         timestamp: new Date().valueOf(),
       });
       localStorage.setItem('lastKeywordId', id);
+    }
+
+    if (!state.isDdgSpecialKeyword) {
       localStorage.setItem('openedKeywordId', id);
-    } else {
-      localStorage.setItem('openedKeywordId', foundKeyword.id);
     }
   },
-  loadRemoteKeys({rootState, commit, state}, keyword) {
+  loadRemoteKeys({rootState, commit}, keyword) {
     return (new Promise((resolveFn) => {
       if (!_.isString(keyword) || _.isEmpty(keyword)) {
         return resolveFn([]);
@@ -125,7 +132,7 @@ const actions = {
       return Promise.reject(new Error(msg));
     });
   },
-  async updateHistory({rootState, commit, state}, {limit, offset, order, sort}) {
+  async updateHistory({commit, state}, {limit, offset, order}) {
     if (state.historyTotal === 0) {
       commit('setHistoryTotal', await db.keywords.count());
     }
