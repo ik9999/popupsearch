@@ -7,7 +7,10 @@ export default {
     if (_.isFinite(_.parseInt(key)) || String(key).length !== 1) {
       return keys;
     }
-    _.each(layouts, (obj) => {
+    _.each(layouts, (obj, key) => {
+      if (key === 'dvorak' || key === 'colemak') {
+        return ;
+      }
       let matchingKey = obj.fromEn(key);
       if (_.isString(matchingKey) && !_.isEmpty(matchingKey)) {
         keys.push(matchingKey);
