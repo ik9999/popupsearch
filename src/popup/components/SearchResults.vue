@@ -49,6 +49,9 @@ export default {
       focusInputKey: state => state.settings.settings.focusInputKey,
       focusInputAltKey:  state => state.settings.settings.focusInputAltKey,
       toggleHistoryKey: state => state.settings.settings.toggleHistoryKey,
+      openPrevResult: state => state.settings.settings.openPrevResult,
+      openNextResult: state => state.settings.settings.openNextResult,
+      openLastResult: state => state.settings.settings.openLastResult,
     }),
     ...mapGetters({
       currentSearchResults: 'searchresults/getCurrentSearchResults'
@@ -155,8 +158,7 @@ export default {
     this.reservedKeys = _.map([
       this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey,
       this.jumpTopKey, this.jumpBottomKey, this.focusInputAltKey, this.toggleHistoryKey,
-      this.$store.state.settings.settings.openPrevResult, this.$store.state.settings.settings.openNextResult, 
-      this.$store.state.settings.settings.openLastResult, 
+      this.openPrevResult, this.openNextResult, this.openLastResult, 
     ], (key) => {
       if (!_.isString(key)) {
         return undefined;
@@ -259,6 +261,18 @@ export default {
       const scrollHeight = this.$el.scrollHeight;
       const elHeight = this.$el.offsetHeight;
       this.$el.scrollTop = scrollHeight - elHeight;
+    });
+    this.HI.bind(this.openPrevResult, () => {
+      this.$store.dispatch('keywords/goPrev');
+      return false;
+    });
+    this.HI.bind(this.openNextResult, (event) => {
+      this.$store.dispatch('keywords/goNext');
+      return false;
+    });
+    this.HI.bind(this.openLastResult.toLowerCase(), () => {
+      this.$store.dispatch('keywords/goLast');
+      return false;
     });
   },
   beforeDestroy() {

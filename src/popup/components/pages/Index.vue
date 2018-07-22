@@ -67,9 +67,6 @@ export default {
       isLoadingResults: state => state.searchresults.isLoadingResults,
       errorMsg: state => state.searchresults.errorMsg,
       errorPageUrl: state => state.searchresults.errorPageUrl,
-      openPrevResult: state => state.settings.settings.openPrevResult,
-      openNextResult: state => state.settings.settings.openNextResult,
-      openLastResult: state => state.settings.settings.openLastResult,
     }),
     isError() {
       return this.$store.state.searchresults.isError || this.$store.state.keywords.error;
@@ -116,18 +113,6 @@ export default {
     };
     this.HI.bind(this.toggleHistoryKey.toLowerCase(), () => {
       this.$router.push('/history');
-      return false;
-    });
-    this.HI.bind(this.openPrevResult, () => {
-      this.goPrev();
-      return false;
-    });
-    this.HI.bind(this.openNextResult, (event) => {
-      this.goNext();
-      return false;
-    });
-    this.HI.bind(this.openLastResult.toLowerCase(), () => {
-      this.goLast();
       return false;
     });
     _.each([this.focusInputKey, this.focusInputAltKey], (key) => {
