@@ -2,10 +2,14 @@ import _ from 'lodash';
 import axios from 'axios';
 import db from '../../helper/Database.js';
 
+let isDdgSpecialKeyword = keyword => keyword[0] === '!' || keyword[0] === '=';
+
 const state = {
   lastKeywords: [],
   remoteKeywords: [],
-  currentKeyword: '',
+  currentKeyword: undefined, //{name: string, id: number}
+  lastNonRedirectKeywordId: undefined,
+  oldestKeywordId: undefined,
   isDdgSpecialKeyword: false,
   error: undefined,
   history: [],
@@ -26,9 +30,17 @@ const mutations = {
     state.error = undefined;
     state.remoteKeywords = keywords;
   },
-  setCurrentKeyword(state, keyword) {
-    state.currentKeyword = keyword;
-    state.isDdgSpecialKeyword = (keyword[0] === '!' || keyword[0] === '=');
+  setCurrentKeyword(state, val) {
+    state.currentKeyword = val;
+    if (val.name) {
+      state.isDdgSpecialKeyword = isDdgSpecialKeyword(val.name);
+    }
+  },
+  setLastNonRedirectKeywordId(state, id) {
+    state.lastNonRedirectKeywordId = id;
+  },
+  setOldestKeywordId(state, id) {
+    state.oldestKeywordId = id;
   },
   setError(state, message) {
     state.error = message;
@@ -49,11 +61,18 @@ const actions = {
     let openedKeywordId = _.parseInt(localStorage.getItem('openedKeywordId'));
     if (_.isFinite(openedKeywordId)) {
       let foundKeyword = await db.keywords.where({id: openedKeywordId}).limit(1).first();
-      commit('setCurrentKeyword', foundKeyword.name);
+      commit('setCurrentKeyword', foundKeyword);
+    }
+    let oldestKeyword = await db.keywords.limit(1).first();
+    if (oldestKeyword) {
+      commit('setOldestKeywordId', oldestKeyword.id);
+    }
+    let lastNonRedirectKeywordId = _.parseInt(localStorage.getItem('lastNonRedirectKeywordId'));
+    if (_.isFinite(lastNonRedirectKeywordId)) {
+      commit('setLastNonRedirectKeywordId', lastNonRedirectKeywordId);
     }
   },
   async updateCurrentKeyword({commit, state}, {keyword, forceNew}) {
-    commit('setCurrentKeyword', keyword);
     let foundKeyword = await db.keywords.where({name: keyword}).limit(1).first();
     let id;
 
@@ -72,7 +91,12 @@ const actions = {
       localStorage.setItem('lastKeywordId', id);
     }
 
+    commit('setCurrentKeyword', {name: keyword, id});
     if (!state.isDdgSpecialKeyword) {
+      if (!foundKeyword || forceNew) {
+        localStorage.setItem('lastNonRedirectKeywordId', id);
+        commit('setLastNonRedirectKeywordId', id);
+      }
       localStorage.setItem('openedKeywordId', id);
     }
   },
@@ -147,6 +171,58 @@ const actions = {
       })
     }));
     commit('setHistory', list);
+  },
+  async goPrev({dispatch, state}) {
+    if (
+      !state.oldestKeywordId || !state.currentKeyword || state.currentKeyword.id <= state.oldestKeywordId
+    ) {
+      return ;
+    }
+    let id = state.currentKeyword.id;
+    let keyword;
+    do {
+      id -= 1;
+      let foundKeyword = await db.keywords.where({id}).limit(1).first();
+      keyword = undefined;
+      if (foundKeyword) {
+        keyword = foundKeyword.name;
+      }
+    } while (keyword && isDdgSpecialKeyword(keyword) && id >= state.oldestKeywordId);
+    if (keyword) {
+      dispatch('searchresults/search', {keyword}, {root:true});
+    }
+  },
+  async goNext({dispatch, state}) {
+    if (
+      !state.lastNonRedirectKeywordId || !state.currentKeyword ||
+      state.currentKeyword.id >= state.lastNonRedirectKeywordId
+    ) {
+      return ;
+    }
+    let id = state.currentKeyword.id;
+    let keyword;
+    do {
+      id += 1;
+      let foundKeyword = await db.keywords.where({id}).limit(1).first();
+      keyword = undefined;
+      if (foundKeyword) {
+        keyword = foundKeyword.name;
+      }
+    } while (keyword && isDdgSpecialKeyword(keyword) && id <= state.lastNonRedirectKeywordId);
+    if (keyword) {
+      dispatch('searchresults/search', {keyword}, {root:true});
+    }
+  },
+  async goLast({dispatch, state}) {
+    if (!state.lastNonRedirectKeywordId) {
+      return ;
+    }
+    let foundKeyword = await db.keywords.where({
+      id: state.lastNonRedirectKeywordId
+    }).limit(1).first();
+    if (foundKeyword) {
+      dispatch('searchresults/search', {keyword: foundKeyword.name}, {root:true});
+    }
   }
 };
 

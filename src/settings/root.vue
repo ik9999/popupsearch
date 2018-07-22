@@ -119,6 +119,24 @@
         <input type="text" class="form-control" v-model="settings.toggleHistoryKey">
       </div>
     </div>
+    <div class="form-group row mt-3">
+      <label class="col-5 col-form-label">Open previous keyword results</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.openPrevResult">
+      </div>
+    </div>
+    <div class="form-group row mt-3">
+      <label class="col-5 col-form-label">Open next keyword results</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.openNextResult">
+      </div>
+    </div>
+    <div class="form-group row mt-3">
+      <label class="col-5 col-form-label">Open last keyword results</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.openLastResult">
+      </div>
+    </div>
     <button type="submit" class="btn btn-primary" @click.prevent="save">Save</button>
   </form>
 </template>

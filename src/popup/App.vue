@@ -16,10 +16,10 @@ export default {
   async created() {
     await this.$store.dispatch('settings/load');
     await this.$store.dispatch('keywords/load');
-    if (!_.isEmpty(this.$store.state.keywords.currentKeyword)) {
+    if (!_.isUndefined(this.$store.state.keywords.currentKeyword)) {
       try {
         await this.$store.dispatch('searchresults/search', {
-          keyword: this.$store.state.keywords.currentKeyword,
+          keyword: this.$store.state.keywords.currentKeyword.name,
         });
       } catch(e) {
       }

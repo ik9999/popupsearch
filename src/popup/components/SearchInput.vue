@@ -32,7 +32,8 @@ export default {
   computed: {
     ...mapState({
       focusedElement: state => state.ui.focusedElement,
-      clearInputKey: state => state.settings.settings.clearInputKey,
+      focusedElement: state => state.ui.focusedElement,
+      currentKeyword: state => state.keywords.currentKeyword,
     }),
   },
   methods: {
@@ -71,10 +72,19 @@ export default {
       if (val === 'searchinput') {
         this.$elem.focus();
       }
+    },
+    currentKeyword: function(val, oldVal) {
+      if (val && val.name !== this.keyword) {
+        this.keyword = val.name;
+        this.lastSubmittedKeyword = this.keyword;
+        this.$elem.val(val.name);
+      }
     }
   },
   mounted() {
-    this.keyword = this.$store.state.keywords.currentKeyword;
+    if (this.$store.state.keywords.currentKeyword) {
+      this.keyword = this.$store.state.keywords.currentKeyword.name;
+    }
     this.$elem = $('.SearchInput-input');
     this.$elem.autocomplete({
       appendMethod: 'replace',

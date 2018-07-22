@@ -92,6 +92,18 @@ Open result link in current tab - press **Ctrl** + number/letter displayed prior
 
 Scrolling results - arrow keys, **j**/**k** keys, **PageUp**/**PageDown** keys 
 
+Open previous keyword results - **left**
+
+Open next keyword results - **right**
+
+Open last keyword results - **Ctrl+right**
+
+### History page
+
+Open previous page - **left**
+
+Open next page - **right**
+
 ## Future improvements
 
 - Search results caching

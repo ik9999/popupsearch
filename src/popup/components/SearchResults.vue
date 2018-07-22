@@ -154,7 +154,9 @@ export default {
   mounted() {
     this.reservedKeys = _.map([
       this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey,
-      this.jumpTopKey, this.jumpBottomKey, this.focusInputAltKey, this.toggleHistoryKey
+      this.jumpTopKey, this.jumpBottomKey, this.focusInputAltKey, this.toggleHistoryKey,
+      this.$store.state.settings.settings.openPrevResult, this.$store.state.settings.settings.openNextResult, 
+      this.$store.state.settings.settings.openLastResult, 
     ], (key) => {
       if (!_.isString(key)) {
         return undefined;

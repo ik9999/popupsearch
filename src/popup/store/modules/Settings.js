@@ -16,7 +16,10 @@ const state = {
     openBgTabModifier: 'Shift',
     openActTabModifier: '',
     openCurTabModifier: 'Ctrl',
-    lastDaysToRemember: 10
+    lastDaysToRemember: 10,
+    openPrevResult: 'left',
+    openNextResult: 'right',
+    openLastResult: 'Ctrl+right',
   },
   keyModifierList: ['Ctrl', 'Shift', 'Alt', ''],
 };

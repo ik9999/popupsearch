@@ -22,14 +22,14 @@ const state = {
 const getters = {
   getCurrentSearchResults(state, getters, rootState) {
     const searchEngine = rootState.settings.settings.searchEngine;
-    const keyword = rootState.keywords.currentKeyword;
+    const currentKeyword = rootState.keywords.currentKeyword;
     if (
-      _.isEmpty(keyword) || _.isUndefined(state.searches[searchEngine]) ||
-      _.isUndefined(state.searches[searchEngine][keyword])
+      _.isUndefined(currentKeyword) || _.isUndefined(state.searches[searchEngine]) ||
+      _.isUndefined(state.searches[searchEngine][currentKeyword.name])
     ) {
       return [];
     }
-    return state.searches[searchEngine][keyword];
+    return state.searches[searchEngine][currentKeyword.name];
   }
 };
 
@@ -75,7 +75,9 @@ const actions = {
   },
   async search({rootState, commit, dispatch, getters}, params) {
     if (!params.keyword) {
-      params.keyword = rootState.keywords.currentKeyword;
+      if (rootState.keywords.currentKeyword) {
+        params.keyword = rootState.keywords.currentKeyword.name;
+      }
       params.start = getters.getCurrentSearchResults.length + 1;
     }
     params = _.extend({

@@ -24,12 +24,12 @@ const actions = {
     if (!rootState.keywords.isDdgSpecialKeyword) {
       let foundLink = await db.visitedlinks.where({
         link: url,
-        search_keyword: rootState.keywords.currentKeyword,
+        search_keyword: rootState.keywords.currentKeyword.name,
       }).limit(1).first();
       if (!foundLink) {
         await db.visitedlinks.add({
           link: url,
-          search_keyword: rootState.keywords.currentKeyword,
+          search_keyword: rootState.keywords.currentKeyword.name,
           timestamp: new Date().valueOf(),
         });
       } else {
