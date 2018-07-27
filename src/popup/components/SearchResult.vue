@@ -11,8 +11,9 @@
       <template v-for="(linkData, linkIdx) in result.subLinkList" v-if="sublinksType === 'links'">
         <a
           :href="linkData.href" @click.prevent="onClick($event, linkData.href)"
+          class="SearchResult-title SearchResult-title--sub"
           v-bind:class="{
-            'SearchResult-subLink': true, 'SearchResult-subLink--opened': openedSublinkIdx === linkIdx 
+            'SearchResult-title--opened': openedSublinkIdx === linkIdx 
           }"
           v-html="(sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '') + ' ' + linkData.title"
         >
@@ -27,7 +28,7 @@
                 <a
                   :href="linkData.href"
                   v-bind:class="{
-                    'SearchResult-subLink': true, 'SearchResult-subLink--opened': openedSublinkIdx === linkIdx 
+                    'SearchResult-title': true, 'SearchResult-title--opened': openedSublinkIdx === linkIdx 
                   }"
                   @click.prevent="onClick($event, linkData.href)"
                   v-html="(sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '') + ' ' + linkData.title"
@@ -70,7 +71,7 @@ export default {
       } else {
         return 'links';
       }
-    },
+    }
   },
   methods: {
     onClick(event, url) {
@@ -121,6 +122,16 @@ export default {
         this.openedSublinkIdx = undefined;
       }, 500);
     },
+    isLinkVisited(href) {
+      return !_.isUndefined(_.get(this.$store.state.searchresults.curSearchVisitedLinks[href], 'id'));
+    },
+    isLinkVisitedFromCurKeyword() {
+      return (
+        !_.isUndefined(_.get(this.$store.state.searchresults.curSearchVisitedLinks[href], 'id')) && 
+        this.$store.state.searchresults.curSearchVisitedLinks[href]['search_keyword'] ===
+        this.$store.state.keywords.currentKeyword.name
+      );
+    },
   },
   mounted() {
     this.sublinkKeyList = _.fill(Array(this.result.subLinkList.length), undefined);
@@ -159,6 +170,6 @@ export default {
   &-subLinkTable
     td, tr
       padding: 0
-  &-subLink, &-subLinkDesc
+  &-title--sub
     font-size: 0.8rem
 </style>

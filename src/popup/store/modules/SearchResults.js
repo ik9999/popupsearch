@@ -6,6 +6,7 @@ import db from '../../helper/Database.js';
 
 const state = {
   searches: {},
+  curSearchVisitedLinks: {},
   isLoadingResults: false,
   isShowingResults: false,
   isEnd: false,
@@ -64,6 +65,10 @@ const mutations = {
   setResCacheData(state, {id, scrollPos}) {
     state.currentResultDbObj.id = id;
     state.currentResultDbObj.scrollPos = scrollPos;
+  },
+  setCurSearchVisitedLinks(state, visitedlinksObj) {
+    console.log(visitedlinksObj);
+    state.curSearchVisitedLinks = visitedlinksObj;
   }
 };
 
@@ -117,6 +122,7 @@ const actions = {
           id: foundDbRes.id,
           scrollPos: foundDbRes.last_scrolling_position
         });
+        dispatch('updateVisitedLinks', {forceNew: true});
         commit('ui/setFocusedElement', 'searchresults', {root:true});
         dispatch('ui/setScrollPos', {pos: foundDbRes.last_scrolling_position}, {root:true});
         commit('setIsLoading', false);
@@ -127,16 +133,15 @@ const actions = {
     commit('setAreResultsFromCache', false);
     switch (searchEngine) {
     case 'googleHTML':
+      let links = [];
       try {
         let result = await googleHTML(keyword, start);
-        let links = [];
         if (_.size(_.get(result, 'links')) > 0) {
           links = _.get(result, 'links');
         }
         commit('setError', {
           val: false
         });
-        commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
       } catch(err) {
         commit('setError', {
           val: true,
@@ -148,8 +153,8 @@ const actions = {
             val: false
           });
         }, 5000);
-        commit('appendSearchResults', {searchEngine, keyword, links: [], forceNew, start});
       }
+      commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
       commit('setIsLoading', false);
       break;
     }
@@ -165,6 +170,7 @@ const actions = {
       resDbId = foundDbRes.id;
     }
     let resultsJsonStr = JSON.stringify(getters.getCurrentSearchResults);
+    dispatch('updateVisitedLinks', {forceNew: (start === 0 ? true : false)});
     if (isResInDb === false || !foundDbRes) {
       resDbId = await db.results.add({
         keyword,
@@ -184,6 +190,39 @@ const actions = {
     await db.results.where({id: state.currentResultDbObj.id}).modify({
       last_scrolling_position: pos
     });
+  },
+  async updateVisitedLinks({state, getters, commit, rootState}, {forceNew}) {
+    if (forceNew) {
+      commit('setCurSearchVisitedLinks', {});
+    }
+    let linkObjPairs = await Promise.all(_(getters.getCurrentSearchResults).transform((linkList, resultData) => {
+      if (!resultData) {
+        return ;
+      }
+      if (resultData.href) {
+        linkList.push(resultData.href);
+      }
+      _.each(resultData.subLinkList, ({href}) => linkList.push(href));
+    }, []).map(async(link) => {
+      let linkObj = state.curSearchVisitedLinks[link];
+      if (_.isUndefined(linkObj)) {
+        linkObj = await db.visitedlinks.where({
+          link,
+          search_keyword: rootState.keywords.currentKeyword.name
+        }).limit(1).first();
+        if (!linkObj) {
+          linkObj = await db.visitedlinks.where({
+            link,
+            search_keyword: rootState.keywords.currentKeyword.name
+          }).limit(1).first();
+        }
+        if (!linkObj) {
+          linkObj = {};
+        }
+      }
+      return [link, linkObj];
+    }).value());
+    commit('setCurSearchVisitedLinks', _.fromPairs(linkObjPairs));
   }
 };
 
