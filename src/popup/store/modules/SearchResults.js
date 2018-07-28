@@ -213,7 +213,6 @@ const actions = {
         if (!linkObj) {
           linkObj = await db.visitedlinks.where({
             link,
-            search_keyword: rootState.keywords.currentKeyword.name
           }).limit(1).first();
         }
         if (!linkObj) {

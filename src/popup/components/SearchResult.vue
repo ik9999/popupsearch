@@ -2,7 +2,11 @@
   <div class="SearchResult">
     <a
       :href="result.href" v-html="getTitle()" @click.prevent="onClick($event, result.href)"
-      v-bind:class="{ 'SearchResult-title': true, 'SearchResult-title--opened': openedMainLink }"
+      class="SearchResult-title"
+      v-bind:class="{
+        'SearchResult-title--opened': openedMainLink, 'SearchResult-title--visited': isLinkVisited(result.href),
+        'SearchResult-title--visitedCur': isLinkVisitedFromCurKeyword(result.href)
+      }"
     >
     </a>
     <div class="SearchResult-link" v-html="result.link"></div>
@@ -13,7 +17,9 @@
           :href="linkData.href" @click.prevent="onClick($event, linkData.href)"
           class="SearchResult-title SearchResult-title--sub"
           v-bind:class="{
-            'SearchResult-title--opened': openedSublinkIdx === linkIdx 
+            'SearchResult-title--opened': openedSublinkIdx === linkIdx,
+            'SearchResult-title--visited': isLinkVisited(linkData.href),
+            'SearchResult-title--visitedCur': isLinkVisitedFromCurKeyword(linkData.href)
           }"
           v-html="(sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '') + ' ' + linkData.title"
         >
@@ -27,8 +33,11 @@
               <td>
                 <a
                   :href="linkData.href"
+                  class="SearchResult-title SearchResult-title--sub"
                   v-bind:class="{
-                    'SearchResult-title': true, 'SearchResult-title--opened': openedSublinkIdx === linkIdx 
+                    'SearchResult-title--opened': openedSublinkIdx === linkIdx,
+                    'SearchResult-title--visited': isLinkVisited(linkData.href),
+                    'SearchResult-title--visitedCur': isLinkVisitedFromCurKeyword(linkData.href)
                   }"
                   @click.prevent="onClick($event, linkData.href)"
                   v-html="(sublinkKeyList[linkIdx] ? '[' + sublinkKeyList[linkIdx] + ']' : '') + ' ' + linkData.title"
@@ -125,7 +134,7 @@ export default {
     isLinkVisited(href) {
       return !_.isUndefined(_.get(this.$store.state.searchresults.curSearchVisitedLinks[href], 'id'));
     },
-    isLinkVisitedFromCurKeyword() {
+    isLinkVisitedFromCurKeyword(href) {
       return (
         !_.isUndefined(_.get(this.$store.state.searchresults.curSearchVisitedLinks[href], 'id')) && 
         this.$store.state.searchresults.curSearchVisitedLinks[href]['search_keyword'] ===
@@ -141,16 +150,22 @@ export default {
 
 <style lang="sass">
 .SearchResult
-  &-title, &-subLink
+  &-title
     background: none
     -webkit-transition: background-color 500ms linear;
     -ms-transition: background-color 500ms linear;
     transition: background-color 500ms linear;
-  &-title--opened, &-subLink--opened
-    background-color: #ffc7f7
-    -webkit-transition: background-color 500ms linear;
-    -ms-transition: background-color 500ms linear;
-    transition: background-color 500ms linear;
+    &--opened
+      background-color: #ffc7f7
+      -webkit-transition: background-color 500ms linear;
+      -ms-transition: background-color 500ms linear;
+      transition: background-color 500ms linear;
+    &--sub
+      font-size: 0.8rem
+    &--visited, &--visited:hover
+      color: #754e88
+    &--visitedCur
+      color: #609
   &-desc
     line-height: 1.35
     font-size: 0.9rem
@@ -170,6 +185,4 @@ export default {
   &-subLinkTable
     td, tr
       padding: 0
-  &-title--sub
-    font-size: 0.8rem
 </style>
