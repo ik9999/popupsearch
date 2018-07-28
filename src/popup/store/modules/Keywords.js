@@ -187,7 +187,10 @@ const actions = {
       if (foundKeyword) {
         keyword = foundKeyword.name;
       }
-    } while (keyword && isDdgSpecialKeyword(keyword) && id >= state.oldestKeywordId);
+    } while (
+      (_.isUndefined(keyword) || isDdgSpecialKeyword(keyword)) &&
+      (id >= state.oldestKeywordId && id > 0)
+    );
     if (keyword) {
       dispatch('searchresults/search', {keyword}, {root:true});
     }
@@ -208,7 +211,10 @@ const actions = {
       if (foundKeyword) {
         keyword = foundKeyword.name;
       }
-    } while (keyword && isDdgSpecialKeyword(keyword) && id <= state.lastNonRedirectKeywordId);
+    } while (
+      (_.isUndefined(keyword) || isDdgSpecialKeyword(keyword)) &&
+      (id <= state.lastNonRedirectKeywordId)
+    );
     if (keyword) {
       dispatch('searchresults/search', {keyword}, {root:true});
     }
