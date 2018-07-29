@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import axios from 'axios';
 import db from '../../helper/Database.js';
+import SearchSyntax from '../../helper/SearchSyntax.js';
 
 let isDdgSpecialKeyword = keyword => keyword[0] === '!' || keyword[0] === '=';
 
 const state = {
-  lastKeywords: [],
   remoteKeywords: [],
   currentKeyword: undefined, //{name: string, id: number}
   lastNonRedirectKeywordId: undefined,
@@ -14,6 +14,7 @@ const state = {
   error: undefined,
   history: [],
   historyTotal: 0,
+  curResSearchedMoreKeywords: [],
   historyQuery: {
     offset: 0,
     limit: 10,
@@ -53,6 +54,10 @@ const mutations = {
   },
   setQuery(state, val) {
     state.historyQuery = val;
+  },
+  setCurResSearchedMoreKeywords(state, val) {
+    console.log(val);
+    state.curResSearchedMoreKeywords = val;
   }
 };
 
@@ -99,6 +104,14 @@ const actions = {
       }
       localStorage.setItem('openedKeywordId', id);
     }
+  },
+  async updateSearchedMoreKeywords({commit, state}, {resultUrlList}) {
+    let res = await Promise.all(_.map(_.without(resultUrlList, undefined), async(href) => {
+      let moreKeyword = SearchSyntax.getMoreFromSite(href, state.currentKeyword.name);
+      let foundKeyword = await db.keywords.where({name: moreKeyword}).limit(1).first();
+      return [href, Boolean(foundKeyword)];
+    }));
+    commit('setCurResSearchedMoreKeywords', _(res).fromPairs().pickBy(v => v).keys().value());
   },
   loadRemoteKeys({rootState, commit}, keyword) {
     return (new Promise((resolveFn) => {

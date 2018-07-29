@@ -90,6 +90,8 @@ Open result link in new background tab - press **shift** + number/letter display
 
 Open result link in current tab - press **Ctrl** + number/letter displayed prior to the link
 
+Show more from this site - press **Alt** + number/letter displayed prior to the link
+
 Scrolling results - arrow keys, **j**/**k** keys, **PageUp**/**PageDown** keys 
 
 Open previous keyword results - **left**

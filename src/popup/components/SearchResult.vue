@@ -1,14 +1,22 @@
 <template>
   <div class="SearchResult">
-    <a
-      :href="result.href" v-html="getTitle()" @click.prevent="onClick($event, result.href)"
-      class="SearchResult-title"
-      v-bind:class="{
-        'SearchResult-title--opened': openedMainLink, 'SearchResult-title--visited': isLinkVisited(result.href),
-        'SearchResult-title--visitedCur': isLinkVisitedFromCurKeyword(result.href)
-      }"
-    >
-    </a>
+    <div>
+      <a
+        :href="result.href" v-html="getTitle()" @click.prevent="onClick($event, result.href)"
+        class="SearchResult-title"
+        v-bind:class="{
+          'SearchResult-title--opened': openedMainLink, 'SearchResult-title--visited': isLinkVisited(result.href),
+          'SearchResult-title--visitedCur': isLinkVisitedFromCurKeyword(result.href)
+        }"
+      >
+      </a>
+      <sup
+        v-if="result.subLinkList.length > 0" class="SearchResult-moreLink"
+        :class="{'SearchResult-moreLink--visited': isMoreUsed}"
+      >
+        <a href="#" @click.prevent="openMoreFromSite(result.href)">more</a>
+      </sup>
+    </div>
     <div class="SearchResult-link" v-html="result.link"></div>
     <div class="SearchResult-desc" v-html="result.description"></div>
     <div class="SearchResult-subLinks" v-if="result.subLinkList.length > 0">
@@ -80,6 +88,9 @@ export default {
       } else {
         return 'links';
       }
+    },
+    isMoreUsed() {
+      return _.includes(this.$store.state.keywords.curResSearchedMoreKeywords, this.result.href);
     }
   },
   methods: {
@@ -119,7 +130,10 @@ export default {
         this.sublinkKeyList[linkIdx] = key;
       }
     },
-    triggerPressMainLink() {
+    triggerPressMainLink(keyModifierType) {
+      if (keyModifierType === 'showMoreModifier') {
+        return ;
+      }
       this.openedMainLink = true;
       setTimeout(() => {
         this.openedMainLink = false;
@@ -141,6 +155,9 @@ export default {
         this.$store.state.keywords.currentKeyword.name
       );
     },
+    openMoreFromSite(href) {
+      this.$store.dispatch('links/openLink', {url: href, keyModifierType: 'showMoreModifier'});
+    }
   },
   mounted() {
     this.sublinkKeyList = _.fill(Array(this.result.subLinkList.length), undefined);
@@ -175,8 +192,8 @@ export default {
     .date
       color: #808080
       font-size: 0.9rem
-    a
-      font-size: 0.8rem
+  &-subLinks
+    font-size: 0.8rem
   &-link
     padding-left: 1px
     color: #006621
@@ -185,4 +202,9 @@ export default {
   &-subLinkTable
     td, tr
       padding: 0
+  &-moreLink
+    font-size: 60%
+    top: -0.68em
+    &--visited, &--visited a
+      color: #609
 </style>

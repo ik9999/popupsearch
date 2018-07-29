@@ -101,6 +101,16 @@
         </select>
       </div>
     </div>
+    <div class="form-group row">
+      <label class="col-5 col-form-label">Key modifier to show more results from the site</label>
+      <div class="col-7">
+        <select class="form-control" v-model="settings.showMoreModifier">
+          <option v-for="option in modifierList" v-bind:value="option">
+            {{ option }}
+          </option>
+        </select>
+      </div>
+    </div>
     <div class="form-group row mt-3">
       <label class="col-5 col-form-label">Scroll up</label>
       <div class="col-7">

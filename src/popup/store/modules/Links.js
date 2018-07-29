@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import db from '../../helper/Database.js';
+import SearchSyntax from '../../helper/SearchSyntax.js';
 
 const state = {
 };
@@ -11,11 +12,13 @@ const mutations = {
 };
 
 const actions = {
-  async openLink({rootState}, {url, keyModifier, keyModifierType}) {
+  async openLink({rootState, dispatch}, {url, keyModifier, keyModifierType}) {
     if (!url) {
       return ;
     }
-    let keyModifierTypeList = ['openBgTabModifier', 'openActTabModifier', 'openCurTabModifier'];
+    let keyModifierTypeList = [
+      'openBgTabModifier', 'openActTabModifier', 'openCurTabModifier', 'showMoreModifier'
+    ];
     if (_.isUndefined(keyModifierType)) {
       keyModifierType = _.find(keyModifierTypeList, (_keyModifierType) => {
         return rootState.settings.settings[_keyModifierType] === keyModifier;
@@ -59,8 +62,14 @@ const actions = {
           window.close();
         }, 500);
         break;
+      case 'showMoreModifier': 
+        dispatch('searchresults/search', {
+          keyword: SearchSyntax.getMoreFromSite(url, rootState.keywords.currentKeyword.name)
+        }, {root:true});
+        break;
       }
     });
+    return keyModifierType;
   }
 };
 

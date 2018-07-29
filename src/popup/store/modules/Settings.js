@@ -16,6 +16,7 @@ const state = {
     openBgTabModifier: 'Shift',
     openActTabModifier: '',
     openCurTabModifier: 'Ctrl',
+    showMoreModifier: 'Alt',
     lastDaysToRemember: 10,
     openPrevResult: 'left',
     openNextResult: 'right',

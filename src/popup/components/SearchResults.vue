@@ -120,8 +120,8 @@ export default {
           }
           resultComp.setKey(key);
           this.urlByKeys[String(key)] = resultData.href;
-          this.callbackFnByKeys[String(key)] = () => {
-            resultComp.triggerPressMainLink();
+          this.callbackFnByKeys[String(key)] = keyModifierType => {
+            resultComp.triggerPressMainLink(keyModifierType);
           };
           keyNum += 1;
           _.each(resultData.subLinkList, (linkData, linkIdx) => {
@@ -196,10 +196,10 @@ export default {
         if (keyModifier !== '') {
           modifiedKeys = [`${keyModifier.toLowerCase()}+${key}`];
         }
-        this.HI.bind(modifiedKeys, (event) => {
-          this.$store.dispatch('links/openLink', {url: this.urlByKeys[key], keyModifier});
+        this.HI.bind(modifiedKeys, async(event) => {
+          let modType = await this.$store.dispatch('links/openLink', {url: this.urlByKeys[key], keyModifier});
           if (this.callbackFnByKeys[key]) {
-            this.callbackFnByKeys[key]();
+            this.callbackFnByKeys[key](modType);
           }
           return false;
         });

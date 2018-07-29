@@ -67,7 +67,6 @@ const mutations = {
     state.currentResultDbObj.scrollPos = scrollPos;
   },
   setCurSearchVisitedLinks(state, visitedlinksObj) {
-    console.log(visitedlinksObj);
     state.curSearchVisitedLinks = visitedlinksObj;
   }
 };
@@ -114,6 +113,7 @@ const actions = {
         keyword,
         search_engine: searchEngine,
       }).limit(1).first();
+      isResInDb = Boolean(foundDbRes);
       if (foundDbRes) {
         let links = JSON.parse(foundDbRes.results_json_str);
         commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
@@ -125,63 +125,72 @@ const actions = {
         dispatch('updateVisitedLinks', {forceNew: true});
         commit('ui/setFocusedElement', 'searchresults', {root:true});
         dispatch('ui/setScrollPos', {pos: foundDbRes.last_scrolling_position}, {root:true});
-        commit('setIsLoading', false);
-        return ;
       }
-      isResInDb = false;
     }
-    commit('setAreResultsFromCache', false);
-    switch (searchEngine) {
-    case 'googleHTML':
-      let links = [];
-      try {
-        let result = await googleHTML(keyword, start);
-        if (_.size(_.get(result, 'links')) > 0) {
-          links = _.get(result, 'links');
-        }
-        commit('setError', {
-          val: false
-        });
-      } catch(err) {
-        commit('setError', {
-          val: true,
-          msg: err.message,
-          url: err.url
-        });
-        setTimeout(() => {
+    commit('setAreResultsFromCache', Boolean(isResInDb));
+
+    if (!isResInDb) {
+      switch (searchEngine) {
+      case 'googleHTML':
+        let links = [];
+        try {
+          let result = await googleHTML(keyword, start);
+          if (_.size(_.get(result, 'links')) > 0) {
+            links = _.get(result, 'links');
+          }
           commit('setError', {
             val: false
           });
-        }, 5000);
+        } catch(err) {
+          commit('setError', {
+            val: true,
+            msg: err.message,
+            url: err.url
+          });
+          setTimeout(() => {
+            commit('setError', {
+              val: false
+            });
+          }, 5000);
+        }
+        commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
+        break;
       }
-      commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
-      commit('setIsLoading', false);
-      break;
     }
-    
 
-    let foundDbRes;
-    let resDbId;
-    if (_.isUndefined(isResInDb)) {
-      foundDbRes = await db.results.where({
-        keyword,
-        search_engine: searchEngine,
-      }).limit(1).first();
-      resDbId = foundDbRes.id;
-    }
-    let resultsJsonStr = JSON.stringify(getters.getCurrentSearchResults);
+    dispatch('keywords/updateSearchedMoreKeywords', {
+      resultUrlList: _.map(getters.getCurrentSearchResults, ({href, subLinkList}) => {
+        if (_.size(subLinkList) > 0) {
+          return href;
+        }
+      })
+    }, {root:true});
+    commit('setIsLoading', false);
     dispatch('updateVisitedLinks', {forceNew: (start === 0 ? true : false)});
-    if (isResInDb === false || !foundDbRes) {
-      resDbId = await db.results.add({
-        keyword,
-        search_engine: searchEngine,
-        results_json_str: resultsJsonStr,
-        last_scrolling_position: 0
-      });
-    } else {
-      await db.results.where({id: resDbId}).modify({results_json_str: resultsJsonStr});
+
+    if (!isResInDb) {
+      let foundDbRes;
+      let resDbId;
+      if (_.isUndefined(isResInDb)) {
+        foundDbRes = await db.results.where({
+          keyword,
+          search_engine: searchEngine,
+        }).limit(1).first();
+        resDbId = foundDbRes.id;
+      }
+      let resultsJsonStr = JSON.stringify(getters.getCurrentSearchResults);
+      if (isResInDb === false || !foundDbRes) {
+        resDbId = await db.results.add({
+          keyword,
+          search_engine: searchEngine,
+          results_json_str: resultsJsonStr,
+          last_scrolling_position: 0
+        });
+      } else {
+        await db.results.where({id: resDbId}).modify({results_json_str: resultsJsonStr});
+      }
+      commit('setResCacheData', {id: resDbId});
     }
-    commit('setResCacheData', {id: resDbId});
   },
   async updateDbScrollPos({state}, {pos}) {
     if (!state.currentResultDbObj.id || state.currentResultDbObj.scrollPos === pos) {
