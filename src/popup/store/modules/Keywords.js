@@ -56,7 +56,6 @@ const mutations = {
     state.historyQuery = val;
   },
   setCurResSearchedMoreKeywords(state, val) {
-    console.log(val);
     state.curResSearchedMoreKeywords = val;
   }
 };
