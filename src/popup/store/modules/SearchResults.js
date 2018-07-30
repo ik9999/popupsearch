@@ -68,6 +68,9 @@ const mutations = {
   },
   setCurSearchVisitedLinks(state, visitedlinksObj) {
     state.curSearchVisitedLinks = visitedlinksObj;
+  },
+  setLinkVisited(state, {href, linkObj}) {
+    state.curSearchVisitedLinks[href] = linkObj;
   }
 };
 

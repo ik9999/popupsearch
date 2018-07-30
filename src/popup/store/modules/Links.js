@@ -12,7 +12,7 @@ const mutations = {
 };
 
 const actions = {
-  async openLink({rootState, dispatch}, {url, keyModifier, keyModifierType}) {
+  async openLink({rootState, commit, dispatch}, {url, keyModifier, keyModifierType}) {
     if (!url) {
       return ;
     }
@@ -24,17 +24,26 @@ const actions = {
         return rootState.settings.settings[_keyModifierType] === keyModifier;
       })
     }
-    if (!rootState.keywords.isDdgSpecialKeyword) {
+    if (!rootState.keywords.isDdgSpecialKeyword && keyModifierType !== 'showMoreModifier') {
       let foundLink = await db.visitedlinks.where({
         link: url,
         search_keyword: rootState.keywords.currentKeyword.name,
       }).limit(1).first();
       if (!foundLink) {
-        await db.visitedlinks.add({
+        let id = await db.visitedlinks.add({
           link: url,
           search_keyword: rootState.keywords.currentKeyword.name,
           timestamp: new Date().valueOf(),
         });
+        commit('searchresults/setLinkVisited', {
+          href: url,
+          linkObj: {
+            id,
+            link: url,
+            search_keyword: rootState.keywords.currentKeyword.name,
+            timestamp: new Date().valueOf(),
+          }
+        }, {root:true});
       } else {
         await db.visitedlinks.where({id: foundLink.id}).modify({timestamp: new Date().valueOf()});
       }
