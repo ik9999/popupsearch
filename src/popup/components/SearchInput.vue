@@ -27,6 +27,7 @@ export default {
       keyword: '',
       HI: undefined,
       lastSubmittedKeyword: undefined,
+      lastNonEmptyKeyword: undefined
     }
   },
   computed: {
@@ -71,6 +72,8 @@ export default {
     focusedElement: function(val, oldVal) {
       if (val === 'searchinput') {
         this.$elem.focus();
+      } else if (_.isEmpty(this.keyword)) {
+        this.keyword = this.lastNonEmptyKeyword || this.lastSubmittedKeyword;
       }
     },
     currentKeyword: function(val, oldVal) {
@@ -78,6 +81,11 @@ export default {
         this.keyword = val.name;
         this.lastSubmittedKeyword = this.keyword;
         this.$elem.val(val.name);
+      }
+    },
+    keyword: function(val) {
+      if (!_.isEmpty(val)) {
+        this.lastNonEmptyKeyword = val;
       }
     }
   },
