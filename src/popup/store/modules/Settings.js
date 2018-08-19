@@ -17,7 +17,6 @@ const state = {
     openActTabModifier: '',
     openCurTabModifier: 'Ctrl',
     showMoreModifier: 'Alt',
-    lastDaysToRemember: 10,
     openPrevResult: 'left',
     openNextResult: 'right',
     openLastResult: 'Ctrl+right',

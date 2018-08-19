@@ -61,7 +61,7 @@ const mutations = {
   },
   setCurrentKeyword(state, val) {
     state.currentKeyword = val;
-    if (val.name) {
+    if (val && val.name) {
       state.isDdgSpecialKeyword = isDdgSpecialKeyword(val.name);
     }
   },

@@ -34,9 +34,9 @@
       </div>
     </div>
     <div class="form-group row">
-      <label class="col-5 col-form-label">Remember search results/qeries, days</label>
+      <label class="col-5 col-form-label">Keep search results/keyword history, days (0 to keep forever)</label>
       <div class="col-7">
-        <input type="text" class="form-control" v-model="settings.lastDaysToRemember">
+        <input type="text" class="form-control" v-model="customSettings.keepHistoryDays">
       </div>
     </div>
     <h3>Shortcuts</h3>
@@ -162,19 +162,32 @@ export default {
       engineList: ['googleHTML'],
       acSourceList: ['google'],
       modifierList: Settings.state.keyModifierList,
-      settings: state
+      settings: state,
+      customSettings: {
+        keepHistoryDays: 120
+      }
     }
   },
   methods: {
     save() {
       chrome.storage.local.set(this.settings, () => {
-        alert('Saved');
+        chrome.storage.local.set(this.customSettings, () => {
+          alert('Saved');
+        });
       });
+    }
+  },
+  created() {
+    if (this.keepHistoryDays === null) {
+      this.keepHistoryDays = 60;
     }
   },
   mounted() {
     chrome.storage.local.get(state, (items) => {
       this.settings = items;
+    });
+    chrome.storage.local.get(this.customSettings, (items) => {
+      this.customSettings = items;
     });
   }
 }

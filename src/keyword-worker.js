@@ -3,21 +3,6 @@ import db from './popup/helper/Database';
 import _ from 'lodash';
 
 (async () => {
-  let allKeywords = await db.keywords.toArray();
-
-  let fuse = new Fuse(allKeywords, {
-    shouldSort: true,
-    tokenize: true,
-    includeScore: true,
-    threshold: 0.4,
-    location: 0,
-    maxPatternLength: 32,
-    minMatchCharLength: 1,
-    keys: [
-      "name",
-    ]
-  });
-
   self.onmessage = async function(event) {
     event = event.data;
     if (!event) {
@@ -58,19 +43,43 @@ import _ from 'lodash';
             val.score = (val.timeScore + val.similarityScore) / 2;
           });
         }
-        console.log(goodScoreResultList);
         goodScoreResultList = _.reverse(_.sortBy(goodScoreResultList, 'score'));
         self.postMessage(_(goodScoreResultList).slice(0, 15).map('name').without(keyword).value());
       } catch(e) {
       }
-    }
-    if (event.type === 'add_keyword') {
+    } else if (event.type === 'add_keyword') {
       allKeywords.push(event.data);
-    }
-    if (event.type === 'reload_keywords') {
+    } else if (event.type === 'reload_keywords') {
+      allKeywords = await db.keywords.toArray();
+      fuse.list = allKeywords;
+    } else if (event.type === 'clear_db') {
+      let keepHistoryDays = event.keepHistoryDays;
+      let oldestDateTS = new Date().valueOf() - 1000 * 60 * 60 * 24 * keepHistoryDays;
+      let oldKeywords = await db.keywords.where('timestamp').below(oldestDateTS).toArray();
+      _.reduce(oldKeywords, (pr, keyword) => {
+        return pr.then(() => {
+          return db.results.where('keyword').equals(keyword.name).delete();
+        });
+      }, Promise.resolve());
+      await db.visitedlinks.where('timestamp').below(oldestDateTS).delete();
+      await db.keywords.where('timestamp').below(oldestDateTS).delete();
       allKeywords = await db.keywords.toArray();
       fuse.list = allKeywords;
     }
   };
-})();
 
+  let allKeywords = await db.keywords.toArray();
+
+  let fuse = new Fuse(allKeywords, {
+    shouldSort: true,
+    tokenize: true,
+    includeScore: true,
+    threshold: 0.4,
+    location: 0,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: [
+      "name",
+    ]
+  });
+})();
