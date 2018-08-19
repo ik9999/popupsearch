@@ -9,8 +9,8 @@ db.version(1).stores({
 
 db.version(2).stores({
   keywords: '++id, &name, *timestamp',
-  results: '++id, *keyword, *search_engine, results_json_str, last_scrolling_position',
-  visitedlinks: '++id, *link, *search_keyword, *timestamp',
+  results: '++id, *keyword, *search_engine, results_json_str, last_scrolling_position, [keyword+search_engine]',
+  visitedlinks: '++id, *link, *search_keyword, *timestamp, [link+search_keyword]',
 });
 
 if (typeof window !== 'undefined') {
