@@ -7,4 +7,8 @@ db.version(1).stores({
   visitedlinks: '++id, *link, *search_keyword, timestamp',
 });
 
+if (typeof window !== 'undefined') {
+  window.db = db;
+}
+
 export default db;

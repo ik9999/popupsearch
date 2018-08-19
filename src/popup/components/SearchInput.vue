@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import 'jquery-autocomplete/jquery.autocomplete.js';
 import 'jquery-autocomplete/jquery.autocomplete.css';
 import _ from 'lodash';
@@ -27,7 +27,8 @@ export default {
       keyword: '',
       HI: undefined,
       lastSubmittedKeyword: undefined,
-      lastNonEmptyKeyword: undefined
+      lastNonEmptyKeyword: undefined,
+      setKeywordsFn: undefined
     }
   },
   computed: {
@@ -36,6 +37,9 @@ export default {
       focusedElement: state => state.ui.focusedElement,
       currentKeyword: state => state.keywords.currentKeyword,
     }),
+    ...mapGetters({
+      relatedKeywordList: 'keywords/getRelatedKeywords'
+    })
   },
   methods: {
     unfocus() {
@@ -87,6 +91,16 @@ export default {
       if (!_.isEmpty(val)) {
         this.lastNonEmptyKeyword = val;
       }
+    },
+    relatedKeywordList: function(val) {
+      if (this.setKeywordsFn) {
+        this.setKeywordsFn(_.map(val, ({visited, keyword}) => {
+          if (visited) {
+            return `<span class="visited">${keyword}</span>`;
+          }
+          return `<span>${keyword}</span>`;
+        }))
+      }
     }
   },
   mounted() {
@@ -99,12 +113,8 @@ export default {
       showHint: false,
       source: [
         (query, add) => {
-          this.$store.dispatch('keywords/loadRemoteKeys', query).then(() => {
-            if (this.focusedElement === 'searchinput') {
-              add(this.$store.state.keywords.remoteKeywords);
-            } else {
-              add([]);
-            }
+          this.setKeywordsFn = add;
+          this.$store.dispatch('keywords/loadRelatedKeywords', query).then(() => {
           });
         }
       ],
@@ -169,6 +179,8 @@ export default {
   &-inputCont
     width: calc(100% - 50px)
     display: inline-block
+    .visited
+      color: #609
   &-button
     display: inline-block
     width: 45px

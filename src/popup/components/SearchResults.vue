@@ -197,11 +197,11 @@ export default {
           modifiedKeys = [`${keyModifier.toLowerCase()}+${key}`];
         }
         this.HI.bind(modifiedKeys, async(event) => {
+          event.preventDefault();
           let modType = await this.$store.dispatch('links/openLink', {url: this.urlByKeys[key], keyModifier});
           if (this.callbackFnByKeys[key]) {
             this.callbackFnByKeys[key](modType);
           }
-          return false;
         });
       });
     });

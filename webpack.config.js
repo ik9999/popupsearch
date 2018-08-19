@@ -11,6 +11,7 @@ const config = {
   context: __dirname + '/src',
   entry: {
     'background': './background.js',
+    'keyword-worker': './keyword-worker.js',
     'popup/popup': './popup/popup.js',
     'settings/settings': './settings/index.js',
   },

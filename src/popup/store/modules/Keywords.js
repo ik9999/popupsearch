@@ -6,7 +6,8 @@ import SearchSyntax from '../../helper/SearchSyntax.js';
 let isDdgSpecialKeyword = keyword => keyword[0] === '!' || keyword[0] === '=';
 
 const state = {
-  remoteKeywords: [],
+  relatedOnlineKeywords: [],
+  relatedOfflineKeywords: [],
   currentKeyword: undefined, //{name: string, id: number}
   lastNonRedirectKeywordId: undefined,
   oldestKeywordId: undefined,
@@ -14,6 +15,7 @@ const state = {
   error: undefined,
   history: [],
   historyTotal: 0,
+  inputKeyword: undefined,
   curResSearchedMoreKeywords: [],
   historyQuery: {
     offset: 0,
@@ -24,12 +26,38 @@ const state = {
 };
 
 const getters = {
+  getRelatedKeywords(state) {
+    let onlineKeywords = state.relatedOnlineKeywords;
+    let offlineKeywords = state.relatedOfflineKeywords;
+    onlineKeywords = _.map(onlineKeywords, (keyword) => {
+      let visited = _.includes(offlineKeywords, keyword);
+      if (visited) {
+        offlineKeywords = _.without(offlineKeywords, keyword)
+      }
+      return {
+        visited,
+        keyword
+      };
+    });
+    let offlineKeywordsRequired = (15 - state.relatedOnlineKeywords.length);
+    offlineKeywords = _.reverse(_.slice(offlineKeywords, 0, offlineKeywordsRequired));
+    return _.concat(onlineKeywords, _.map(offlineKeywords, (keyword) => {
+      return {visited: true, keyword};
+    }))
+  }
 };
 
 const mutations = {
-  setRemoteKeywords(state, keywords) {
+  setRelatedOnlineKeywords(state, keywords) {
     state.error = undefined;
-    state.remoteKeywords = keywords;
+    state.relatedOnlineKeywords = keywords;
+  },
+  setRelatedOfflineKeywords(state, keywords) {
+    state.error = undefined;
+    state.relatedOfflineKeywords = keywords;
+  },
+  setInputKeyword(state, keyword) {
+    state.inputKeyword = keyword;
   },
   setCurrentKeyword(state, val) {
     state.currentKeyword = val;
@@ -60,8 +88,17 @@ const mutations = {
   }
 };
 
+
 const actions = {
   async load({commit}) {
+    window.port = chrome.extension.connect({
+      name: "Sample Communication"
+    });
+    window.port.onMessage.addListener(function(msg) {
+      if (_.isArray(msg)) {
+        commit('setRelatedOfflineKeywords', msg);
+      }
+    });
     let openedKeywordId = _.parseInt(localStorage.getItem('openedKeywordId'));
     if (_.isFinite(openedKeywordId)) {
       let foundKeyword = await db.keywords.where({id: openedKeywordId}).limit(1).first();
@@ -80,10 +117,13 @@ const actions = {
     let foundKeyword = await db.keywords.where({name: keyword}).limit(1).first();
     let id;
 
+    let keywordRemoved = false;
+    let keywordAdded = false;
     if (foundKeyword) {
       id = foundKeyword.id;
       if (forceNew) {
         await db.keywords.where({id: foundKeyword.id}).delete();
+        keywordRemoved = true;
       }
     }
 
@@ -93,6 +133,21 @@ const actions = {
         timestamp: new Date().valueOf(),
       });
       localStorage.setItem('lastKeywordId', id);
+      keywordAdded = true;
+    }
+
+    if (keywordRemoved) {
+      window.port.postMessage({
+        type: 'reload_keywords'
+      });
+    } else if (keywordAdded) {
+      window.port.postMessage({
+        type: 'add_keyword',
+        data: {
+          name: keyword,
+          timestamp: new Date().valueOf(),
+        }
+      });
     }
 
     commit('setCurrentKeyword', {name: keyword, id});
@@ -112,7 +167,12 @@ const actions = {
     }));
     commit('setCurResSearchedMoreKeywords', _(res).fromPairs().pickBy(v => v).keys().value());
   },
-  loadRemoteKeys({rootState, commit}, keyword) {
+  loadRelatedKeywords({rootState, commit}, keyword) {
+    window.port.postMessage({
+      type: 'get_related_keywords',
+      keyword
+    });
+    commit('setInputKeyword', keyword)
     return (new Promise((resolveFn) => {
       if (!_.isString(keyword) || _.isEmpty(keyword)) {
         return resolveFn([]);
@@ -155,7 +215,11 @@ const actions = {
       }
       return resolveFn([]);
     })).then((keywordList) => {
-      commit('setRemoteKeywords', _.without(keywordList, keyword));
+      if (state.inputKeyword === keyword) {
+        commit('setRelatedOnlineKeywords', _.without(keywordList, keyword));
+      } else {
+        commit('setRelatedOnlineKeywords', []);
+      }
       return Promise.resolve(keywordList);
     }, error => {
       let msg;
