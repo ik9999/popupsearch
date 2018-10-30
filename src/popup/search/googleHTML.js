@@ -3,7 +3,8 @@ import querystring from 'querystring-browser';
 import fastFormat from 'fast-format';
 import _ from 'lodash';
 
-var linkSel = 'h3.r a'
+var linkSel = 'a[ping]'
+var titleSel = 'h3'
 var descSel = 'span.st'
 var sublinksSel = 'div.osl a';
 var itemSel = 'div.g'
@@ -69,9 +70,10 @@ var igoogle = function (query, start) {
       const $this = $(this);
       var linkElem = $this.find(linkSel);
       var descElem = $this.find(descSel);
+      var titleElem = $this.find(titleSel);
       var sublinksInlineElem = $this.find(sublinksSel);
       var item = {
-        title: linkElem.first().text(),
+        title: titleElem.first().text(),
         link: null,
         description: null,
         href: null,
