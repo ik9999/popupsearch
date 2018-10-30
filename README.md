@@ -19,8 +19,6 @@
 
 - Search results caching
 
-- Search results caching
-
 - Visited links highlighting
 
 - [DuckDuckGo bangs](https://duckduckgo.com/bang) (type something like "!yt test" then press Enter or Ctrl/Shift/Alt + Enter to search on youtube)
