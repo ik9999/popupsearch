@@ -147,6 +147,12 @@
         <input type="text" class="form-control" v-model="settings.openLastResult">
       </div>
     </div>
+    <div class="form-group row mt-3">
+      <label class="col-5 col-form-label">Refresh results</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.refreshResInputKey">
+      </div>
+    </div>
     <button type="submit" class="btn btn-primary" @click.prevent="save">Save</button>
   </form>
 </template>

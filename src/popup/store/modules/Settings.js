@@ -9,6 +9,7 @@ const state = {
     toggleHistoryKey: 'Ctrl+h',
     focusInputAltKey: 'Tab',
     clearInputKey: 'Ctrl+u',
+    refreshResInputKey: 'Ctrl+r',
     jumpTopKey: 'Shift+g',
     jumpBottomKey: 'g g',
     scrollUpKey: 'k',

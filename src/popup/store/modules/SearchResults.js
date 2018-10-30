@@ -16,7 +16,8 @@ const state = {
   areResultsFromCache: false,
   currentResultDbObj: {
     id: undefined,
-    scrollPos: undefined
+    scrollPos: undefined,
+    searchDateTS: undefined,
   }
 };
 
@@ -62,9 +63,10 @@ const mutations = {
   setAreResultsFromCache(state, val) {
     state.areResultsFromCache = Boolean(val);
   },
-  setResCacheData(state, {id, scrollPos}) {
+  setResCacheData(state, {id, scrollPos, searchDateTS}) {
     state.currentResultDbObj.id = id;
     state.currentResultDbObj.scrollPos = scrollPos;
+    state.currentResultDbObj.searchDateTS = searchDateTS;
   },
   setCurSearchVisitedLinks(state, visitedlinksObj) {
     state.curSearchVisitedLinks = visitedlinksObj;
@@ -123,7 +125,8 @@ const actions = {
         commit('setAreResultsFromCache', true);
         commit('setResCacheData', {
           id: foundDbRes.id,
-          scrollPos: foundDbRes.last_scrolling_position
+          scrollPos: foundDbRes.last_scrolling_position,
+          searchDateTS: foundDbRes.timestamp,
         });
         dispatch('updateVisitedLinks', {forceNew: true});
         commit('ui/setFocusedElement', 'searchresults', {root:true});
@@ -187,7 +190,8 @@ const actions = {
           keyword,
           search_engine: searchEngine,
           results_json_str: resultsJsonStr,
-          last_scrolling_position: 0
+          last_scrolling_position: 0,
+          timestamp: new Date().valueOf(),
         });
       } else {
         await db.results.where({id: resDbId}).modify({results_json_str: resultsJsonStr});

@@ -30,7 +30,9 @@
     "vue-spinner": "^1.0.3",
     "convert-layout": "^0.7.0",
     "vue2-datatable-component": "ik9999/vue2-datatable",
-    "fuse.js": "ik9999/Fuse"
+    "fuse.js": "ik9999/Fuse",
+    "moment": "^2.22.2"
+
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.49",

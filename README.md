@@ -17,6 +17,10 @@
 
 - Displaying additional links (e.g. More from this site)
 
+- Search results caching
+
+- Search results caching
+
 - [DuckDuckGo bangs](https://duckduckgo.com/bang) (type something like "!yt test" then press Enter or Ctrl/Shift/Alt + Enter to search on youtube)
 
 - [DuckDuckGo calculator](https://duckduckgo.com/?q=%3D2%2B2&t=h_&ia=calculator) (type your expression e.g. "=2+2" then press Enter or Ctrl/Shift/Alt + Enter to open ddg calculator page)
@@ -108,13 +112,9 @@ Open next page - **right**
 
 ## Future improvements
 
-- Search results caching
-
-- Search history
+- Add searx.me and duckduckgo engines
 
 - Visited links history
-
-- Add searx.me and duckduckgo engines
 
 - Dark color ui theme
 

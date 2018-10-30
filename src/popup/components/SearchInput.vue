@@ -34,7 +34,6 @@ export default {
   computed: {
     ...mapState({
       focusedElement: state => state.ui.focusedElement,
-      focusedElement: state => state.ui.focusedElement,
       currentKeyword: state => state.keywords.currentKeyword,
     }),
     ...mapGetters({
@@ -52,23 +51,22 @@ export default {
       this.$store.commit('ui/setFocusedElement', 'searchinput');
     },
     submit(keyword, event) {
-      if (keyword === this.lastSubmittedKeyword) {
-        return ;
+      if (keyword !== this.lastSubmittedKeyword) {
+        this.lastSubmittedKeyword = keyword;
+        let keyModifier = '';
+        if (event.altKey) {
+          keyModifier = 'Alt';
+        } else if (event.shiftKey) {
+          keyModifier = 'Shift';
+        } else if (event.ctrlKey) {
+          keyModifier = 'Ctrl';
+        }
+        this.$store.dispatch('searchresults/search', {
+          keyword,
+          keyModifier,
+          forceUpdateDbTime: true
+        });
       }
-      this.lastSubmittedKeyword = keyword;
-      let keyModifier = '';
-      if (event.altKey) {
-        keyModifier = 'Alt';
-      } else if (event.shiftKey) {
-        keyModifier = 'Shift';
-      } else if (event.ctrlKey) {
-        keyModifier = 'Ctrl';
-      }
-      this.$store.dispatch('searchresults/search', {
-        keyword,
-        keyModifier,
-        forceUpdateDbTime: true
-      });
       this.$store.commit('ui/setFocusedElement', 'searchresults');
     }
   },
@@ -93,7 +91,7 @@ export default {
       }
     },
     relatedKeywordList: function(val) {
-      if (this.setKeywordsFn) {
+      if (this.setKeywordsFn && this.focusedElement === 'searchinput') {
         this.setKeywordsFn(_.map(val, ({visited, keyword}) => {
           if (visited) {
             return `<span class="visited">${keyword}</span>`;

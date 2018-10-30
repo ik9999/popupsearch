@@ -15,6 +15,9 @@
         </div>
         <div class="col-4 text-center">
           <pulse-loader :loading="isLoadingResults" :color="'#007bff'" :size="'11px'"></pulse-loader>
+          <div v-if="!isLoadingResults && resultsCached">
+            Results cached {{ cacheTimeAgo }} <a href="#" @click.prevent="refresh">Refresh [Ctrl+r]</a>
+          </div>
         </div>
         <div class="col-4 text-right">
           <span @click.prevent="goNext">
@@ -49,6 +52,7 @@ import SearchInput from '../../components/SearchInput.vue';
 import SearchResults from '../../components/SearchResults.vue';
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 import Mousetrap from 'mousetrap';
+import moment from 'moment';
 import { mapGetters, mapState, mapActions } from 'vuex';
 
 export default {
@@ -61,12 +65,15 @@ export default {
     ...mapState({
       focusedElement: state => state.ui.focusedElement,
       toggleHistoryKey: state => state.settings.settings.toggleHistoryKey,
+      refreshResInputKey: state => state.settings.settings.refreshResInputKey,
       closeAfterLink: state => state.settings.settings.closeAfterLink,
       focusInputKey: state => state.settings.settings.focusInputKey,
       focusInputAltKey: state => state.settings.settings.focusInputAltKey,
       isLoadingResults: state => state.searchresults.isLoadingResults,
       errorMsg: state => state.searchresults.errorMsg,
       errorPageUrl: state => state.searchresults.errorPageUrl,
+      resultsCached: state => state.searchresults.areResultsFromCache,
+      resultsCache: state => state.searchresults.currentResultDbObj,
     }),
     isError() {
       return this.$store.state.searchresults.isError || this.$store.state.keywords.error;
@@ -87,6 +94,12 @@ export default {
         return false;
       }
       return currentKeyword.id === this.$store.state.keywords.oldestKeywordId;
+    },
+    cacheTimeAgo() {
+      if (this.resultsCached && this.resultsCache && this.resultsCache.searchDateTS) {
+        return moment.utc(this.resultsCache.searchDateTS).fromNow();
+      }
+      return '';
     }
   },
   methods: {
@@ -105,6 +118,12 @@ export default {
         });
       });
     },
+    refresh() {
+      this.$store.dispatch('searchresults/search', {
+        keyModifier: '',
+        forceNew: true
+      });
+    }
   },
   mounted() {
     this.HI = new Mousetrap(this.$el);
@@ -113,6 +132,10 @@ export default {
     };
     this.HI.bind(this.toggleHistoryKey.toLowerCase(), () => {
       this.$router.push('/history');
+      return false;
+    });
+    this.HI.bind(this.refreshResInputKey.toLowerCase(), () => {
+      this.refresh();
       return false;
     });
     _.each([this.focusInputKey, this.focusInputAltKey], (key) => {
