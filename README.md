@@ -27,9 +27,9 @@
 
 ## Screenshot
 
-![screenshot](https://user-images.githubusercontent.com/6804575/42267722-779623c4-7f82-11e8-8fb2-6c404980f71c.png)
+![screenshot](https://user-images.githubusercontent.com/6804575/47818042-388e7e80-dd68-11e8-9453-db1e71cd85cb.png)
 
-<a href="https://user-images.githubusercontent.com/6804575/41853083-930fe3f4-7895-11e8-869d-bf3652d0df60.gif" target="_blank" rel="noopener noreferrer">gif demo</a>
+<a href="https://user-images.githubusercontent.com/6804575/47818459-10ebe600-dd69-11e8-9b75-cdceec9d2ca8.gif" target="_blank" rel="noopener noreferrer">gif demo</a>
 
 ## Installation
 
