@@ -87,7 +87,9 @@ const actions = {
       if (rootState.keywords.currentKeyword) {
         params.keyword = rootState.keywords.currentKeyword.name;
       }
-      params.start = getters.getCurrentSearchResults.length + 1;
+      if (!params.forceNew) {
+        params.start = getters.getCurrentSearchResults.length + 1;
+      }
     }
     params = _.extend({
       start: 0,
@@ -113,6 +115,12 @@ const actions = {
       }, {root:true});
     }
     let isResInDb = undefined;
+    if (forceNew) {
+      await db.results.where({
+        keyword,
+        search_engine: searchEngine,
+      }).delete();
+    }
     if (!forceNew && start === 0) {
       let foundDbRes = await db.results.where({
         keyword,

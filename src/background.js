@@ -14,12 +14,7 @@ chrome.storage.local.get(['keepHistoryDays'], function(items) {
   if (keepHistoryDays !== 0 && !keepHistoryDays) {
     keepHistoryDays = 120;
   }
-  console.log(keepHistoryDays);
   if (keepHistoryDays !== 0) {
-    console.log({
-      type: 'clear_db',
-      keepHistoryDays 
-    });
     worker.postMessage({
       type: 'clear_db',
       keepHistoryDays 
