@@ -29,7 +29,7 @@
 
 ![screenshot](https://user-images.githubusercontent.com/6804575/47818042-388e7e80-dd68-11e8-9453-db1e71cd85cb.png)
 
-<a href="https://user-images.githubusercontent.com/6804575/47818459-10ebe600-dd69-11e8-9b75-cdceec9d2ca8.gif" target="_blank" rel="noopener noreferrer">gif demo</a>
+<a href="https://user-images.githubusercontent.com/6804575/47867572-f110fc80-de12-11e8-83ae-0b844319f43e.gif" target="_blank" rel="noopener noreferrer">gif demo</a>
 
 ## Installation
 
