@@ -79,7 +79,7 @@ export default {
         shortcut = idx + 1;
       } else if (idx === 9) {
         shortcut = 0;
-      } 
+      }
       return shortcut;
     },
     openByIdx(idx) {
@@ -115,7 +115,7 @@ export default {
     };
     _.each(_.range(0, 10), (idx) => {
       let shortcut = this.getShortcutByIdx(idx);
-      if (!shortcut) {
+      if (_.isUndefined(shortcut)) {
         return ;
       }
       this.HI.bind(String(shortcut), () => {
