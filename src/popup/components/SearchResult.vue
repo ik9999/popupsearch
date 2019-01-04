@@ -150,7 +150,7 @@ export default {
     },
     isLinkVisitedFromCurKeyword(href) {
       return (
-        !_.isUndefined(_.get(this.$store.state.searchresults.curSearchVisitedLinks[href], 'id')) && 
+        !_.isUndefined(_.get(this.$store.state.searchresults.curSearchVisitedLinks[href], 'id')) &&
         this.$store.state.searchresults.curSearchVisitedLinks[href]['search_keyword'] ===
         this.$store.state.keywords.currentKeyword.name
       );

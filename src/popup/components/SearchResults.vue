@@ -1,7 +1,7 @@
 <template>
   <div class="SearchResults" tabindex="-1" @scroll="onScroll" @focus="onFocus">
     <template v-for="(resultData, index) in currentSearchResults">
-      <search-result 
+      <search-result
         :result="resultData" class="SearchResults-result" :ref="'element' + index"
       >
       </search-result>
@@ -158,7 +158,7 @@ export default {
     this.reservedKeys = _.map([
       this.toggleClosepopupKey, this.scrollUpKey, this.scrollDownKey, this.focusInputKey,
       this.jumpTopKey, this.jumpBottomKey, this.focusInputAltKey, this.toggleHistoryKey,
-      this.openPrevResult, this.openNextResult, this.openLastResult, 
+      this.openPrevResult, this.openNextResult, this.openLastResult, 'n'
     ], (key) => {
       if (!_.isString(key)) {
         return undefined;
