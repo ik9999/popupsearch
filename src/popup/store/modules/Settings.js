@@ -4,6 +4,10 @@ const state = {
   settings: {
     searchEngine: 'googleHTML',
     acSource: 'google',
+    searxLanguage: 'all',
+    searxInstances: 'searx.prvcy.eu,searx.xyz,searx.pofilo.fr,search.stinpriza.org',
+    searxSearchEngines: 'google,wikipedia',
+    searxAutocompleteSource: 'google',
     closeAfterLink: false,
     focusInputKey: 'Ctrl+e',
     toggleHistoryKey: 'Ctrl+h',
@@ -26,6 +30,9 @@ const state = {
 };
 
 const getters = {
+  searxInstanceList(state) {
+    return state.settings.searxInstances.split(',');
+  }
 };
 
 const mutations = {

@@ -54,14 +54,14 @@ var igoogle = function (query, start) {
       links: [],
       startNext: 0
     }
-    
+
     let $input;
     $body.find('input').each(function() {
       if ($(this).val() === query) {
         $input = $(this);
       }
     });
-    
+
     if (!$input) {
       return Promise.reject(_.extend(new Error('Parsing error'), {url: newUrl}));
     }

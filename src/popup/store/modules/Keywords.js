@@ -167,61 +167,89 @@ const actions = {
     }));
     commit('setCurResSearchedMoreKeywords', _(res).fromPairs().pickBy(v => v).keys().value());
   },
-  loadRelatedKeywords({rootState, commit}, keyword) {
+  async loadRelatedKeywords({rootState, commit, rootGetters}, keyword) {
     window.port.postMessage({
       type: 'get_related_keywords',
       keyword
     });
     commit('setInputKeyword', keyword)
-    return (new Promise((resolveFn) => {
-      if (!_.isString(keyword) || _.isEmpty(keyword)) {
-        return resolveFn([]);
-      }
-      let isBang = false;
-      let bang = '';
-      if (keyword[0] === '=') {
-        return resolveFn([]);
-      }
-      if (keyword[0] === '!') {
-        isBang = true;
-        let keywSplit = keyword.split(' ');
-        if (keywSplit.length < 2) {
-          return resolveFn([]);
+    try {
+      let keywordList = await (async() => {
+        if (!_.isString(keyword) || _.isEmpty(keyword)) {
+          return [];
         }
-        bang = keywSplit.shift();
-        keyword = keywSplit.join(' ');
-        if (_.isEmpty(keyword)) {
-          return resolveFn([]);
+        let isBang = false;
+        let bang = '';
+        if (keyword[0] === '=') {
+          return [];
         }
-      }
-      switch (rootState.settings.settings.acSource) {
-      case 'google':
-        return resolveFn(axios.get('http://suggestqueries.google.com/complete/search?client=firefox', {
-          params: {
-            q: keyword
+        if (keyword[0] === '!') {
+          isBang = true;
+          let keywSplit = keyword.split(' ');
+          if (keywSplit.length < 2) {
+            return [];
           }
-        }).then((response) => {
-          let keywordList = _.get(response, 'data[1]');
-          if (_.isArray(keywordList)) {
-            keywordList = _.without(keywordList, keyword);
-            if (isBang) {
-              return Promise.resolve(_.map(keywordList, res => bang + ' ' + res));
+          bang = keywSplit.shift();
+          keyword = keywSplit.join(' ');
+          if (_.isEmpty(keyword)) {
+            return [];
+          }
+        }
+        let response;
+        let keywordList = [];
+        switch (rootState.settings.settings.acSource) {
+        case 'google':
+          response = await axios.get('http://suggestqueries.google.com/complete/search?client=firefox', {
+            params: {
+              q: keyword
             }
-            return Promise.resolve(keywordList);
+          });
+          let goKeywordList = _.get(response, 'data[1]');
+          if (_.isArray(goKeywordList)) {
+            keywordList = _.without(goKeywordList, keyword);
+            if (isBang) {
+              keywordList = _.map(keywordList, res => bang + ' ' + res);
+            }
           }
-          return Promise.resolve([]);
-        }));
-        break;
-      }
-      return resolveFn([]);
-    })).then((keywordList) => {
+          break;
+        case 'searx':
+          await _.reduce(rootGetters['settings/searxInstanceList'], async(pr, domain) => {
+            await pr;
+            if (response) {
+              return;
+            }
+            try {
+              response = await axios.get(`https://${domain}/autocompleter`, {
+                params: {
+                  q: keyword,
+                  autocomplete: rootState.settings.settings.searxAutocompleteSource,
+                }
+              });
+            } catch(e) {
+              console.warn(e);
+            }
+          }, Promise.resolve());
+          if (!response) {
+            throw new Error('autocomplete error');
+          }
+          let searxKeywordList = _.get(response, 'data');
+          if (_.isArray(searxKeywordList)) {
+            keywordList = _.without(searxKeywordList, keyword);
+            if (isBang) {
+              keywordList = _.map(keywordList, res => bang + ' ' + res);
+            }
+          }
+          break;
+        }
+        return keywordList;
+      })();
       if (state.inputKeyword === keyword) {
         commit('setRelatedOnlineKeywords', _.without(keywordList, keyword));
       } else {
         commit('setRelatedOnlineKeywords', []);
       }
-      return Promise.resolve(keywordList);
-    }, error => {
+      return keywordList;
+    } catch(error) {
       let msg;
       if (error.response) {
         msg = `Error - ${error.response.status}`;
@@ -229,8 +257,8 @@ const actions = {
         msg = JSON.stringify(error.message);
       }
       commit('setError', msg);
-      return Promise.reject(new Error(msg));
-    });
+      throw new Error(msg);
+    }
   },
   async updateHistory({commit, state}, {limit, offset, order}) {
     if (state.historyTotal === 0) {

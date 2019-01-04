@@ -11,6 +11,24 @@
         </select>
       </div>
     </div>
+    <div class="form-group row" v-if="settings.searchEngine === 'searx'">
+      <label class="col-5 col-form-label">Searx.me language (i.e. 'en-US', 'de', default: 'all')</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.searxLanguage">
+      </div>
+    </div>
+    <div class="form-group row" v-if="settings.searchEngine === 'searx'">
+      <label class="col-5 col-form-label">Searx.me <a href="https://stats.searx.xyz/" target="_blank">instances</a> (comma-separated)</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.searxInstances">
+      </div>
+    </div>
+    <div class="form-group row" v-if="settings.searchEngine === 'searx'">
+      <label class="col-5 col-form-label">Searx.me <a href="https://searx.me/preferences#" target="_blank">search engines</a> (comma-separated)</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.searxSearchEngines">
+      </div>
+    </div>
     <div class="form-group row">
       <label class="col-5 col-form-label">Autocomplete source</label>
       <div class="col-7">
@@ -19,6 +37,12 @@
             {{ option }}
           </option>
         </select>
+      </div>
+    </div>
+    <div class="form-group row" v-if="settings.acSource === 'searx'">
+      <label class="col-5 col-form-label">Searx.me <a href="https://searx.me/preferences#" target="_blank">autocomplete source</a> (i.e. 'google', 'duckduckgo', etc.)</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.searxAutocompleteSource">
       </div>
     </div>
     <div class="form-group row">
@@ -165,8 +189,8 @@ const state = Settings.state.settings;
 export default {
   data() {
     return {
-      engineList: ['googleHTML'],
-      acSourceList: ['google'],
+      engineList: ['googleHTML', 'searx'],
+      acSourceList: ['google', 'searx'],
       modifierList: Settings.state.keyModifierList,
       settings: state,
       customSettings: {

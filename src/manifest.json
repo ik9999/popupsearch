@@ -10,6 +10,7 @@
   "permissions": [
     "https://www.google.com/search*",
     "http://suggestqueries.google.com/complete/search/*",
+    "https://*/*",
     "activeTab",
     "tabs",
     "background",
