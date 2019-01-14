@@ -13,9 +13,15 @@ db.version(2).stores({
   visitedlinks: '++id, *link, *search_keyword, *timestamp, [link+search_keyword]',
 });
 
-db.version(2).stores({
+db.version(2.5).stores({
   keywords: '++id, &name, *timestamp',
   results: '++id, *keyword, *search_engine, results_json_str, last_scrolling_position, [keyword+search_engine], timestamp',
+  visitedlinks: '++id, *link, *search_keyword, *timestamp, [link+search_keyword]',
+});
+
+db.version(4).stores({
+  keywords: '++id, &name, *timestamp',
+  results: '++id, *keyword, *search_engine, results_json_str, last_scrolling_position, [keyword+search_engine], timestamp, page_num',
   visitedlinks: '++id, *link, *search_keyword, *timestamp, [link+search_keyword]',
 });
 
