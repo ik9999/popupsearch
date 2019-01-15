@@ -5,7 +5,7 @@ const state = {
     searchEngine: 'googleHTML',
     acSource: 'google',
     searxLanguage: 'all',
-    searxInstances: 'searx.prvcy.eu,searx.xyz,searx.pofilo.fr,search.stinpriza.org',
+    searxInstances: 'searx.libmail.eu,searx.pofilo.fr,search.stinpriza.org,searx.me',
     searxSearchEngines: 'google,wikipedia',
     searxAutocompleteSource: 'google',
     closeAfterLink: false,

@@ -71,7 +71,7 @@ const actions = {
           window.close();
         }, 500);
         break;
-      case 'showMoreModifier': 
+      case 'showMoreModifier':
         dispatch('searchresults/search', {
           keyword: SearchSyntax.getMoreFromSite(url, rootState.keywords.currentKeyword.name)
         }, {root:true});

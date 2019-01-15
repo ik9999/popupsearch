@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import googleHTML from '../../search/googleHTML.js';
+import searx from '../../search/searx.js';
 import Vue from 'vue';
 import querystring from 'querystring-browser';
 import db from '../../helper/Database.js';
@@ -18,6 +19,7 @@ const state = {
     id: undefined,
     scrollPos: undefined,
     searchDateTS: undefined,
+    pageNum: undefined
   }
 };
 
@@ -36,11 +38,11 @@ const getters = {
 };
 
 const mutations = {
-  appendSearchResults(state, {searchEngine, keyword, links, forceNew, start}) {
+  appendSearchResults(state, {searchEngine, keyword, links, forceNew, start, pageNum}) {
     if (_.isUndefined(state.searches[searchEngine])) {
       Vue.set(state.searches, searchEngine, {});
     }
-    if (_.isUndefined(state.searches[searchEngine][keyword]) || forceNew || start === 0) {
+    if (_.isUndefined(state.searches[searchEngine][keyword]) || forceNew || start === 0 || pageNum === 1) {
       Vue.set(state.searches[searchEngine], keyword, []);
     }
     if (_.size(links) < 3) {
@@ -63,10 +65,11 @@ const mutations = {
   setAreResultsFromCache(state, val) {
     state.areResultsFromCache = Boolean(val);
   },
-  setResCacheData(state, {id, scrollPos, searchDateTS}) {
+  setResCacheData(state, {id, scrollPos, searchDateTS, pageNum}) {
     state.currentResultDbObj.id = id;
     state.currentResultDbObj.scrollPos = scrollPos;
     state.currentResultDbObj.searchDateTS = searchDateTS;
+    state.currentResultDbObj.pageNum = pageNum;
   },
   setCurSearchVisitedLinks(state, visitedlinksObj) {
     state.curSearchVisitedLinks = visitedlinksObj;
@@ -82,22 +85,29 @@ const actions = {
       resolveFn();
     });
   },
-  async search({rootState, commit, dispatch, getters}, params) {
+  async search({rootState, commit, dispatch, getters, state, rootGetters}, params) {
+    const searchEngine = rootState.settings.settings.searchEngine;
+    if (searchEngine === 'googleHTML') {
+      params.start = 0;
+      if (!params.keyword && !params.forceNew) {
+        params.start = getters.getCurrentSearchResults.length + 1;
+      }
+    } else if (searchEngine === 'searx') {
+      params.pageNum = 1;
+      if (!params.keyword && !params.forceNew) {
+        params.pageNum = state.currentResultDbObj.pageNum + 1; //TODO: store in state.searches for each search result
+      }
+    }
     if (!params.keyword) {
       if (rootState.keywords.currentKeyword) {
         params.keyword = rootState.keywords.currentKeyword.name;
       }
-      if (!params.forceNew) {
-        params.start = getters.getCurrentSearchResults.length + 1;
-      }
     }
     params = _.extend({
-      start: 0,
       forceNew: false,
       forceUpdateDbTime: false
     }, params);
-    let searchEngine = rootState.settings.settings.searchEngine;
-    let {keyword, start, forceNew, forceUpdateDbTime} = params;
+    let {keyword, start, pageNum, forceNew, forceUpdateDbTime} = params;
     if (!_.isString(keyword) || _.isEmpty(keyword)) {
       return Promise.resolve([]);
     }
@@ -110,7 +120,7 @@ const actions = {
       let keywordEscaped = querystring.escape(keyword);
       let url = `https://duckduckgo.com/?q=${keywordEscaped}`;
       return dispatch('links/openLink', {
-        url, 
+        url,
         keyModifier: params.keyModifier,
       }, {root:true});
     }
@@ -121,7 +131,7 @@ const actions = {
         search_engine: searchEngine,
       }).delete();
     }
-    if (!forceNew && start === 0) {
+    if (!forceNew && (start === 0 || pageNum === 1)) {
       let foundDbRes = await db.results.where({
         keyword,
         search_engine: searchEngine,
@@ -135,6 +145,7 @@ const actions = {
           id: foundDbRes.id,
           scrollPos: foundDbRes.last_scrolling_position,
           searchDateTS: foundDbRes.timestamp,
+          pageNum: foundDbRes.page_num,
         });
         dispatch('updateVisitedLinks', {forceNew: true});
         commit('ui/setFocusedElement', 'searchresults', {root:true});
@@ -144,32 +155,55 @@ const actions = {
     commit('setAreResultsFromCache', Boolean(isResInDb));
 
     if (!isResInDb) {
+      let links = [];
+      let result;
+      let error;
       switch (searchEngine) {
       case 'googleHTML':
-        let links = [];
         try {
-          let result = await googleHTML(keyword, start);
-          if (_.size(_.get(result, 'links')) > 0) {
-            links = _.get(result, 'links');
+          result = await googleHTML(keyword, start);
+        } catch(err) {
+          error = err
+        }
+        break;
+      case 'searx':
+        await _.reduce(rootGetters['settings/searxInstanceList'], async(pr, domain) => {
+          await pr;
+          if (result) {
+            return;
           }
+          try {
+            let _result = await searx(
+              domain, rootState.settings.settings.searxLanguage, keyword, pageNum,
+              rootState.settings.settings.searxSearchEngines
+            );
+            result = _result;
+          } catch(e) {
+            console.warn(e);
+          }
+        }, Promise.resolve());
+        break;
+      }
+      if (!error && result) {
+        if (_.size(_.get(result, 'links')) > 0) {
+          links = _.get(result, 'links');
+        }
+        commit('setError', {
+          val: false
+        });
+      } else {
+        commit('setError', {
+          val: true,
+          msg: error ? error.message : 'Unknown error',
+          url: error && error.url ? error.url : ''
+        });
+        setTimeout(() => {
           commit('setError', {
             val: false
           });
-        } catch(err) {
-          commit('setError', {
-            val: true,
-            msg: err.message,
-            url: err.url
-          });
-          setTimeout(() => {
-            commit('setError', {
-              val: false
-            });
-          }, 5000);
-        }
-        commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start});
-        break;
+        }, 5000);
       }
+      commit('appendSearchResults', {searchEngine, keyword, links, forceNew, start, pageNum});
     }
 
     dispatch('keywords/updateSearchedMoreKeywords', {
@@ -180,7 +214,7 @@ const actions = {
       })
     }, {root:true});
     commit('setIsLoading', false);
-    dispatch('updateVisitedLinks', {forceNew: (start === 0 ? true : false)});
+    dispatch('updateVisitedLinks', {forceNew: (start === 0 || pageNum === 1 ? true : false)});
 
     if (!isResInDb) {
       let foundDbRes;
@@ -190,21 +224,33 @@ const actions = {
           keyword,
           search_engine: searchEngine,
         }).limit(1).first();
-        resDbId = foundDbRes.id;
+        if (foundDbRes) {
+          resDbId = foundDbRes.id;
+        }
       }
       let resultsJsonStr = JSON.stringify(getters.getCurrentSearchResults);
       if (isResInDb === false || !foundDbRes) {
-        resDbId = await db.results.add({
+        const resultDbObj = {
           keyword,
           search_engine: searchEngine,
           results_json_str: resultsJsonStr,
           last_scrolling_position: 0,
           timestamp: new Date().valueOf(),
-        });
+        };
+        if (pageNum) {
+          resultDbObj.page_num = pageNum;
+        }
+        resDbId = await db.results.add(resultDbObj);
       } else {
-        await db.results.where({id: resDbId}).modify({results_json_str: resultsJsonStr});
+        const modifyObj = {
+          results_json_str: resultsJsonStr
+        };
+        if (pageNum) {
+          modifyObj.page_num = pageNum;
+        }
+        await db.results.where({id: resDbId}).modify(modifyObj);
       }
-      commit('setResCacheData', {id: resDbId});
+      commit('setResCacheData', {id: resDbId, pageNum: pageNum});
     }
   },
   async updateDbScrollPos({state}, {pos}) {

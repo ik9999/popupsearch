@@ -18,12 +18,6 @@
       </div>
     </div>
     <div class="form-group row" v-if="settings.searchEngine === 'searx'">
-      <label class="col-5 col-form-label">Searx.me <a href="https://stats.searx.xyz/" target="_blank">instances</a> (comma-separated)</label>
-      <div class="col-7">
-        <input type="text" class="form-control" v-model="settings.searxInstances">
-      </div>
-    </div>
-    <div class="form-group row" v-if="settings.searchEngine === 'searx'">
       <label class="col-5 col-form-label">Searx.me <a href="https://searx.me/preferences#" target="_blank">search engines</a> (comma-separated)</label>
       <div class="col-7">
         <input type="text" class="form-control" v-model="settings.searxSearchEngines">
@@ -37,6 +31,12 @@
             {{ option }}
           </option>
         </select>
+      </div>
+    </div>
+    <div class="form-group row" v-if="settings.acSource === 'searx' || settings.searchEngine === 'searx'">
+      <label class="col-5 col-form-label">Searx.me <a href="https://stats.searx.xyz/" target="_blank">instances</a> (comma-separated)</label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.searxInstances">
       </div>
     </div>
     <div class="form-group row" v-if="settings.acSource === 'searx'">
