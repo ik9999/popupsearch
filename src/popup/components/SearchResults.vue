@@ -152,6 +152,9 @@ export default {
       this.updateControls();
       const pos = this.$el.scrollTop;
       this.$store.dispatch('ui/setScrollPos', {pos});
+    },
+    scroll(pos) {
+      this.$el.scrollTop = pos;
     }
   },
   mounted() {

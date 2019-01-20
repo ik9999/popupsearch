@@ -119,6 +119,7 @@ export default {
       });
     },
     refresh() {
+      this.$refs.SearchResults.scroll(0);
       this.$store.dispatch('searchresults/search', {
         keyModifier: '',
         forceNew: true
