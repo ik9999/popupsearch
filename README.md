@@ -27,6 +27,8 @@
 
 - Internal search keywords search/history
 
+- Searx.me or google.com as search engine/keywords source (google.com is a default one for both, you can switch it in settings).
+
 ## Screenshot
 
 ![screenshot](https://user-images.githubusercontent.com/6804575/47818042-388e7e80-dd68-11e8-9453-db1e71cd85cb.png)
