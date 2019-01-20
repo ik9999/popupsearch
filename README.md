@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  Chrome/Chromium extension for searching in google™ or searx.me and open results using popup window. The main idea is to not keep opened tabs with search results but do all the searching, browsing results, opening links in popup window. 
+  Chrome/Chromium extension for searching in google™ or searx.me and open results using popup window. The main idea is to not keep opened tabs with search results but do all the searching, results browsing in popup window. 
 </p>
 <hr />
 
