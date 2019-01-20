@@ -2,7 +2,7 @@
   <div class="SearchResult">
     <div>
       <a
-        :href="result.href" v-html="getTitle()" @click.prevent="onClick($event, result.href)"
+        :href="result.href" v-text="getTitle()" @click.prevent="onClick($event, result.href)"
         class="SearchResult-title"
         v-bind:class="{
           'SearchResult-title--opened': openedMainLink, 'SearchResult-title--visited': isLinkVisited(result.href),
