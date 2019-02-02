@@ -45,23 +45,25 @@
 
 - Unpack it to some directory
 
-- Go to chrome://extensions/ page
+- Go to __chrome://extensions/__ page
 
 - Enable Developer mode
 
 - Click "Load unpacked" button and open the directory you unpacked downloaded zip to.
 
-- Re-assign shortcut to open popup on chrome://extensions/shortcuts
+- Re-assign shortcut to open popup on __chrome://extensions/shortcuts__ page
 
 ### From crx
 
 - Download latest crx from [Releases page](https://github.com/ik9999/popupsearch/releases)
 
-- Go to chrome://extensions/ page
+- Go to 	__chrome://extensions/__ page
 
 - Enable Developer mode
 
 - Drag crx file from downloads bar to Extensions page
+
+- Re-assign shortcut to open popup on 	__chrome://extensions/shortcuts__ page
 
 ## Troubleshooting
 
