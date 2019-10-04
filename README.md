@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  Chrome/Chromium extension for searching in google™ or searx.me and open results using popup window. The main idea is to not keep opened tabs with search results but do all the searching, browsing results, opening links in popup window. 
+  Chrome/Chromium extension for searching in google™ or searx.me and browsing results using popup window. The main idea is to not keep opened tabs with search results but do all the searching, results browsing in popup window. 
 </p>
 <hr />
 
@@ -27,6 +27,10 @@
 
 - Internal search keywords search/history
 
+- Searx.me or google.com as search engine/keywords source (google.com is a default one for both, you can switch it in settings).
+
+- Customizable via settings UI
+
 ## Screenshot
 
 ![screenshot](https://user-images.githubusercontent.com/6804575/47818042-388e7e80-dd68-11e8-9453-db1e71cd85cb.png)
@@ -41,23 +45,25 @@
 
 - Unpack it to some directory
 
-- Go to chrome://extensions/ page
+- Go to __chrome://extensions/__ page
 
 - Enable Developer mode
 
 - Click "Load unpacked" button and open the directory you unpacked downloaded zip to.
 
-- Re-assign shortcut to open popup on chrome://extensions/shortcuts
+- Re-assign shortcut to open popup on __chrome://extensions/shortcuts__ page
 
 ### From crx
 
 - Download latest crx from [Releases page](https://github.com/ik9999/popupsearch/releases)
 
-- Go to chrome://extensions/ page
+- Go to 	__chrome://extensions/__ page
 
 - Enable Developer mode
 
 - Drag crx file from downloads bar to Extensions page
+
+- Re-assign shortcut to open popup on 	__chrome://extensions/shortcuts__ page
 
 ## Troubleshooting
 
