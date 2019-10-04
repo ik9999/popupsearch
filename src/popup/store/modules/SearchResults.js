@@ -163,6 +163,7 @@ const actions = {
         try {
           result = await googleHTML(keyword, start);
         } catch(err) {
+          console.error(err);
           error = err
         }
         break;
