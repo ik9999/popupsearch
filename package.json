@@ -1,6 +1,6 @@
 {
   "name": "popupsearch",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "Chrome extension for searching",
   "author": "q@eqw.me",
   "scripts": {

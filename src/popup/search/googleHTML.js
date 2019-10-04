@@ -76,12 +76,13 @@ export default async function(query, start) {
 
     $this.find(linkSel).each(function() {
       let $link = $(this);
-      if ($link.closest('.action-menu').length > 0) {
+      if ($link.closest('.action-menu').length > 0 || $link.closest('.action-menu-panel').length > 0) {
         return;
       }
       linkElem = $link;
 
       var qsObj = querystring.parse(linkElem.attr('href'))
+
       if (qsObj['/url?q']) {
         item.href = qsObj['/url?q'];
       } else {
@@ -89,6 +90,9 @@ export default async function(query, start) {
       }
       var hrefUrlObj = new window.URL(item.href);
       if (hrefUrlObj.hostname === 'webcache.googleusercontent.com') {
+        return;
+      }
+      if (hrefUrlObj.hostname === 'translate.google.com' && hrefUrlObj.pathname === '/translate') {
         return;
       }
       return false;
