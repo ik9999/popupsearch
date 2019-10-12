@@ -88,7 +88,12 @@ export default async function(query, start) {
       } else {
         item.href = linkElem.attr('href');
       }
-      var hrefUrlObj = new window.URL(item.href);
+      let hrefUrlObj;
+      try {
+        hrefUrlObj = new window.URL(item.href);
+      } catch (e) {
+        return;
+      }
       if (hrefUrlObj.hostname === 'webcache.googleusercontent.com') {
         return;
       }
@@ -98,6 +103,7 @@ export default async function(query, start) {
       return false;
     });
     if (!linkElem) {
+      console.warn("no link elem");
       return;
     }
     var descElem = $this.find(descSel);
