@@ -62,7 +62,7 @@ export default {
           keyModifier = 'Ctrl';
         }
         this.$store.dispatch('searchresults/search', {
-          keyword,
+          keyword: _.trim(keyword),
           keyModifier,
           forceUpdateDbTime: true
         });
