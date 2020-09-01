@@ -3,14 +3,7 @@ import querystring from 'querystring-browser';
 import fastFormat from 'fast-format';
 import _ from 'lodash';
 
-var linkSel = 'a[ping]'
-var titleSel = 'h3'
-var descSel = 'span.st'
-var sublinksSel = 'div.osl a';
-var itemSel = 'div.g'
-var nextSel = 'td.b a span'
-
-var googleUrl = '%s://www.google.%s/search?hl=%s&q=%s&start=%s&sa=N&num=%s&ie=UTF-8&oe=UTF-8&gws_rd=ssl'
+const googleUrl = 'https://www.google.com/search?hl=%s&q=%s&start=%s&sa=N&num=%s&ie=UTF-8&oe=UTF-8&gws_rd=ssl'
 
 
 export default async function(query, start) {
@@ -18,13 +11,11 @@ export default async function(query, start) {
     start = 0;
   }
   let resultsPerPage = 15
-  let tld = 'com'
-  let lang = 'en'
-  let protocol = 'https'
+  let lang = 'en';
 
   let requestUrl = googleUrl;
-  var newUrl = fastFormat(
-    requestUrl, protocol, tld, lang, querystring.escape(query), start, resultsPerPage
+  let newUrl = fastFormat(
+    requestUrl, lang, querystring.escape(query), start, resultsPerPage
   )
 
   let resp;
@@ -62,11 +53,14 @@ export default async function(query, start) {
     return Promise.reject(_.extend(new Error('Parsing error'), {url: newUrl}));
   }
 
-  $body.find(itemSel).each(function() {
+  $body.find('div.g').each(function() {
     const $this = $(this);
-    var titleElem = $this.find(titleSel);
+    if ($this.parents('div.g').length > 0) {
+      return;
+    }
+    let titleElem = $this.find('h3');
     let linkElem = undefined;
-    var item = {
+    let item = {
       title: titleElem.first().text(),
       link: null,
       description: null,
@@ -74,14 +68,14 @@ export default async function(query, start) {
       subLinkList: []
     }
 
-    $this.find(linkSel).each(function() {
+    $this.find('a[ping]').each(function() {
       let $link = $(this);
       if ($link.closest('.action-menu').length > 0 || $link.closest('.action-menu-panel').length > 0) {
         return;
       }
       linkElem = $link;
 
-      var qsObj = querystring.parse(linkElem.attr('href'))
+      let qsObj = querystring.parse(linkElem.attr('href'))
 
       if (qsObj['/url?q']) {
         item.href = qsObj['/url?q'];
@@ -103,13 +97,13 @@ export default async function(query, start) {
       return false;
     });
     if (!linkElem) {
-      console.warn("no link elem");
+      console.warn('no link elem');
       return;
     }
-    var descElem = $this.find(descSel);
-    var sublinksInlineElem = $this.find(sublinksSel);
+    let descElem = $this.find('span.st');
+    let sublinksInlineElem = $this.find('div.osl a');
 
-    var $date = descElem.find('span.f');
+    let $date = descElem.find('span.f');
     if ($date.length > 0) {
       $date.addClass('date');
     }
@@ -167,30 +161,43 @@ export default async function(query, start) {
         });
       });
     }
-    descElem.find('a').each(function() {
-      let $this = $(this);
-      let sublinkData = {
-        href: $this.attr('href'),
-        title: $this.text()
-      };
-      if (!_.isUndefined(_.get(item.subLinkList, '[0].desc'))) {
-        sublinkData.desc = "";
+    if ((descElem.length == 0 || descElem.text().trim().length == 0) && $this.find('div.g').length > 0) {
+      //is featured snippet
+      let $featuredSnippetDesc = $this.find('h2').parent().find('div.mod div[data-attrid="wa:/description"]');
+      let $featuredSnippetDescSpanList = $featuredSnippetDesc.children('span');
+      let $featuredSnippetDescSpan = $featuredSnippetDescSpanList.eq(0);
+      if ($featuredSnippetDescSpanList.length === 2) {
+        let dateText = $featuredSnippetDescSpanList.eq(1).text().trim();
+        $featuredSnippetDescSpan.prepend(`<span class="f date">${dateText} - </span>`);
       }
-      item.subLinkList.unshift(sublinkData);
-      if ($this.parent().hasClass('f')) {
-        $this.parent().remove();
-      } else {
-        $this.remove();
-      }
-    });
-    item.description = descElem.html()
+      item.description = $featuredSnippetDescSpan.html();
+    } else {
+      descElem.find('a').each(function() {
+        let $this = $(this);
+        let sublinkData = {
+          href: $this.attr('href'),
+          title: $this.text()
+        };
+        if (!_.isUndefined(_.get(item.subLinkList, '[0].desc'))) {
+          sublinkData.desc = "";
+        }
+        item.subLinkList.unshift(sublinkData);
+        if ($this.parent().hasClass('f')) {
+          $this.parent().remove();
+        } else {
+          $this.remove();
+        }
+      });
+      item.description = descElem.html()
+    }
+    //<span class="f date">Nov 19, 2011 - </span>
 
     if (item.href && item.title) {
       res.links.push(item)
     }
   })
 
-  if ($body.find(nextSel).last().text() === 'Next') {
+  if ($body.find('td.b a span').last().text() === 'Next') {
     res.startNext = start + res.links.length;
   }
 
