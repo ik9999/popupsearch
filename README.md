@@ -90,9 +90,9 @@ Focus query input field or focus search results - **ctrl+e** / **tab**
 
 Clear input field - **ctrl+u**
 
-Jump to first loaded result - **shift+g**
+Jump to first loaded result - **g g**
 
-Jump to last loaded result - **g g**
+Jump to last loaded result - **shift+g**
 
 Clear input field - **ctrl+u**
 
