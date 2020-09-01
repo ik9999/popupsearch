@@ -215,7 +215,7 @@ export default {
       let scrollPos;
       this.isScrolling = true;
       if (this.lastVisibleResIdx > 0) {
-        if (this.lastVisibleResIdx - 1 >= 0 && this.$refs[`element${this.lastVisibleResIdx - 1}`]) {
+        if (this.lastVisibleResIdx - 1 >= 0 && !_.isEmpty(this.$refs[`element${this.lastVisibleResIdx - 1}`])) {
           let prevResComp = this.$refs[`element${this.lastVisibleResIdx - 1}`][0];
           scrollPos = prevResComp.$el.offsetTop + prevResComp.$el.offsetHeight - this.$el.offsetHeight;
           if (scrollPos < 0) {
@@ -238,7 +238,7 @@ export default {
       let scrollPos;
       this.isScrolling = true;
       if (this.lastVisibleResIdx > 0) {
-        if (this.$refs[`element${this.lastVisibleResIdx + 1}`]) {
+        if (!_.isEmpty(this.$refs[`element${this.lastVisibleResIdx + 1}`])) {
           let nextResComp = this.$refs[`element${this.lastVisibleResIdx + 1}`][0];
           scrollPos = nextResComp.$el.offsetTop + nextResComp.$el.offsetHeight - this.$el.offsetHeight;
           if (this.lastVisibleResIdx + 1 < this.currentSearchResults.length) {
