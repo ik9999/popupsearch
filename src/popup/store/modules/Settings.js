@@ -9,6 +9,7 @@ const state = {
     searxSearchEngines: 'google,wikipedia',
     searxAutocompleteSource: 'google',
     closeAfterLink: false,
+    removeHighlighting: false,
     focusInputKey: 'Ctrl+e',
     toggleHistoryKey: 'Ctrl+h',
     focusInputAltKey: 'Tab',

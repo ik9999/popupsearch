@@ -139,7 +139,7 @@ export default {
           resultComp.setKey(undefined);
           resultComp.setSublinkKey(undefined);
         }
-        incHeight += resultComp.getHieght() + resultMarginSize;
+        incHeight += resultComp.getHeight() + resultMarginSize;
       });
       if (_.isUndefined(this.initialLastVisibleResIdx)) {
         this.initialLastVisibleResIdx = this.lastVisibleResIdx;

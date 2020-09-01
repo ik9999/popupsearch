@@ -48,6 +48,9 @@ const actions = {
         await db.visitedlinks.where({id: foundLink.id}).modify({timestamp: new Date().valueOf()});
       }
     }
+    if (rootState.settings.settings.removeHighlighting) {
+      url = url.split('#:~:text=')[0];
+    }
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       let tab = tabs[0];
       switch (keyModifierType) {

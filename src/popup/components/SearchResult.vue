@@ -111,7 +111,7 @@ export default {
       }
       return `[${this.key}] ${this.result.title}`;
     },
-    getHieght() {
+    getHeight() {
       return this.$el.offsetHeight;
     },
     setKey(key) {

@@ -58,6 +58,19 @@
       </div>
     </div>
     <div class="form-group row">
+      <label class="col-5 col-form-label">Remove highlighting (<code>#:~:text=...</code>) from links</label>
+      <div class="col-7">
+        <div class="form-check">
+          <input
+            class="form-check-input" type="checkbox" v-model="settings.removeHighlighting"
+            style="margin-top: 12px"
+          />
+          <label class="form-check-label">
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
       <label class="col-5 col-form-label">Keep search results/keyword history, days (0 to keep forever)</label>
       <div class="col-7">
         <input type="text" class="form-control" v-model="customSettings.keepHistoryDays">
