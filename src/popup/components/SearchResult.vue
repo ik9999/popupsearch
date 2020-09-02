@@ -157,7 +157,7 @@ export default {
     },
     openMoreFromSite(href) {
       this.$store.dispatch('links/openLink', {url: href, keyModifierType: 'showMoreModifier'});
-    }
+    },
   },
   mounted() {
     this.sublinkKeyList = _.fill(Array(this.result.subLinkList.length), undefined);

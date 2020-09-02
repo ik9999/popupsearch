@@ -28,6 +28,7 @@ export default {
       lettersByNums: {},
       reservedKeys: [],
       initialLastVisibleResIdx: undefined,
+      firstVisibleResIdx: 0,
       lastVisibleResIdx: 0,
       isScrolling: false
     }
@@ -106,9 +107,14 @@ export default {
       let incHeight = 0;
       let keyNum = 1;
       let keyLetter = 'a';
+      let firstVisibleResIdx = undefined;
+      let lastVisibleResIdx = undefined;
       _.each(this.currentSearchResults, (resultData, resIdx) => {
         let resultComp = this.$refs[`element${resIdx}`][0];
-        if (incHeight >= scrollOffset && incHeight <= scrollOffset + elHeight) {
+        if (
+          incHeight + resultComp.getHeight() / 4 >= scrollOffset &&
+          incHeight + resultComp.getHeight() / 2 <= scrollOffset + elHeight
+        ) {
           let key = undefined;
           if (keyNum < 10) {
             key = keyNum;
@@ -133,7 +139,11 @@ export default {
             keyLetter = this.nextChar(keyLetter);
           });
           if (!this.isScrolling) {
-            this.lastVisibleResIdx = resIdx;
+            if (_.isUndefined(firstVisibleResIdx)) {
+              firstVisibleResIdx = resIdx;
+            }
+            lastVisibleResIdx = resIdx;
+            //this.lastVisibleResIdx = resIdx;
           }
         } else {
           resultComp.setKey(undefined);
@@ -141,8 +151,12 @@ export default {
         }
         incHeight += resultComp.getHeight() + resultMarginSize;
       });
-      if (_.isUndefined(this.initialLastVisibleResIdx)) {
-        this.initialLastVisibleResIdx = this.lastVisibleResIdx;
+      if (!this.isScrolling) {
+        this.firstVisibleResIdx = firstVisibleResIdx;
+        this.lastVisibleResIdx = lastVisibleResIdx;
+        if (_.isUndefined(this.initialLastVisibleResIdx)) {
+          this.initialLastVisibleResIdx = this.lastVisibleResIdx;
+        }
       }
       if (scrollHeight - scrollOffset - elHeight < 200 && !this.isLoadingResults && !this.isEnd) {
         this.$store.dispatch('searchresults/search', {});
@@ -211,48 +225,64 @@ export default {
     let lastScrollPos;
     let scrollUpKeyList = _.concat(KeyboardLayout.getMatchingKeys(this.scrollUpKey), 'up');
     let scrollDownKeyList = _.concat(KeyboardLayout.getMatchingKeys(this.scrollDownKey), 'down');
-    this.HI.bind(scrollUpKeyList, (event) => {
+    this.HI.bind(scrollUpKeyList, () => {
       let scrollPos;
       this.isScrolling = true;
-      if (this.lastVisibleResIdx > 0) {
-        if (this.lastVisibleResIdx - 1 >= 0 && !_.isEmpty(this.$refs[`element${this.lastVisibleResIdx - 1}`])) {
-          let prevResComp = this.$refs[`element${this.lastVisibleResIdx - 1}`][0];
-          scrollPos = prevResComp.$el.offsetTop + prevResComp.$el.offsetHeight - this.$el.offsetHeight;
-          if (scrollPos < 0) {
-            scrollPos = 0;
-          }
-          if (this.initialLastVisibleResIdx && this.lastVisibleResIdx - 1 >= this.initialLastVisibleResIdx) {
-            this.lastVisibleResIdx -=1;
-          }
-        } else {
+      if (this.firstVisibleResIdx <= 0) {
+        return false;
+      }
+      if (this.firstVisibleResIdx - 1 >= 0 && !_.isEmpty(this.$refs[`element${this.firstVisibleResIdx - 1}`])) {
+        let prevResComp = this.$refs[`element${this.firstVisibleResIdx - 1}`][0];
+        scrollPos = prevResComp.$el.offsetTop;
+        if (scrollPos < 0) {
           scrollPos = 0;
         }
-        if (scrollPos !== lastScrollPos) {
-          lastScrollPos = scrollPos;
-          $this.clearQueue().animate({scrollTop: scrollPos}, 200);
+        if (this.firstVisibleResIdx - 1 >= 0) {
+          this.firstVisibleResIdx -=1;
         }
+      } else {
+        scrollPos = 0;
       }
-      return false;
+      if (scrollPos !== lastScrollPos) {
+        lastScrollPos = scrollPos;
+        $this.clearQueue().animate({
+          scrollTop: scrollPos,
+        }, {
+          duration: 150,
+          always: () => {
+            this.isScrolling = false;
+            this.updateControls();
+          },
+        });
+      }
     }, 'keydown');
-    this.HI.bind(scrollDownKeyList, (event) => {
+    this.HI.bind(scrollDownKeyList, () => {
       let scrollPos;
       this.isScrolling = true;
-      if (this.lastVisibleResIdx > 0) {
-        if (!_.isEmpty(this.$refs[`element${this.lastVisibleResIdx + 1}`])) {
-          let nextResComp = this.$refs[`element${this.lastVisibleResIdx + 1}`][0];
-          scrollPos = nextResComp.$el.offsetTop + nextResComp.$el.offsetHeight - this.$el.offsetHeight;
-          if (this.lastVisibleResIdx + 1 < this.currentSearchResults.length) {
-            this.lastVisibleResIdx +=1;
-          }
-        } else {
-          scrollPos = this.$el.scrollHeight - this.$el.offsetHeight;
-        }
-        if (scrollPos !== lastScrollPos) {
-          lastScrollPos = scrollPos;
-          $this.clearQueue().animate({scrollTop: scrollPos}, 200);
-        }
+      if (this.lastVisibleResIdx <= 0) {
+        return false;
       }
-      return false;
+      if (!_.isEmpty(this.$refs[`element${this.lastVisibleResIdx + 1}`])) {
+        let nextResComp = this.$refs[`element${this.lastVisibleResIdx + 1}`][0];
+        scrollPos = nextResComp.$el.offsetTop + nextResComp.$el.offsetHeight - this.$el.offsetHeight;
+        if (this.lastVisibleResIdx + 1 < this.currentSearchResults.length) {
+          this.lastVisibleResIdx +=1;
+        }
+      } else {
+        scrollPos = this.$el.scrollHeight - this.$el.offsetHeight;
+      }
+      if (scrollPos !== lastScrollPos) {
+        lastScrollPos = scrollPos;
+        $this.clearQueue().animate({
+          scrollTop: scrollPos,
+        }, {
+          duration: 150,
+          always: () => {
+            this.isScrolling = false;
+            this.updateControls();
+          },
+        });
+      }
     }, 'keydown');
     this.HI.bind([this.scrollUpKey, this.scrollDownKey, 'up', 'down'], (event) => {
       this.isScrolling = false;
