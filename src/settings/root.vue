@@ -190,14 +190,21 @@
         <input type="text" class="form-control" v-model="settings.refreshResInputKey">
       </div>
     </div>
-    <button type="submit" class="btn btn-primary" @click.prevent="save">Save</button>
+    <div class="mt-5 mb-4">
+      <button type="submit" class="btn btn-primary" @click.prevent="save">Save</button>
+      <button type="submit" class="btn btn-info" @click.prevent="reset">Reset settings</button>
+    </div>
   </form>
 </template>
 
 <script>
 import Settings from '../popup/store/modules/Settings.js';
+import _ from 'lodash';
 
-const state = Settings.state.settings;
+const defaultSettings = Settings.state.settings;
+const defaultCustomSettings = {
+  keepHistoryDays: 120
+};
 
 export default {
   data() {
@@ -205,10 +212,8 @@ export default {
       engineList: ['googleHTML', 'searx'],
       acSourceList: ['google', 'searx'],
       modifierList: Settings.state.keyModifierList,
-      settings: state,
-      customSettings: {
-        keepHistoryDays: 120
-      }
+      settings: _.cloneDeep(defaultSettings),
+      customSettings: _.cloneDeep(defaultCustomSettings)
     }
   },
   methods: {
@@ -218,6 +223,10 @@ export default {
           alert('Saved');
         });
       });
+    },
+    reset() {
+      this.settings = _.cloneDeep(defaultSettings);
+      this.customSettings = _.cloneDeep(defaultCustomSettings);
     }
   },
   created() {
@@ -226,7 +235,7 @@ export default {
     }
   },
   mounted() {
-    chrome.storage.local.get(state, (items) => {
+    chrome.storage.local.get(defaultSettings, (items) => {
       this.settings = items;
     });
     chrome.storage.local.get(this.customSettings, (items) => {
