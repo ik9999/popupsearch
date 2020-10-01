@@ -100,10 +100,13 @@ export default async function(query, start) {
       console.warn('no link elem');
       return;
     }
-    let descElem = $this.find('span.st');
+    let $descElem = $this.find('span[class]:has(em)');
+    if ($descElem.length === 0) {
+      $descElem = $this.find('span[class]:last-of-type');
+    }
     let sublinksInlineElem = $this.find('div.osl a');
 
-    let $date = descElem.find('span.f');
+    let $date = $descElem.find('span.f');
     if ($date.length > 0) {
       $date.addClass('date');
     }
@@ -161,7 +164,7 @@ export default async function(query, start) {
         });
       });
     }
-    if ((descElem.length == 0 || descElem.text().trim().length == 0) && $this.find('div.g').length > 0) {
+    if (($descElem.length === 0 || $descElem.text().trim().length === 0) && $this.find('div.g').length > 0) {
       //is featured snippet
       let $featuredSnippetDesc = $this.find('h2').parent().find('div.mod div[data-attrid="wa:/description"]');
       let $featuredSnippetDescSpanList = $featuredSnippetDesc.children('span');
@@ -172,7 +175,7 @@ export default async function(query, start) {
       }
       item.description = $featuredSnippetDescSpan.html();
     } else {
-      descElem.find('a').each(function() {
+      $descElem.find('a').each(function() {
         let $this = $(this);
         let sublinkData = {
           href: $this.attr('href'),
@@ -188,7 +191,7 @@ export default async function(query, start) {
           $this.remove();
         }
       });
-      item.description = descElem.html()
+      item.description = $descElem.html()
     }
     //<span class="f date">Nov 19, 2011 - </span>
 
