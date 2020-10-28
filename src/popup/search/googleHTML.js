@@ -5,6 +5,14 @@ import _ from 'lodash';
 
 const googleUrl = 'https://www.google.com/search?hl=%s&q=%s&start=%s&sa=N&num=%s&ie=UTF-8&oe=UTF-8&gws_rd=ssl'
 
+let removeUnwantedTags = ($rootEl) => {
+  $rootEl.find('*').filter(function() {
+    if (_.includes(['img', 'g-img', 'svg'], $(this).prop('tagName').toLowerCase())) {
+      return true;
+    }
+    return $.trim($(this).text()).length === 0;
+  }).remove();
+};
 
 export default async function(query, start) {
   if (_.isUndefined(start)) {
@@ -53,15 +61,13 @@ export default async function(query, start) {
     return Promise.reject(_.extend(new Error('Parsing error'), {url: newUrl}));
   }
 
-  $body.find('div.g').each(function() {
+  $body.find('div.g').each(function(resultIdx) {
     const $this = $(this);
     if ($this.parents('div.g').length > 0) {
       return;
     }
-    let titleElem = $this.find('h3');
     let linkElem = undefined;
     let item = {
-      title: titleElem.first().text(),
       link: null,
       description: null,
       href: null,
@@ -97,13 +103,13 @@ export default async function(query, start) {
       return false;
     });
     if (!linkElem) {
-      console.warn('no link elem');
+      console.warn('no link elem', resultIdx);
       return;
     }
     let $descElem = $this.find('span[class]:has(em)');
-    if ($descElem.length === 0) {
-      $descElem = $this.find('span[class]:last-of-type');
-    }
+    //if ($descElem.length === 0) {
+      //$descElem = $this.find('span[class]:last-of-type');
+    //}
     let sublinksInlineElem = $this.find('div.osl a');
 
     let $date = $descElem.find('span.f');
@@ -120,35 +126,45 @@ export default async function(query, start) {
 
     if (sublinksInlineElem.length > 0) {
       sublinksInlineElem.each(function() {
+        removeUnwantedTags($(this));
         item.subLinkList.push({
           href: $(this).attr('href'),
-          title: $(this).text(),
+          title: _.trim($(this).text()),
         });
+        $(this).remove();
       });
     } else if ($this.find('table').length > 0) {
       let $sublinksTable = $this.find('table');
       $sublinksTable.find('tr').last().remove();
       $sublinksTable.find('td').each(function() {
+        removeUnwantedTags($(this));
         let $a = $(this).find('a');
         if ($a.length === 0) {
           return ;
         }
+        $a.children().each(function() {
+          if ($(this).prop('tagName').toLowerCase() === 'div') {
+            $(this).replaceWithTag('span');
+          }
+        })
         let linkText = $a.html();
         let linkHref = $a.attr('href');
         $a.remove();
         let linkDesc = $(this).text();
         item.subLinkList.push({
           href: linkHref,
-          title: linkText,
-          desc: (linkDesc ? linkDesc : ''),
+          title: _.trim(linkText),
+          desc: (linkDesc ? _.trim(linkDesc) : ''),
         });
+        $(this).remove();
       });
     } else if ($this.find('a[href*="+site:"]').length > 0) {
-      let $sublinksCont = $this.find('a[href*="+site:"]').parent().parent().parent();
+      let $sublinksCont = $this.find('a[href*="+site:"]').parent().parent().parent().parent();
       $sublinksCont.children().each(function() {
         if ($(this).find('a[href*="+site:"]').length > 0) {
           return ;
         }
+        removeUnwantedTags($(this));
         let $a = $(this).find('a');
         if ($a.length === 0) {
           return ;
@@ -159,12 +175,14 @@ export default async function(query, start) {
         let linkDesc = $(this).html().replace(/(<([^>]+)>)/ig, ' ').replace(/ +(?= )/g,'');
         item.subLinkList.push({
           href: linkHref,
-          title: linkText,
-          desc: (linkDesc ? linkDesc : ''),
+          title: _.trim(linkText),
+          desc: (linkDesc ? _.trim(linkDesc) : ''),
         });
+        $(this).remove();
       });
     }
     if (($descElem.length === 0 || $descElem.text().trim().length === 0) && $this.find('div.g').length > 0) {
+      console.log('is featured snippet', resultIdx);
       //is featured snippet
       let $featuredSnippetDesc = $this.find('h2').parent().find('div.mod div[data-attrid="wa:/description"]');
       let $featuredSnippetDescSpanList = $featuredSnippetDesc.children('span');
@@ -173,13 +191,14 @@ export default async function(query, start) {
         let dateText = $featuredSnippetDescSpanList.eq(1).text().trim();
         $featuredSnippetDescSpan.prepend(`<span class="f date">${dateText} - </span>`);
       }
+      removeUnwantedTags($featuredSnippetDescSpan)
       item.description = $featuredSnippetDescSpan.html();
-    } else {
+    } else if ($descElem.length !== 0) {
       $descElem.find('a').each(function() {
         let $this = $(this);
         let sublinkData = {
           href: $this.attr('href'),
-          title: $this.text()
+          title: _.trim($this.text())
         };
         if (!_.isUndefined(_.get(item.subLinkList, '[0].desc'))) {
           sublinkData.desc = "";
@@ -191,9 +210,11 @@ export default async function(query, start) {
           $this.remove();
         }
       });
+      removeUnwantedTags($descElem)
       item.description = $descElem.html()
     }
-    //<span class="f date">Nov 19, 2011 - </span>
+    let $title = $this.find('h3').last();
+    item.title = _.trim($title.first().text());
 
     if (item.href && item.title) {
       res.links.push(item)

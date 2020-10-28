@@ -113,7 +113,7 @@ export default {
         let resultComp = this.$refs[`element${resIdx}`][0];
         if (
           incHeight + resultComp.getHeight() / 4 >= scrollOffset &&
-          incHeight + resultComp.getHeight() / 2 <= scrollOffset + elHeight
+          incHeight <= scrollOffset + elHeight
         ) {
           let key = undefined;
           if (keyNum < 10) {
@@ -284,13 +284,13 @@ export default {
         });
       }
     }, 'keydown');
-    this.HI.bind([this.scrollUpKey, this.scrollDownKey, 'up', 'down'], (event) => {
+    this.HI.bind([this.scrollUpKey, this.scrollDownKey, 'up', 'down'], () => {
       this.isScrolling = false;
     }, 'keyup');
-    this.HI.bind(this.jumpTopKey.toLowerCase(), (event) => {
+    this.HI.bind(this.jumpTopKey.toLowerCase(), () => {
       this.$el.scrollTop = 0;
     });
-    this.HI.bind(this.jumpBottomKey.toLowerCase(), (event) => {
+    this.HI.bind(this.jumpBottomKey.toLowerCase(), () => {
       const scrollHeight = this.$el.scrollHeight;
       const elHeight = this.$el.offsetHeight;
       this.$el.scrollTop = scrollHeight - elHeight;
@@ -299,7 +299,7 @@ export default {
       this.$store.dispatch('keywords/goPrev');
       return false;
     });
-    this.HI.bind(this.openNextResult, (event) => {
+    this.HI.bind(this.openNextResult, () => {
       this.$store.dispatch('keywords/goNext');
       return false;
     });

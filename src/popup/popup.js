@@ -19,6 +19,21 @@ if (process.env.NODE_ENV !== 'production') {
   Vue.config.devtools = true;
 }
 
+$.fn.replaceWithTag = function(tagName) {
+  var result = [];
+  this.each(function() {
+    var newElem = $('<' + tagName + '>').get(0);
+    for (var i = 0; i < this.attributes.length; i++) {
+      newElem.setAttribute(
+        this.attributes[i].name, this.attributes[i].value
+      );
+    }
+    newElem = $(this).wrapInner(newElem).children(0).unwrap().get(0);
+    result.push(newElem);
+  });
+  return $(result);
+};
+
 fontawesome.library.add(faSearch);
 fontawesome.library.add(faArrowRight);
 fontawesome.library.add(faEllipsisH);

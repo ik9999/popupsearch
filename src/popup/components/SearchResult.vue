@@ -186,6 +186,7 @@ export default {
   &-desc
     line-height: 1.35
     font-size: 0.9rem
+  &-desc, &-subLinks
     em
       font-weight: bold
       font-style: normal
