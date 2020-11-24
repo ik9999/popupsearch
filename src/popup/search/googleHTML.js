@@ -210,11 +210,24 @@ export default async function(query, start) {
           $this.remove();
         }
       });
-      removeUnwantedTags($descElem)
+      removeUnwantedTags($descElem);
       item.description = $descElem.html()
     }
     let $title = $this.find('h3').last();
     item.title = _.trim($title.first().text());
+    if (
+      $descElem.length === 0 && _.isNull(item.description) && $this.find('div.rc').length > 0 &&
+      $this.find('div.rc').eq(0).find('span').length > 0
+    ) {
+      try {
+        $this.find('div.rc').eq(0).find('a[ping]').eq(0).parent().remove();
+      } catch (e) {
+        console.warn(e);
+      }
+      let $descElem = $this.find('div.rc').eq(0).find('span').eq(0);
+      removeUnwantedTags($descElem);
+      item.description = $descElem.html();
+    }
 
     if (item.href && item.title) {
       res.links.push(item)

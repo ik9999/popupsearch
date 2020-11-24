@@ -30,6 +30,8 @@ export default {
 </script>
 
 <style lang="sass">
+*:focus
+  outline: 0
 body, .App
   width: 800px
   height: 600px
