@@ -23,7 +23,7 @@
     "jquery": "^3.3.1",
     "jquery-autocomplete": "ik9999/autocomplete",
     "popper.js": "^1.14.3",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.21",
     "fast-format": "^0.2.0",
     "querystring-browser": "^1.0.4",
     "mousetrap": "^1.6.2",
