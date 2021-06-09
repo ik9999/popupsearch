@@ -172,8 +172,12 @@ export default async function(query, start) {
               return false;
             }
             if (childNodeDomEl.nodeName === 'A') {
-              let hostname = _.trimStart((new URL(childNodeDomEl.href)).host, 'www.');
-              if (hostname !== itemHrefHost) {
+              let hostname = undefined;
+              try {
+                hostname = _.trimStart((new URL(childNodeDomEl.href)).host, 'www.');
+              } catch (e) {
+              }
+              if (hostname && hostname !== itemHrefHost) {
                 isValid = false;
                 return false;
               }
