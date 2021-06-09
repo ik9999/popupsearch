@@ -63,6 +63,7 @@ export default async function(query, start) {
 
   $body.find('div.g').each(function(resultIdx) {
     const $this = $(this);
+    console.log($this.html());
     if ($this.parents('div.g').length > 0) {
       return;
     }
@@ -106,15 +107,83 @@ export default async function(query, start) {
       console.warn('no link elem', resultIdx);
       return;
     }
-    let $descElem = $this.find('span[class]:has(em)');
-    //if ($descElem.length === 0) {
-      //$descElem = $this.find('span[class]:last-of-type');
-    //}
-    let sublinksInlineElem = $this.find('div.osl a');
-
-    let $date = $descElem.find('span.f');
-    if ($date.length > 0) {
-      $date.addClass('date');
+    let validateTextContainer = (domEl) => {
+      if (!domEl) {
+        return false;
+      }
+      let result = false;
+      _.each(domEl.childNodes, (node) => {
+        if (node.nodeName === '#text') {
+          result = true;
+          return false;
+        }
+      });
+      return result;
+    };
+    let $descElem = undefined;
+    $this.find('div > div > span').each(function() {
+      if ($(this)[0].classList.length === 0) {
+        let $parent = $(this).parent();
+        if ($parent[0].classList.length >= 4) {
+          let $grparent = $parent.parent();
+          if ($grparent[0].classList.length === 1 && validateTextContainer($(this)[0])) {
+            $descElem = $(this);
+            let $siblingsList = $(this).siblings();
+            if ($siblingsList.length > 0 && $siblingsList[0].tagName === 'SPAN') {
+              let searchDate = $siblingsList[0];
+              if (searchDate.childNodes.length === 1 && searchDate.childNodes[0].nodeName === '#text') {
+                $descElem.prepend($(searchDate).addClass('date'));
+              }
+            }
+            return false;
+          }
+        }
+      }
+    });
+    if (!$descElem) {
+      $this.find('div > div').each(function() {
+        if ($(this)[0].classList.length >= 4) {
+          let $parent = $(this).parent();
+          console.log($parent[0].classList.length, validateTextContainer($(this)[0]));
+          if ($parent[0].classList.length === 1 && validateTextContainer($(this)[0])) {
+            $descElem = $(this);
+            return false;
+          }
+        }
+      });
+    }
+    if (!$descElem || $descElem.length === 0) {
+      $descElem = $this.find('span:last-of-type');
+    }
+    let $sublinksInlineElem = undefined;
+    
+    if (item.href) {
+      let itemHrefHost;
+      try {
+        itemHrefHost = _.trimStart((new URL(item.href)).host, 'www.');
+      } catch (e) {
+      }
+      if (itemHrefHost) {
+        $this.find('div').each(function() {
+          let isValid = true;
+          _.each($(this)[0].childNodes, (childNodeDomEl) => {
+            if (childNodeDomEl.nodeName !== '#text' && childNodeDomEl.nodeName !== 'A') {
+              isValid = false;
+              return false;
+            }
+            if (childNodeDomEl.nodeName === 'A') {
+              let hostname = _.trimStart((new URL(childNodeDomEl.href)).host, 'www.');
+              if (hostname !== itemHrefHost) {
+                isValid = false;
+                return false;
+              }
+            }
+          });
+          if ($(this)[0].childNodes.length > 0 && isValid) {
+            $sublinksInlineElem = $(this);
+          }
+        });
+      }
     }
 
     $this.find('cite').each(function() {
@@ -124,8 +193,8 @@ export default async function(query, start) {
       item.link = item.href;
     }
 
-    if (sublinksInlineElem.length > 0) {
-      sublinksInlineElem.each(function() {
+    if ($sublinksInlineElem) {
+      $sublinksInlineElem.find('a').each(function() {
         removeUnwantedTags($(this));
         item.subLinkList.push({
           href: $(this).attr('href'),
