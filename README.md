@@ -69,7 +69,7 @@
 
 If one installation method doesnt work for you - you can try another. If both methods dont work, you can google solutions (Google Chrome makes it harder to use non-webstore plugins with every version) or use [Chromium Browser](https://www.google.com/search?q=download+chromium) / [ungoogled-chromium](https://ungoogled-software.github.io/ungoogled-chromium-binaries/).
 
-You can report bugs by creating [the issue](https://github.com/ik9999/popupsearch/issues) or by email: q@eqw.me
+You can report bugs by creating [the issue](https://github.com/ik9999/popupsearch/issues)
 
 ## Usage
 
@@ -117,12 +117,6 @@ Open last keyword results - **Ctrl+right**
 Open previous page - **left**
 
 Open next page - **right**
-
-## Future improvements
-
-- Dark color ui theme
-
-- Visited links history
 
 ## Development
 
