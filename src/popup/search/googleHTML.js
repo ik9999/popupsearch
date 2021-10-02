@@ -60,10 +60,19 @@ export default async function(query, start) {
   if (!$input) {
     return Promise.reject(_.extend(new Error('Parsing error'), {url: newUrl}));
   }
+  $body.find('div.g').each(function(resultIdx) {
+    const $this = $(this);
+    if ($this.parents('div.g').length > 0) {
+      return;
+    }
+    $this.find('div.g').each(function(resultIdx) {
+      $(this).addClass('subresult');
+      $(this).insertBefore($this);
+    })
+  });
 
   $body.find('div.g').each(function(resultIdx) {
     const $this = $(this);
-    console.log($this.html());
     if ($this.parents('div.g').length > 0) {
       return;
     }
@@ -103,6 +112,10 @@ export default async function(query, start) {
       }
       return false;
     });
+    if (!linkElem) {
+      linkElem = $this.find('a[href]').eq(0);
+      item.href = linkElem.attr('href');
+    }
     if (!linkElem) {
       console.warn('no link elem', resultIdx);
       return;
@@ -144,7 +157,6 @@ export default async function(query, start) {
       $this.find('div > div').each(function() {
         if ($(this)[0].classList.length >= 4) {
           let $parent = $(this).parent();
-          console.log($parent[0].classList.length, validateTextContainer($(this)[0]));
           if ($parent[0].classList.length === 1 && validateTextContainer($(this)[0])) {
             $descElem = $(this);
             return false;
@@ -153,10 +165,13 @@ export default async function(query, start) {
       });
     }
     if (!$descElem || $descElem.length === 0) {
+      $descElem = $this.find('span[style*="webkit-line-clamp')
+    }
+    if (!$descElem || $descElem.length === 0) {
       $descElem = $this.find('span:last-of-type');
     }
     let $sublinksInlineElem = undefined;
-    
+
     if (item.href) {
       let itemHrefHost;
       try {
@@ -197,16 +212,7 @@ export default async function(query, start) {
       item.link = item.href;
     }
 
-    if ($sublinksInlineElem) {
-      $sublinksInlineElem.find('a').each(function() {
-        removeUnwantedTags($(this));
-        item.subLinkList.push({
-          href: $(this).attr('href'),
-          title: _.trim($(this).text()),
-        });
-        $(this).remove();
-      });
-    } else if ($this.find('table').length > 0) {
+    if ($this.find('table').length > 0) {
       let $sublinksTable = $this.find('table');
       $sublinksTable.find('tr').last().remove();
       $sublinksTable.find('td').each(function() {
@@ -250,6 +256,15 @@ export default async function(query, start) {
           href: linkHref,
           title: _.trim(linkText),
           desc: (linkDesc ? _.trim(linkDesc) : ''),
+        });
+        $(this).remove();
+      });
+    } else if ($sublinksInlineElem) {
+      $sublinksInlineElem.find('a').each(function() {
+        removeUnwantedTags($(this));
+        item.subLinkList.push({
+          href: $(this).attr('href'),
+          title: _.trim($(this).text()),
         });
         $(this).remove();
       });
@@ -305,11 +320,13 @@ export default async function(query, start) {
     if (item.href && item.title) {
       res.links.push(item)
     }
-  })
+  });
 
-  if ($body.find('td.b a span').last().text() === 'Next') {
-    res.startNext = start + res.links.length;
-  }
+  $($body.find('td a span').get().reverse()).each(function() {
+    if ($(this).text() === 'Next') {
+      res.startNext = start + res.links.length;
+    }
+  });
 
   return res;
 };
