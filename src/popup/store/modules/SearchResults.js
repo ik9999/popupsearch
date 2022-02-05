@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import googleHTML from '../../search/googleHTML.js';
 import searx from '../../search/searx.js';
+import valueserp from '../../search/valueserp.js';
 import Vue from 'vue';
 import querystring from 'querystring-browser';
 import db from '../../helper/Database.js';
@@ -92,7 +93,7 @@ const actions = {
       if (!params.keyword && !params.forceNew) {
         params.start = getters.getCurrentSearchResults.length + 1;
       }
-    } else if (searchEngine === 'searx') {
+    } else if (searchEngine === 'searx' || searchEngine === 'valueserp') {
       params.pageNum = 1;
       if (!params.keyword && !params.forceNew) {
         params.pageNum = state.currentResultDbObj.pageNum + 1; //TODO: store in state.searches for each search result
@@ -183,6 +184,14 @@ const actions = {
             console.warn(e);
           }
         }, Promise.resolve());
+        break;
+      case 'valueserp':
+        try {
+          result = await valueserp(rootState.settings.settings.valueSerpUrl, keyword, pageNum);
+        } catch(err) {
+          console.error(err);
+          error = err
+        }
         break;
       }
       if (!error && result) {

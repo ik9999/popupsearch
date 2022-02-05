@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  Chrome/Chromium extension for searching in google™ or searx.me and browsing results using popup window. The main idea is to not keep opened tabs with search results but do all the searching, results browsing in popup window. 
+  Chrome/Chromium extension for searching in google™ (via valueserp.com) or searx.me and browsing results using popup window. The main idea is to not keep opened tabs with search results but do all the searching, results browsing in popup window. 
 </p>
 <hr />
 
@@ -80,6 +80,8 @@ You can report bugs by creating [the issue](https://github.com/ik9999/popupsearc
 - Enter search query then press enter
 
 - press number/letter displayed prior to the link in square brackets to open or click on the link with mouse.
+
+Set valueserp.com API url or change the search engine on settings page.
 
 You can change some shortcuts on extension settings page.
 

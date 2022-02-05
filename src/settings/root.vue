@@ -33,6 +33,15 @@
         </select>
       </div>
     </div>
+    <div class="form-group row" v-if="settings.searchEngine === 'valueserp'">
+      <label class="col-5 col-form-label">
+        <a href="https://app.valueserp.com/playground" target="_blank">Valueserp.com</a> url (with {q} as a placeholder for query,
+        {page} - for a page number)
+      </label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.valueSerpUrl">
+      </div>
+    </div>
     <div class="form-group row" v-if="settings.acSource === 'searx' || settings.searchEngine === 'searx'">
       <label class="col-5 col-form-label">Searx.me <a href="https://stats.searx.xyz/" target="_blank">instances</a> (comma-separated)</label>
       <div class="col-7">
@@ -209,7 +218,7 @@ const defaultCustomSettings = {
 export default {
   data() {
     return {
-      engineList: ['googleHTML', 'searx'],
+      engineList: ['valueserp', 'googleHTML', 'searx'],
       acSourceList: ['google', 'searx'],
       modifierList: Settings.state.keyModifierList,
       settings: _.cloneDeep(defaultSettings),
