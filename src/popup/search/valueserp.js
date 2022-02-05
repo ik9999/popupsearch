@@ -36,7 +36,8 @@ export default async(urlTemplate, query, pageNum) => {
       subLinkList: []
     }
     _.each(resultData['sitelinks'], (linksList) => {
-      _.each(linksList, ({link, title}) => {
+      _.each(linksList, (subLinkData) => {
+        let {link, title} = subLinkData;
         if (_.startsWith(link, '/')) {
           return;
         }
@@ -54,10 +55,17 @@ export default async(urlTemplate, query, pageNum) => {
         if (hrefUrlObj.hostname === 'translate.google.com' && hrefUrlObj.pathname === '/translate') {
           return;
         }
+        let description = ' ';
+        if (subLinkData['answers_raw']) {
+          description += subLinkData['answers_raw'] + ' ';
+        }
+        if (subLinkData['date_raw']) {
+          description += subLinkData['date_raw'] + ' ';
+        }
         item.subLinkList.push({
           href: link,
           title,
-          desc: ' ',
+          desc: description,
         })
       });
     });
@@ -68,6 +76,7 @@ export default async(urlTemplate, query, pageNum) => {
         title: nestedResultData['title'],
         href: nestedResultData['link'],
         description: resultData['snippet'],
+        subLinkList: [],
       });
     });
   });
