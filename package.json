@@ -1,6 +1,6 @@
 {
   "name": "popupsearch",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Chrome extension for searching",
   "author": "q@eqw.me",
   "scripts": {
@@ -38,7 +38,7 @@
     "@babel/core": "^7.17.0",
     "@babel/plugin-proposal-optional-chaining": "^7.16.7",
     "@babel/preset-env": "^7.16.11",
-    "babel-loader": "8.2.3",
+    "babel-loader": "^8.2.3",
     "copy-webpack-plugin": "^6.3.2",
     "cross-env": "^5.1.6",
     "css-loader": "^5.2.7",

@@ -5,6 +5,7 @@ const state = {
     searchEngine: 'valueserp',
     acSource: 'google',
     valueSerpUrl: 'https://api.valueserp.com/search?api_key=api_key&q={q}&page={page}',
+    valueSerpSimultaneousReqs: 2,
     searxLanguage: 'all',
     searxInstances: 'searx.fmac.xyz,searx.gnu.style,search.mdosch.de',
     searxSearchEngines: 'google,wikipedia',

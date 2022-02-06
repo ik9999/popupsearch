@@ -187,7 +187,7 @@ const actions = {
         break;
       case 'valueserp':
         try {
-          result = await valueserp(rootState.settings.settings.valueSerpUrl, keyword, pageNum);
+          result = await valueserp(rootState.settings.settings.valueSerpUrl, keyword, pageNum, rootState.settings.settings.valueSerpSimultaneousReqs);
         } catch(err) {
           console.error(err);
           error = err

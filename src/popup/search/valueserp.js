@@ -2,11 +2,14 @@ import axios from 'axios';
 import _ from 'lodash';
 
 
-export default async(urlTemplate, query, pageNum) => {
+export default async(urlTemplate, query, pageNum, simultaneousReqs) => {
   const url = urlTemplate.replace('{q}', query).replace('{page}', pageNum);
+  let httpReqs = _.map(_.range(1, _.parseInt(simultaneousReqs) + 1), () => {
+    return axios.get(url);
+  });
   let response;
   try {
-    response = await axios.get(url);
+    response = await Promise.race(httpReqs);
   } catch (e) {
     let message = 'No response';
     if (_.get(e, 'response.data.request_info.message')) {

@@ -42,6 +42,15 @@
         <input type="text" class="form-control" v-model="settings.valueSerpUrl">
       </div>
     </div>
+    <div class="form-group row" v-if="settings.searchEngine === 'valueserp'">
+      <label class="col-5 col-form-label">
+        <a href="https://app.valueserp.com/playground" target="_blank">Valueserp.com</a> simultaneous requests
+        (increasing it will decrease average response time, but increase the cost per search)
+      </label>
+      <div class="col-7">
+        <input type="text" class="form-control" v-model="settings.valueSerpSimultaneousReqs">
+      </div>
+    </div>
     <div class="form-group row" v-if="settings.acSource === 'searx' || settings.searchEngine === 'searx'">
       <label class="col-5 col-form-label">Searx.me <a href="https://stats.searx.xyz/" target="_blank">instances</a> (comma-separated)</label>
       <div class="col-7">
