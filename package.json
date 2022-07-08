@@ -31,7 +31,7 @@
     "convert-layout": "^0.7.0",
     "vue2-datatable-component": "ik9999/vue2-datatable",
     "fuse.js": "ik9999/Fuse",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "buffer": "^6.0.3"
   },
   "devDependencies": {
